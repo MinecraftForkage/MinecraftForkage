@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>BuildTools</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>BON</name>
+			<type>2</type>
+			<locationURI>MCF_ROOT/BuildTools/BON</locationURI>
+		</link>
+		<link>
+			<name>src</name>
+			<type>2</type>
+			<locationURI>MCF_ROOT/BuildTools/src</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>MCF_ROOT</name>
+			<value>$%7BPARENT-1-WORKSPACE_LOC%7D</value>
+		</variable>
+	</variableList>
+</projectDescription>
