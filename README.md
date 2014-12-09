@@ -1,3 +1,5 @@
+== Workspace setup ==
+
 To set up a workspace for developing Minecraft Forkage:
 
 0. If you're on Windows, install Cygwin.
@@ -26,24 +28,19 @@ To set up a workspace for developing Minecraft Forkage:
    If you are on Windows, you should run this in Cygwin.
    MSYS may also work, but has not been tested by the Minecraft Forkage team.
 
-6. If patching fails, run `make clean` and retry. (This is probably related to
-   nondeterminism in FernFlower.)
+6. If patching fails, run `make clean` and try again. This is probably related to
+   nondeterminism in FernFlower. You might need to try a few times.
 
-7. Refresh the MinecraftForkage project in Eclipse.
+7. Open the MinecraftForkage project in Eclipse.
 
+8. Once Eclipse finishes building the workspace, you are now set up.
+   There are predefined "MCF Client" and "MCF Server" run configurations. Note that they
+   will not be in the drop-down menu - you will need to select them in the run configurations
+   dialog the first time you use them.
+
+== Libraries ==
 
 External libraries for both Minecraft and Forge will be downloaded to `libraries/` when you run
 any makefile target (TODO: make it an actual target, instead of running automatically). The folder
 structure is not preserved - all the library JARs are simply dumped into that directory.
 Natives will be extracted to `libraries/natives/`.
-
-TODO: Write something here about how the decompilation/patching/install process works internally.
-(Or not here, but somewhere)
-
-As long as this project is taking upstream patches from Minecraft Forge, we need to use their
-source-patching process. If Minecraft Forkage ever becomes independent from Forge, then it may
-be preferable to switch to a bytecode-patching process for simplicity, as source-patching is
-heavily dependent on the decompilation process.
-
-It would also be convenient to distribute the server and client a single JARs, if possible.
-Downloading stuff at runtime is a bad idea. (Downloading stuff at install time is a bit better)
