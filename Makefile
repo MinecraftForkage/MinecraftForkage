@@ -1,6 +1,5 @@
 MCVERSION=1.7.10
 
-MCP_PATCHES=$(wildcard FML/conf/patches/minecraft_ff/*)
 FML_PATCHES=$(shell find FML/patches -type f)
 FORGE_PATCHES=$(shell find MinecraftForge/patches -type f)
 
@@ -74,9 +73,6 @@ build/download/minecraft.jar:
 build/download/minecraft_server.jar:
 	wget -O "$@" "http://s3.amazonaws.com/Minecraft.Download/versions/$(MCVERSION)/minecraft_server.$(MCVERSION).jar"
 
-build/download/fernflower.jar:
-	wget -O - http://files.minecraftforge.net/fernflower-fix-1.0.zip | funzip > "$@"
-
 ####################### DECOMP BYTECODE PROCESSING ##########################
 
 build/minecraft_merged.jar: build/download/minecraft.jar build/download/minecraft_server.jar
@@ -105,7 +101,7 @@ build/processed_binary_trimmed_sorted.jar: build/processed_binary_trimmed.jar
 build/bytecode-orig.txt: build/processed_binary_trimmed_sorted.jar
 	$(BUILDTOOLS) bytecode.Bytecode2Text < "$<" > "$@"
 
-build/raw_source.zip: build/processed_binary.jar #build/download/fernflower.jar
+build/raw_source.zip: build/processed_binary.jar
 	[ -d "$(FFTEMP)" ] && rm -r "$(FFTEMP)"; exit 0
 	mkdir -p "$(FFTEMP)"
 	java -Xmx512M -cp eclipse/fernflower/bin org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler -din=1 -rbr=0 -dgs=1 -asc=1 -log=ALL "$<" "$(FFTEMP)" #| tee "build/fernflower.log"
@@ -130,9 +126,6 @@ build/fml.patch: $(FML_PATCHES)
 	cat $(FML_PATCHES) > "$@"
 build/forge.patch: $(FORGE_PATCHES)
 	cat $(FORGE_PATCHES) > "$@"
-
-build/mcp.patch: $(MCP_PATCHES)
-	cat $(MCP_PATCHES) > "$@"
 
 $(DEOBF_DATA): FML/conf/joined.srg
 	lzma < "$<" > "$@"
