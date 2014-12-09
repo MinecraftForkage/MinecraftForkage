@@ -1,14 +1,17 @@
 To set up a workspace for developing Minecraft Forkage:
 
 * Clone this repository.
-* `git submodule init`
-* `git submodule update`
-* Open the included Eclipse workspace (`eclipse/`). Clean and refresh the "BuildTools"
+* Run `git submodule init`.
+* Run `git submodule update`.
+* Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
+  If you unzipped to a subdirectory by mistake, then move the `eclipse` directory to the
+  repository root.
+* Open the Eclipse workspace you just unzipped (in `eclipse/`). Clean and refresh the "BuildTools"
   and "fernflower" projects, if necessary, so that they build. (TODO: make them buildable
   by makefile)
-* `make extractsrc`
-* If patching fails, run `make clean` and retry. This is probably related to
-  nondeterminism in FernFlower.
+* Run `make extractsrc`.
+* If patching fails, run `make clean` and retry. (This is probably related to
+  nondeterminism in FernFlower.)
 * Refresh the MinecraftForkage project in Eclipse.
 
 If you are on Windows, we recommend running the shell scripts under Cygwin.
