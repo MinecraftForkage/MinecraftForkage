@@ -7,6 +7,3 @@
 [submodule "fernflower"]
 	path = fernflower
 	url = https://github.com/fesh0r/fernflower
-[submodule "BuildTools/BON"]
-	path = BuildTools/BON
-	url = git@github.com:immibis/Bearded-Octo-Nemesis.git
