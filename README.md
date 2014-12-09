@@ -1,4 +1,5 @@
-== Workspace setup ==
+Workspace setup
+===============
 
 To set up a workspace for developing Minecraft Forkage:
 
@@ -38,9 +39,14 @@ To set up a workspace for developing Minecraft Forkage:
    will not be in the drop-down menu - you will need to select them in the run configurations
    dialog the first time you use them.
 
-== Libraries ==
+
+
+Libraries
+=========
 
 External libraries for both Minecraft and Forge will be downloaded to `libraries/` when you run
 any makefile target (TODO: make it an actual target, instead of running automatically). The folder
 structure is not preserved - all the library JARs are simply dumped into that directory.
 Natives will be extracted to `libraries/natives/`.
+
+
