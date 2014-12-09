@@ -7,3 +7,6 @@
 [submodule "fernflower"]
 	path = fernflower
 	url = https://github.com/fesh0r/fernflower
+[submodule "BuildTools"]
+	path = BuildTools
+	url = git@github.com:MinecraftForkage/BuildTools.git
