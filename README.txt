@@ -1,18 +1,36 @@
 To set up a workspace for developing Minecraft Forkage:
 
-* Clone this repository.
-* Run `git submodule init`.
-* Run `git submodule update`.
-* Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
-  If you unzipped to a subdirectory by mistake, then move the `eclipse` directory to the
-  repository root.
-* Open the Eclipse workspace you just unzipped (in `eclipse/`). Clean and refresh the "BuildTools"
-  and "fernflower" projects, if necessary, so that they build. (TODO: make them buildable
-  by makefile)
-* Run `make extractsrc`.
-* If patching fails, run `make clean` and retry. (This is probably related to
-  nondeterminism in FernFlower.)
-* Refresh the MinecraftForkage project in Eclipse.
+1. Clone this repository.
+2. Run `git submodule update --init --recursive`.
+
+  NOTE: MSYSGit has a bug that causes nested submodules to not be initialized properly.
+  If the above command fails with an error similar to:
+
+	fatal: Not a git repository: ../../../..//c/mcf-test/.git/modules/BuildTools/modules/BON
+	Failed to recurse into submodule path 'BuildTools'
+
+  then you need to fix the path in `BuildTools/BON/.git`, which contains something like:
+
+	gitdir: ../../../..//c/mcf-test/.git/modules/BuildTools/modules/BON
+
+  Change this to a correct relative path. After fixing it, the file should look something like this:
+
+	gitdir: ../../.git/modules/BuildTools/modules/BON
+
+  After doing this, run the command again (in the top level of the working tree) to update the
+  remaining submodules.
+	
+
+3. Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
+   If you unzipped to a subdirectory by mistake, then move the `eclipse` directory to the
+   repository root.
+4. Open the Eclipse workspace you just unzipped (in `eclipse/`). Clean and refresh the "BuildTools"
+   and "fernflower" projects, if necessary, so that they build. (TODO: make them buildable
+   by makefile)
+5. Run `make extractsrc`.
+6. If patching fails, run `make clean` and retry. (This is probably related to
+   nondeterminism in FernFlower.)
+7. Refresh the MinecraftForkage project in Eclipse.
 
 If you are on Windows, we recommend running the shell scripts under Cygwin.
 MSYS may also work, but has not been tested by the Minecraft Forkage team.

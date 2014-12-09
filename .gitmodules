@@ -1,12 +1,12 @@
 [submodule "MinecraftForge"]
 	path = MinecraftForge
-	url = git@github.com:MinecraftForge/MinecraftForge.git
+	url = git@github.com:MinecraftForkage/MinecraftForge.git
 [submodule "FML"]
 	path = FML
-	url = git@github.com:MinecraftForge/FML.git
+	url = git@github.com:MinecraftForkage/FML.git
 [submodule "fernflower"]
 	path = fernflower
-	url = https://github.com/fesh0r/fernflower
+	url = git@github.com:MinecraftForkage/fernflower.git
 [submodule "BuildTools"]
 	path = BuildTools
 	url = git@github.com:MinecraftForkage/BuildTools.git
