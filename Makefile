@@ -177,6 +177,6 @@ build/install-data.zip: build/new-classes.pack build/bytecode.patch $(SRG) $(EXC
 	rm -f "$@"
 	zip -j0 "$@" $^
 
-build/install-data.zip.xz: build/install-data.zip
-	xz -9e < "$<" > "$@"
+build/install-data.zip.lzma: build/install-data.zip
+	lzma -9e < "$<" > "$@"
 
