@@ -138,7 +138,7 @@ build/edited_source.zip: $(find -type f $(SOURCE_DIRS))
 	for srcdir in $(SOURCE_DIRS); do cd $$srcdir; zip -r "$$OLDPWD/$@" .; cd "$$OLDPWD"; done
 
 build/recomp.jar: build/edited_source.zip $(LIBRARIES)
-	$(BUILDTOOLS) CompileZip "$<" build/libraries > "$@"
+	$(BUILDTOOLS) CompileZip "$<" $(LIBRARIES_DIR) > "$@"
 
 build/reobf.jar: build/recomp.jar build/mcp-to-srg.srg
 	$(BUILDTOOLS) bytecode.ApplySRG build/mcp-to-srg.srg "$<" "$@"
