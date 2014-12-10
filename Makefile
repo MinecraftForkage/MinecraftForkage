@@ -1,4 +1,5 @@
 MCVERSION=1.7.10
+MCFVERSION=1.0
 
 FML_PATCHES=$(shell find FML/patches -type f)
 FORGE_PATCHES=$(shell find MinecraftForge/patches -type f)
@@ -172,6 +173,7 @@ build/new-classes.pack: build/new-classes.zip
 build/install.properties:
 	rm -f "$@"
 	echo mcver=$(MCVERSION) >> "$@"
+	echo mcfver=$(MCFVERSION) >> "$@"
 
 build/install-data.zip: build/new-classes.pack build/bytecode.patch $(SRG) $(EXCEPTOR_JSON) $(EXC) $(FMLAT) $(FORGEAT) build/install.properties $(MCP_MERGE_CFG)
 	rm -f "$@"
