@@ -50,3 +50,8 @@ structure is not preserved - all the library JARs are simply dumped into that di
 Natives will be extracted to `libraries/natives/`.
 
 
+Installer
+=========
+
+To generate the installer, run `make build/installer.jar` after letting Eclipse compile the main
+Minecraft Forkage project.

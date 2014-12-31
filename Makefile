@@ -32,7 +32,7 @@ DEOBF_DATA=FML/src/main/resources/deobfuscation_data-missing.lzma
 BUILDTOOLS_BIN_DIR=eclipse/BuildTools/bin
 BUILDTOOLS=java -cp $(BUILDTOOLS_BIN_DIR)
 
-LIBRARIES := $(shell $(BUILDTOOLS) GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)")
+LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)")
 
 ifeq ($(OSTYPE),cygwin)
 	CLASSPATH_SEPARATOR := \;
@@ -66,13 +66,14 @@ clean:
 	rm -f build/install.json
 	rm -f build/install.properties
 	rm -f build/install-data.zip.lzma
+	rm -rf $(TEMPDIR)
 .PHONY: clean
 cleanlibs:
-	rm -rf $(LIBRARIES_DIR)/*.jar
-	rm -rf $(NATIVES_DIR)/*.dll
-	rm -rf $(NATIVES_DIR)/*.so
-	rm -rf $(NATIVES_DIR)/*.dylib
-	rm -rf $(NATIVES_DIR)/*.jnilib
+	rm -f $(LIBRARIES_DIR)/*.jar
+	rm -f $(NATIVES_DIR)/*.dll
+	rm -f $(NATIVES_DIR)/*.so
+	rm -f $(NATIVES_DIR)/*.dylib
+	rm -f $(NATIVES_DIR)/*.jnilib
 .PHONY: cleanlibs
 
 ############################### DOWNLOADS ###################################
@@ -124,16 +125,16 @@ build/raw_source.zip: build/processed_binary.jar
 ######################## DECOMP SOURCE PROCESSING ###########################
 
 build/cleaned_source.zip: build/raw_source.zip $(ASTYLE_CFG)
-	$(BUILDTOOLS) MCPCleanup "$(ASTYLE_CFG)" < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.MCPCleanup "$(ASTYLE_CFG)" < "$<" > "$@"
 build/patched_source_fml.zip: build/cleaned_source.zip build/fml.patch
-	$(BUILDTOOLS) ApplyUnifiedDiffs build/fml.patch < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.ApplyUnifiedDiffs build/fml.patch < "$<" > "$@"
 build/patched_source_forge.zip: build/patched_source_fml.zip build/forge.patch
-	$(BUILDTOOLS) ApplyUnifiedDiffs build/forge.patch < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.ApplyUnifiedDiffs build/forge.patch < "$<" > "$@"
 build/processed_source.zip: build/patched_source_forge.zip
 	cp "$<" "$@"
 
 build/deobf_source.zip: build/processed_source.zip
-	$(BUILDTOOLS) RemapSources FML/conf/methods.csv FML/conf/fields.csv FML/conf/params.csv true < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.RemapSources FML/conf/methods.csv FML/conf/fields.csv FML/conf/params.csv true < "$<" > "$@"
 
 build/fml.patch: $(FML_PATCHES)
 	cat $(FML_PATCHES) > "$@"
@@ -146,21 +147,21 @@ $(DEOBF_DATA): FML/conf/joined.srg
 
 ################### RECOMPILATION OF EDITED SOURCE ##########################
 
-build/edited_source.zip: $(find $(SOURCE_DIRS) -type f)
+build/edited_source.zip: $(shell find $(SOURCE_DIRS) -type f)
 	rm -f "$@"
 	for srcdir in $(SOURCE_DIRS); do cd $$srcdir; zip -r "$$OLDPWD/$@" .; cd "$$OLDPWD"; done
 
 build/recomp.jar: build/edited_source.zip $(LIBRARIES)
-	$(BUILDTOOLS) CompileZip "$<" $(LIBRARIES_DIR) > "$@"
+	$(BUILDTOOLS) decompsource.CompileZip "$<" $(LIBRARIES_DIR) > "$@"
 
 build/reobf.jar: build/recomp.jar build/mcp-to-srg.srg
 	$(BUILDTOOLS) bytecode.ApplySRG build/mcp-to-srg.srg "$<" "$@"
 
 build/srg-to-mcp.srg: $(SRG) FML/conf/methods.csv FML/conf/fields.csv
-	$(BUILDTOOLS) CSV2SRG FML/conf/methods.csv FML/conf/fields.csv < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.CSV2SRG FML/conf/methods.csv FML/conf/fields.csv < "$<" > "$@"
 
 build/mcp-to-srg.srg: build/srg-to-mcp.srg
-	$(BUILDTOOLS) InvertSRG < "$<" > "$@"
+	$(BUILDTOOLS) decompsource.InvertSRG < "$<" > "$@"
 
 ################### INSTALL DATA FILE CREATION ##########################
 
@@ -189,7 +190,7 @@ build/install.properties:
 	echo launcherVersionName=$(VERSION_NAME_IN_LAUNCHER) >> "$@"
 
 build/install.json: build/download/vanilla.json $(LIBRARY_JSON)
-	$(BUILDTOOLS) MakeInstallJSON build/download/vanilla.json $(LIBRARY_JSON) $(VERSION_NAME_IN_LAUNCHER) > "$@"
+	$(BUILDTOOLS) decompsource.MakeInstallJSON build/download/vanilla.json $(LIBRARY_JSON) $(VERSION_NAME_IN_LAUNCHER) > "$@"
 
 build/install-data.zip: build/new-classes.pack build/bytecode.patch $(SRG) $(EXCEPTOR_JSON) $(EXC) $(FMLAT) $(FORGEAT) build/install.properties $(MCP_MERGE_CFG) build/install.json
 	rm -f "$@"
@@ -198,11 +199,31 @@ build/install-data.zip: build/new-classes.pack build/bytecode.patch $(SRG) $(EXC
 build/install-data.zip.lzma: build/install-data.zip
 	lzma -9e < "$<" > "$@"
 
-build/BuildTools.jar: $(find $(BUILDTOOLS_BIN_DIR) -type f)
+
+
+
+
+
+################### INSTALLER CREATION ##########################
+
+
+
+build/BuildTools.jar: $(shell find $(BUILDTOOLS_BIN_DIR) -type f)
 	rm -f "$@"
 	cd $(BUILDTOOLS_BIN_DIR); zip -r "$$OLDPWD/$@" .
 
-build/installer.jar: build/BuildTools.jar build/install-data.zip.lzma
+build/installer-code.jar: build/BuildTools.jar
+	rm -rf $(TEMPDIR)
+	mkdir -p $(TEMPDIR)
+	rm -f "$@"
+	cd $(TEMPDIR); unzip "$$OLDPWD/$<"
+	mv $(TEMPDIR)/LICENSE.txt $(TEMPDIR)/BON-LICENSE.txt
+	cd $(TEMPDIR); zip -r9 "$$OLDPWD/$@" bytecode installer lzma misc org/objectweb/asm immibis/bon JAVA-ASM-LICENSE.txt BON-LICENSE.txt
+
+	# add installer/META-INF/MANIFEST.MF as manifest
+	cd $(TEMPDIR)/installer; zip -9 "$$OLDPWD/$@" META-INF/MANIFEST.MF
+
+build/installer.jar: build/installer-code.jar build/install-data.zip.lzma
 	cp "$<" "$@"
-	zip "$@" build/install-data.zip.lzma
-	cd $(BUILDTOOLS_BIN_DIR)/installer; zip "$$OLDPWD/$@" META-INF/MANIFEST.MF
+	cd build; zip -0 "../$@" install-data.zip.lzma
+
