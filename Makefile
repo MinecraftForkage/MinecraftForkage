@@ -1,5 +1,5 @@
 MCVERSION=1.7.10
-MCFVERSION=1.0
+MCFVERSION=1.1
 
 VERSION_NAME_IN_LAUNCHER=MCForkage-$(MCVERSION)-$(MCFVERSION)
 
@@ -204,6 +204,25 @@ build/install-data.zip.lzma: build/install-data.zip
 
 
 
+
+########################## INSTANCE SETUP STUB ##########################
+# (Goes with a particular MCF version, but not in the main JAR)
+
+build/instance-setup-src.zip: $(shell find InstanceSetup/src -type f)
+	rm -f "$@"
+	cd InstanceSetup/src; zip -r "$$OLDPWD/$@" *
+
+build/instance-setup.jar: build/instance-setup-src.zip
+	$(BUILDTOOLS) decompsource.CompileZip "$<" "$(LIBRARIES_DIR)" > "$@"
+
+build/test-setup-plugin-src.zip: $(shell find InstanceSetup/src-plugin -type f)
+	rm -f "$@"
+	cd InstanceSetup/src-plugin; zip -r "$$OLDPWD/$@" *
+
+build/test-setup-plugin.jar: build/test-setup-plugin-src.zip build/instance-setup.jar
+	$(BUILDTOOLS) decompsource.CompileZip "$<" "$(LIBRARIES_DIR)" -cp build/instance-setup.jar > "$@"
+
+
 ################### INSTALLER CREATION ##########################
 
 
@@ -226,4 +245,10 @@ build/installer-code.jar: build/BuildTools.jar
 build/installer.jar: build/installer-code.jar build/install-data.zip.lzma
 	cp "$<" "$@"
 	cd build; zip -0 "../$@" install-data.zip.lzma
+
+
+
+
+
+
 
