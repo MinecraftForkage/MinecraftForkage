@@ -22,12 +22,14 @@ class EntryPointFromLauncher {
 		
 		System.out.println("Arguments from launcher: " + Arrays.toString(args));
 		
-		InstallationArguments instArgs = new InstallationArguments();
-		instArgs.instanceBaseDir = gameDir;
-		instArgs.isInstallerRunningFromLauncher = true;
-		instArgs.patchedVanillaJarLocation = findPatchedVanillaJarLocation();
-		
-		SetupEntryPoint.setupInstance(instArgs);
+		// Minecraft launcher has no way to specify additional program arguments, but we can specify JVM arguments, including -D
+		if(!Boolean.getBoolean("minecraftforkage.launcherstub.noInstanceSetup")) {
+			InstallationArguments instArgs = new InstallationArguments();
+			instArgs.instanceBaseDir = gameDir;
+			instArgs.isInstallerRunningFromLauncher = true;
+			instArgs.patchedVanillaJarLocation = findPatchedVanillaJarLocation();
+			SetupEntryPoint.setupInstance(instArgs);
+		}
 		SetupEntryPoint.runInstance(gameDir, args, SetupEntryPoint.findLibrariesFromClasspath());
 	}
 

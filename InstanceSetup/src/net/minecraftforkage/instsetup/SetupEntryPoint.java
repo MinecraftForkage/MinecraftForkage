@@ -2,6 +2,7 @@ package net.minecraftforkage.instsetup;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,8 +77,9 @@ public class SetupEntryPoint {
 			for(File f : mods)
 				System.out.println("  " + f.getAbsolutePath());
 		
+		List<String> coremodClassList = new ArrayList<>();
 		
-		createInitialBakedJar(mods, args.patchedVanillaJarLocation, args.bakedJarLocation);
+		createInitialBakedJar(mods, args.patchedVanillaJarLocation, args.bakedJarLocation, coremodClassList);
 		
 		System.out.println("Baked JAR: " + args.bakedJarLocation.getAbsolutePath());
 		
@@ -88,8 +93,16 @@ public class SetupEntryPoint {
 			for(URL url : setupMods)
 				System.out.println("  " + url);
 		
-		final ZipFile bakedJarZF = new ZipFile(args.bakedJarLocation);
-		bakedJarZF.setFileNameCharset("UTF-8");
+		IZipFile bakedJarIZF;
+		
+		if(false) {
+			ZipFile bakedJarZF = new ZipFile(args.bakedJarLocation);
+			bakedJarZF.setFileNameCharset("UTF-8");
+			bakedJarIZF = new ZipFileAdapter(bakedJarZF);
+		} else {
+			FileSystem fs = FileSystems.newFileSystem(Paths.get(args.bakedJarLocation.toURI()), null);
+			bakedJarIZF = new ZipFileSystemAdapter(fs);
+		}
 		
 		
 		
@@ -99,7 +112,10 @@ public class SetupEntryPoint {
 		
 		List<JarTransformer> jarTransformers = loadAndDependencySort(JarTransformer.class, setupModClassLoader);
 		for(JarTransformer jt : jarTransformers)
-			jt.transform(bakedJarZF);
+			jt.transform(bakedJarIZF);
+		
+		if(bakedJarIZF instanceof Closeable)
+			((Closeable)bakedJarIZF).close();
 	}
 	
 	public static void runInstance(File minecraftDir, String[] args, List<URL> libraryURLs) throws Exception {
@@ -152,7 +168,7 @@ public class SetupEntryPoint {
 	}
 
 
-	private static void createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL, File bakedJarFile) throws IOException {
+	private static void createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL, File bakedJarFile, List<String> coremodClassList) throws IOException {
 		List<URL> inputURLs = new ArrayList<>();
 		inputURLs.add(patchedVanillaJarURL);
 		for(File modFile : mods)
@@ -194,6 +210,10 @@ public class SetupEntryPoint {
 						}
 						
 						if(ze_in.getName().equals("META-INF/MANIFEST.MF")) {
+							Manifest mf_in = new Manifest(z_in);
+							String coreModClass = mf_in.getMainAttributes().getValue("FMLCorePlugin");
+							if(coreModClass != null)
+								coremodClassList.add(coreModClass);
 							z_in.closeEntry();
 							continue;
 						}
