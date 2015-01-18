@@ -49,7 +49,7 @@ public abstract class JarTransformer implements DependencySortedObject {
 		transform(new ZipFileAdapter(zipFile));
 	}
 	
-	static class ZipFileAdapter implements IZipFile {
+	private static class ZipFileAdapter implements IZipFile {
 
 		private final ZipFile wraps;
 		private Set<String> filenames;

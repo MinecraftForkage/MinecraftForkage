@@ -35,14 +35,18 @@ import net.minecraftforkage.instsetup.depsort.DependencySortingException;
 
 public class SetupEntryPoint {
 	
-	// TODO THIS SHOULD NOT BE STATIC! it should probably be saved in a file in the instance directory
-	private static List<URL> libraryURLs = new ArrayList<>();
-	
-	public static void setupInstance(File minecraftDir) throws Exception {
-		InstanceEnvironmentData.minecraftDir = minecraftDir;
-		InstanceEnvironmentData.modsDir = new File(minecraftDir, "mods");
-		InstanceEnvironmentData.configDir = new File(minecraftDir, "config");
-		InstanceEnvironmentData.setupTempDir = new File(minecraftDir, "setup-temp");
+	public static void setupInstance(InstallationArguments args) throws Exception {
+		
+		if(args.instanceBaseDir == null)
+			throw new IllegalArgumentException("args.instanceBaseDir must be set");
+		
+		InstanceEnvironmentData.minecraftDir = args.instanceBaseDir;
+		InstanceEnvironmentData.modsDir = new File(args.instanceBaseDir, "mods");
+		InstanceEnvironmentData.configDir = new File(args.instanceBaseDir, "config");
+		InstanceEnvironmentData.setupTempDir = new File(args.instanceBaseDir, "setup-temp");
+		
+		if(args.bakedJarLocation == null)
+			args.bakedJarLocation = new File(args.instanceBaseDir, "mcforkage-baked.jar");
 		
 		deleteRecursive(InstanceEnvironmentData.setupTempDir);
 		if(!InstanceEnvironmentData.setupTempDir.mkdir()) {
@@ -69,33 +73,10 @@ public class SetupEntryPoint {
 			for(File f : mods)
 				System.out.println("  " + f.getAbsolutePath());
 		
-		URL launcherStubURL = null;
-		for(URL url : ((URLClassLoader)SetupEntryPoint.class.getClassLoader()).getURLs()) {
-			System.out.println("On classpath: "+url);
-			if(!url.getProtocol().equals("file")) {
-				libraryURLs.add(url);
-				continue;
-			}
-			
-			String[] path = url.getPath().split("/");
-			if(path.length == 0) {
-				libraryURLs.add(url);
-				continue;
-			}
-			
-			String lastSegment = path[path.length - 1];
-			if(lastSegment.startsWith("MCForkage-"))
-				launcherStubURL = url;
-			else if(!lastSegment.contains("zip4j"))
-				libraryURLs.add(url);
-		}
-		System.out.println("Launcher stub was loaded from: " + launcherStubURL);
 		
-		URL patchedVanillaJarURL = getPatchedVanillaJarURL(launcherStubURL);
+		createInitialBakedJar(mods, args.patchedVanillaJarLocation, args.bakedJarLocation);
 		
-		File bakedJar = createInitialBakedJar(mods, patchedVanillaJarURL);
-		
-		System.out.println("Baked JAR: " + bakedJar.getAbsolutePath());
+		System.out.println("Baked JAR: " + args.bakedJarLocation.getAbsolutePath());
 		
 		
 		
@@ -107,7 +88,7 @@ public class SetupEntryPoint {
 			for(URL url : setupMods)
 				System.out.println("  " + url);
 		
-		final ZipFile bakedJarZF = new ZipFile(bakedJar);
+		final ZipFile bakedJarZF = new ZipFile(args.bakedJarLocation);
 		bakedJarZF.setFileNameCharset("UTF-8");
 		
 		
@@ -121,7 +102,7 @@ public class SetupEntryPoint {
 			jt.transform(bakedJarZF);
 	}
 	
-	public static void runInstance(File minecraftDir, String[] args) throws Exception {
+	public static void runInstance(File minecraftDir, String[] args, List<URL> libraryURLs) throws Exception {
 		File bakedJar = new File(minecraftDir, "mcforkage-baked.jar");
 		
 		List<URL> classpath = new ArrayList<>(libraryURLs);
@@ -136,29 +117,42 @@ public class SetupEntryPoint {
 		minecraftClassLoader.loadClass("net.minecraft.launchwrapper.Launch").getMethod("main", String[].class).invoke(null, new Object[] {newArgs.toArray(new String[0])});
 	}
 	
+	/** Takes a URL found on the classpath, and checks whether it is a library
+	 * (whether it should be used on the Minecraft classpath) */
+	private static boolean isClasspathEntryLibrary(URL url) {
+		if(!url.getProtocol().equals("file"))
+			return true;
+		
+		String[] path = url.getPath().split("/");
+		if(path.length == 0)
+			return true;
+		
+		String lastSegment = path[path.length - 1];
+		return !lastSegment.startsWith("MCForkage-") && !lastSegment.contains("zip4j");
+	}
+	
+	public static List<URL> findLibrariesFromClasspath() {
+		List<URL> result = new ArrayList<>();
+		for(URL url : ((URLClassLoader)SetupEntryPoint.class.getClassLoader()).getURLs()) {
+			if(isClasspathEntryLibrary(url)) {
+				result.add(url);
+				System.out.println("On classpath: " + url + " (is library)");
+			} else {
+				System.out.println("On classpath: " + url + " (not library)");
+			}
+		}
+		return result;
+	}
+	
 	private static <T extends DependencySortedObject> List<T> loadAndDependencySort(Class<T> what, ClassLoader classLoader) throws DependencySortingException {
 		List<T> result = new ArrayList<>();
 		for(T t : ServiceLoader.load(what, classLoader))
 			result.add(t);
 		return DependencySorter.sort(result);
 	}
-	
-	
-	private static URL getPatchedVanillaJarURL(URL launcherStubURL) {
-		String s = launcherStubURL.toString();
-		s = s.substring(0, s.lastIndexOf('/'));
-		s += "/patched-vanilla.jar";
-		try {
-			return new URL(s);
-		} catch(MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 
-	private static File createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL) throws IOException {
-		File bakedJarFile = new File(InstanceEnvironmentData.minecraftDir, "mcforkage-baked.jar");
-		
+	private static void createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL, File bakedJarFile) throws IOException {
 		List<URL> inputURLs = new ArrayList<>();
 		inputURLs.add(patchedVanillaJarURL);
 		for(File modFile : mods)
@@ -255,10 +249,6 @@ public class SetupEntryPoint {
 			classToSourceMap.store(z_out, "");
 			z_out.closeEntry();
 		}
-		
-		
-		
-		return bakedJarFile;
 	}
 
 

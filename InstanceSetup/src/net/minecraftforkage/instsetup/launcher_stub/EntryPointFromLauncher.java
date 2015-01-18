@@ -1,8 +1,12 @@
 package net.minecraftforkage.instsetup.launcher_stub;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 
+import net.minecraftforkage.instsetup.InstallationArguments;
 import net.minecraftforkage.instsetup.SetupEntryPoint;
 
 class EntryPointFromLauncher {
@@ -18,7 +22,40 @@ class EntryPointFromLauncher {
 		
 		System.out.println("Arguments from launcher: " + Arrays.toString(args));
 		
-		SetupEntryPoint.setupInstance(gameDir);
-		SetupEntryPoint.runInstance(gameDir, args);
+		InstallationArguments instArgs = new InstallationArguments();
+		instArgs.instanceBaseDir = gameDir;
+		instArgs.isInstallerRunningFromLauncher = true;
+		instArgs.patchedVanillaJarLocation = findPatchedVanillaJarLocation();
+		
+		SetupEntryPoint.setupInstance(instArgs);
+		SetupEntryPoint.runInstance(gameDir, args, SetupEntryPoint.findLibrariesFromClasspath());
+	}
+
+	private static URL findPatchedVanillaJarLocation() {
+		URL launcherStubURL = null;
+		for(URL url : ((URLClassLoader)EntryPointFromLauncher.class.getClassLoader()).getURLs()) {
+			if(!url.getProtocol().equals("file")) {
+				continue;
+			}
+			
+			String[] path = url.getPath().split("/");
+			if(path.length == 0) {
+				continue;
+			}
+			
+			String lastSegment = path[path.length - 1];
+			if(lastSegment.startsWith("MCForkage-"))
+				launcherStubURL = url;
+		}
+		System.out.println("Launcher stub was loaded from: " + launcherStubURL);
+		
+		String s = launcherStubURL.toString();
+		s = s.substring(0, s.lastIndexOf('/'));
+		s += "/patched-vanilla.jar";
+		try {
+			return new URL(s);
+		} catch(MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
