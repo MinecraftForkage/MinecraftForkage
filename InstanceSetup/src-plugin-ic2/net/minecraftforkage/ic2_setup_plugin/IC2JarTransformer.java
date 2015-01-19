@@ -17,14 +17,13 @@ public class IC2JarTransformer extends JarTransformer {
 	@Override
 	public void transform(IZipFile zipFile) throws Exception {
 		byte[] buffer = new byte[32768];
+		System.out.println("[IC2] Extracting lib/ejml-0.23.jar");
 		try (ZipInputStream ejml_in = new ZipInputStream(zipFile.read("lib/ejml-0.23.jar"))) {
 			for(ZipEntry ze; (ze = ejml_in.getNextEntry()) != null;) {
 				if(ze.getName().startsWith("META-INF/")) {
 					ejml_in.closeEntry();
 					continue;
 				}
-				
-				System.out.println(ze.getName());
 				
 				if(ze.getName().endsWith("/")) {
 					zipFile.createDirectory(ze.getName());

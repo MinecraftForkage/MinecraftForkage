@@ -19,7 +19,7 @@ public final class InstallationArguments {
 	 * This map is accessible to setup plugins; it is not used directly by Minecraft Forkage.
 	 * Keys are recommended (but not required) to be strings starting with your mod ID, to avoid conflicts.
 	 */
-	public Map<Object, Object> custom = new HashMap<>();
+	public Map<Object, Object> customData = new HashMap<>();
 	
 	/**
 	 * If null, a default location is used.

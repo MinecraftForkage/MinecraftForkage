@@ -2,14 +2,12 @@ package net.minecraftforkage.instsetup;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -18,21 +16,17 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import net.lingala.zip4j.core.ZipFile;
 import net.minecraftforkage.instsetup.depsort.DependencySortedObject;
 import net.minecraftforkage.instsetup.depsort.DependencySorter;
 import net.minecraftforkage.instsetup.depsort.DependencySortingException;
@@ -93,29 +87,18 @@ public class SetupEntryPoint {
 			for(URL url : setupMods)
 				System.out.println("  " + url);
 		
-		IZipFile bakedJarIZF;
+		FileSystem fs = FileSystems.newFileSystem(Paths.get(args.bakedJarLocation.toURI()), null);
+		try (ZipFileSystemAdapter bakedJarIZF = new ZipFileSystemAdapter(fs)) {
 		
-		if(false) {
-			ZipFile bakedJarZF = new ZipFile(args.bakedJarLocation);
-			bakedJarZF.setFileNameCharset("UTF-8");
-			bakedJarIZF = new ZipFileAdapter(bakedJarZF);
-		} else {
-			FileSystem fs = FileSystems.newFileSystem(Paths.get(args.bakedJarLocation.toURI()), null);
-			bakedJarIZF = new ZipFileSystemAdapter(fs);
+			
+			URLClassLoader setupModClassLoader = new URLClassLoader(setupMods.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader());
+		
+			List<JarTransformer> jarTransformers = loadAndDependencySort(JarTransformer.class, setupModClassLoader);
+			for(JarTransformer jt : jarTransformers)
+				jt.transform(bakedJarIZF);
+		
+			
 		}
-		
-		
-		
-		
-		
-		URLClassLoader setupModClassLoader = new URLClassLoader(setupMods.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader());
-		
-		List<JarTransformer> jarTransformers = loadAndDependencySort(JarTransformer.class, setupModClassLoader);
-		for(JarTransformer jt : jarTransformers)
-			jt.transform(bakedJarIZF);
-		
-		if(bakedJarIZF instanceof Closeable)
-			((Closeable)bakedJarIZF).close();
 	}
 	
 	public static void runInstance(File minecraftDir, String[] args, List<URL> libraryURLs) throws Exception {
@@ -144,7 +127,7 @@ public class SetupEntryPoint {
 			return true;
 		
 		String lastSegment = path[path.length - 1];
-		return !lastSegment.startsWith("MCForkage-") && !lastSegment.contains("zip4j");
+		return !lastSegment.startsWith("MCForkage-");
 	}
 	
 	public static List<URL> findLibrariesFromClasspath() {

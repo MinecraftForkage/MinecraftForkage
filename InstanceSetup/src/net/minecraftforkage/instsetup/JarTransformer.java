@@ -1,6 +1,5 @@
 package net.minecraftforkage.instsetup;
 
-import net.lingala.zip4j.core.ZipFile;
 import net.minecraftforkage.instsetup.depsort.DependencySortedObject;
 
 /**

@@ -32,6 +32,8 @@ public final class InstanceEnvironmentData {
 	
 	/**
 	 * An unstructured "blackboard" for any mods that want to add their own data to this, for any reason.
+	 * This map is accessible to setup plugins; it is not used directly by Minecraft Forkage.
+	 * Keys are recommended (but not required) to be strings starting with your mod ID, to avoid conflicts.
 	 */
 	public static final Map<Object, Object> customData = new HashMap<Object, Object>();
 	
