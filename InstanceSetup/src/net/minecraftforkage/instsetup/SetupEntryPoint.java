@@ -97,10 +97,20 @@ public class SetupEntryPoint {
 			for(JarTransformer jt : jarTransformers)
 				jt.transform(bakedJarIZF);
 		
-			
+
+			writeListFile(bakedJarIZF, InstanceEnvironmentData.coremodsToIgnore, "mcforkage-ignored-coremods.txt");
 		}
 	}
 	
+	private static void writeListFile(IZipFile bakedJarIZF, Set<String> list, String path) throws IOException {
+		try (OutputStream out = bakedJarIZF.write(path)) {
+			for(String item : list) {
+				out.write(item.getBytes(StandardCharsets.UTF_8));
+				out.write('\n');
+			}
+		}
+	}
+
 	public static void runInstance(File minecraftDir, String[] args, List<URL> libraryURLs) throws Exception {
 		File bakedJar = new File(minecraftDir, "mcforkage-baked.jar");
 		

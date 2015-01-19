@@ -2,7 +2,10 @@ package net.minecraftforkage.instsetup;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains random global information that lots of things need during the instance setup process.
@@ -46,6 +49,11 @@ public final class InstanceEnvironmentData {
 	static File minecraftDir;
 	static File setupTempDir;
 	
+	
+	/**
+	 * Coremod classes to ignore when loading Minecraft.
+	 */
+	public static Set<String> coremodsToIgnore = new HashSet<>();
 	
 	
 	private InstanceEnvironmentData() {}

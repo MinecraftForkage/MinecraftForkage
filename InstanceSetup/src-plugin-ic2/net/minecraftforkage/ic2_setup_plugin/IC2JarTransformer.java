@@ -5,6 +5,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import net.minecraftforkage.instsetup.IZipFile;
+import net.minecraftforkage.instsetup.InstanceEnvironmentData;
 import net.minecraftforkage.instsetup.JarTransformer;
 
 public class IC2JarTransformer extends JarTransformer {
@@ -42,6 +43,8 @@ public class IC2JarTransformer extends JarTransformer {
 		}
 		
 		zipFile.delete("lib/ejml-0.23.jar");
+		
+		InstanceEnvironmentData.coremodsToIgnore.add("ic2.core.coremod.IC2core");
 	}
 
 }
