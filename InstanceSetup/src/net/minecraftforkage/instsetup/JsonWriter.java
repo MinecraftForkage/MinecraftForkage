@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
-public class JsonWriter {
+class JsonWriter {
 	
 	public static String toString(Object obj) {
 		StringWriter sw = new StringWriter();

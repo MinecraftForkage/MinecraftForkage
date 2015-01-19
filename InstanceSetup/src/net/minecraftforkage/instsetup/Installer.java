@@ -15,7 +15,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
-public class Installer {
+class Installer {
 	
 	private static boolean isSetupClasspathJar(Attributes manifestSection) {
 		String value = manifestSection.getValue("MCF-InstanceSetupClasspath");

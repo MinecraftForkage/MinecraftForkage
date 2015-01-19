@@ -31,7 +31,7 @@ import java.util.HashMap;
  * 
  * Valid JSON values are Maps (from Strings to JSON values), Lists (of JSON values), Booleans, Strings, Doubles and null.
  */
-public final class JsonReader {
+final class JsonReader {
 	
 	public static Object readJSON(Reader in) throws IOException {
 		return readJSONInternal(new PushbackReader(in));
