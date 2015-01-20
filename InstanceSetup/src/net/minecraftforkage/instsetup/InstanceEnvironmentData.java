@@ -55,6 +55,8 @@ public final class InstanceEnvironmentData {
 	 */
 	public static Set<String> coremodsToIgnore = new HashSet<>();
 	
+	public static Set<String> extraModContainers = new HashSet<>();
+	
 	
 	private InstanceEnvironmentData() {}
 }

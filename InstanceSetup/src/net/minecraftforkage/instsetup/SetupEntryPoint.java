@@ -16,6 +16,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import net.minecraftforkage.instsetup.JarTransformer.Stage;
 import net.minecraftforkage.instsetup.depsort.DependencySortedObject;
 import net.minecraftforkage.instsetup.depsort.DependencySorter;
 import net.minecraftforkage.instsetup.depsort.DependencySortingException;
@@ -93,12 +95,29 @@ public class SetupEntryPoint {
 			
 			URLClassLoader setupModClassLoader = new URLClassLoader(setupMods.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader());
 		
-			List<JarTransformer> jarTransformers = loadAndDependencySort(JarTransformer.class, setupModClassLoader);
-			for(JarTransformer jt : jarTransformers)
-				jt.transform(bakedJarIZF);
-		
+			Map<JarTransformer.Stage, List<JarTransformer>> transformersByStage = new HashMap<>();
+			
+			for(JarTransformer jt : loadAllOfClass(JarTransformer.class, setupModClassLoader)) {
+				JarTransformer.Stage stage = jt.getStage();
+				if(!transformersByStage.containsKey(stage))
+					transformersByStage.put(stage, new ArrayList<JarTransformer>());
+				transformersByStage.get(stage).add(jt);
+			}
+			
+			for(Stage stage : new JarTransformer.Stage[] {
+				JarTransformer.Stage.CLASS_GENERATION_STAGE,
+				JarTransformer.Stage.MAIN_STAGE
+			}) {
+				if(transformersByStage.containsKey(stage)) {
+					for(JarTransformer jt : DependencySorter.sort(transformersByStage.get(stage))) {
+						jt.transform(bakedJarIZF);
+					}
+				}
+			}
+					
 
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.coremodsToIgnore, "mcforkage-ignored-coremods.txt");
+			writeListFile(bakedJarIZF, InstanceEnvironmentData.extraModContainers, "mcforkage-mod-container-classes.txt");
 		}
 	}
 	
@@ -153,11 +172,11 @@ public class SetupEntryPoint {
 		return result;
 	}
 	
-	private static <T extends DependencySortedObject> List<T> loadAndDependencySort(Class<T> what, ClassLoader classLoader) throws DependencySortingException {
+	private static <T extends DependencySortedObject> List<T> loadAllOfClass(Class<T> what, ClassLoader classLoader) throws DependencySortingException {
 		List<T> result = new ArrayList<>();
 		for(T t : ServiceLoader.load(what, classLoader))
 			result.add(t);
-		return DependencySorter.sort(result);
+		return result;
 	}
 
 
@@ -186,6 +205,7 @@ public class SetupEntryPoint {
 			seenEntries.add("META-INF/MANIFEST.MF");
 			
 			for(URL inputURL : inputURLs) {
+				System.out.println(inputURL);
 				try (ZipInputStream z_in = new ZipInputStream(inputURL.openStream())) {
 					ZipEntry ze_in;
 					while((ze_in = z_in.getNextEntry()) != null) {

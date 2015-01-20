@@ -20,7 +20,39 @@ public abstract class JarTransformer implements DependencySortedObject {
 	public abstract String getID();
 	
 	/**
+	 * Returns the stage to execute this transformer in.
+	 */
+	
+	/**
 	 * Main entry point for a JAR transformer.
 	 */
 	public abstract void transform(IZipFile zipFile) throws Exception;
+	
+	
+	/**
+	 * Returns the stage this transformer runs in.
+	 * To use multiple stages, use multiple transformers.
+	 * 
+	 * Dependencies are processed separately within each stage.
+	 * This means that transformers in different stages can have the same ID, and
+	 * transformers in different stages can't depend on each other. 
+	 */
+	public Stage getStage() {return Stage.MAIN_STAGE;}
+	
+	public static final class Stage {
+		private Stage() {}
+		
+		/**
+		 * Stages that only generate new classes can run here.
+		 * 
+		 * This runs before other stages, so that transformers in
+		 * other stages get a chance to transform the generated classes.
+		 */
+		public static final Stage CLASS_GENERATION_STAGE = new Stage();
+		
+		/**
+		 * Most transformers should run in MAIN_STAGE.
+		 */
+		public static final Stage MAIN_STAGE = new Stage();
+	}
 }

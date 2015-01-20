@@ -12,11 +12,14 @@
 
 package cpw.mods.fml.common;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -330,6 +333,20 @@ public class Loader
             }
             mods.add(new InjectedModContainer(mc,mc.getSource()));
         }
+        
+        // TODO remove this mechanism somehow
+        if(Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR")) {
+        	try (BufferedReader in = new BufferedReader(new InputStreamReader(Loader.class.getResourceAsStream("/mcforkage-mod-container-classes.txt"), StandardCharsets.UTF_8))){
+        		String line;
+        		while((line = in.readLine()) != null)
+        			if(!line.equals(""))
+        				mods.add(new InjectedModContainer(Class.forName(line).asSubclass(ModContainer.class).getConstructor().newInstance(), null));
+        	} catch(Exception e) {
+        		e.printStackTrace();
+        		throw new RuntimeException(e);
+        	}
+        }
+        
         ModDiscoverer discoverer = new ModDiscoverer();
         FMLLog.fine("Attempting to load mods contained in the minecraft jar file and associated classes");
         discoverer.findClasspathMods(modClassLoader);

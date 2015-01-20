@@ -12,6 +12,7 @@
 
 package cpw.mods.fml.common;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
 
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.event.FMLEvent;
@@ -44,6 +47,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLStateEvent;
 import cpw.mods.fml.common.functions.ArtifactVersionNameFunction;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public class LoadController
 {
@@ -62,6 +66,25 @@ public class LoadController
     {
         this.loader = loader;
         this.masterChannel = new EventBus("FMLMainChannel");
+        
+        try {
+        	Field f = ReflectionHelper.findField(EventBus.class, "subscriberExceptionHandler");
+        	f.setAccessible(true);
+        	f.set(this.masterChannel, new SubscriberExceptionHandler() {
+				@Override
+				public void handleException(Throwable arg0, SubscriberExceptionContext arg1) {
+					arg0.printStackTrace();
+					
+					// can't rethrow as Guava deliberately swallows all exceptions
+					// (which I can only presume is because they have braindead design)
+					System.exit(1);
+				}
+			});
+        	
+        } catch(Exception e) {
+        	throw new RuntimeException(e);
+        }
+        
         this.masterChannel.register(this);
 
         state = LoaderState.NOINIT;
@@ -90,7 +113,7 @@ public class LoadController
 
         for (ModContainer mod : loader.getModList())
         {
-            //Create mod logger, and make the EventBus logger a child of it.
+        	//Create mod logger, and make the EventBus logger a child of it.
             EventBus bus = new EventBus(mod.getModId());
             boolean isActive = mod.registerBus(bus, this);
             if (isActive)
