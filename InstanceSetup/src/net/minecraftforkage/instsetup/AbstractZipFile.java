@@ -2,7 +2,16 @@ package net.minecraftforkage.instsetup;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public abstract class AbstractZipFile {
 	/**
@@ -46,4 +55,84 @@ public abstract class AbstractZipFile {
 	 * do not already exist.
 	 */
 	public abstract void createDirectory(String path) throws IOException;
+	
+	
+	
+	
+	/* ===== UTF-8 UTILITY METHODS ===== */
+	
+	/**
+	 * Similar to {@link #read(String)}, but returns a Reader.
+	 * Characters are decoded as UTF-8.
+	 */
+	public Reader readUTF8(String path) throws IOException {
+		return new InputStreamReader(read(path), StandardCharsets.UTF_8);
+	}
+	
+	/**
+	 * Similar to {@link #write(String)}, but returns a Writer.
+	 * Characters are encoded as UTF-8.
+	 */
+	public Writer writeUTF8(String path) throws IOException {
+		return new OutputStreamWriter(write(path), StandardCharsets.UTF_8);
+	}
+	
+	
+	
+	
+	/* ===== JSON UTILITY METHODS ===== */
+	
+	private static final Gson DEFAULT_GSON = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+	
+	/**
+	 * Reads a JSON file into an object tree, using {@link Gson}
+	 * with the default settings.
+	 */
+	public <T> T readGSON(String path, Class<T> classOfT) throws IOException {
+		return readGSON(path, classOfT, DEFAULT_GSON);
+	}
+	
+	/**
+	 * Reads a JSON file into an object tree, using {@link Gson}
+	 * with the default settings.
+	 */
+	public <T> T readGSON(String path, Type typeOfT) throws IOException {
+		return readGSON(path, typeOfT, DEFAULT_GSON);
+	}
+	
+	/**
+	 * Reads a JSON file into an object tree, using a customized {@link Gson} instance.
+	 */
+	public <T> T readGSON(String path, Class<T> classOfT, Gson gsonInstance) throws IOException {
+		try (Reader in = readUTF8(path)) {
+			return gsonInstance.fromJson(in, classOfT);
+		} 
+	}
+	
+	/**
+	 * Reads a JSON file into an object tree, using a customized {@link Gson} instance.
+	 */
+	public <T> T readGSON(String path, Type typeOfT, Gson gsonInstance) throws IOException {
+		try (Reader in = readUTF8(path)) {
+			return gsonInstance.fromJson(in, typeOfT);
+		}
+	}
+	
+	/**
+	 * Writes an object tree into a JSON file, using {@link Gson}
+	 * with the default settings.
+	 */
+	public void writeGSON(String path, Object object) throws IOException {
+		writeGSON(path, object, DEFAULT_GSON);
+	}
+	
+	/**
+	 * Writes an object tree into a JSON file, using a customized {@link Gson} instance.
+	 */
+	public void writeGSON(String path, Object object, Gson gsonInstance) throws IOException {
+		try (Writer out = writeUTF8(path)) {
+			gsonInstance.toJson(object, out);
+		}
+	}
+	
 }

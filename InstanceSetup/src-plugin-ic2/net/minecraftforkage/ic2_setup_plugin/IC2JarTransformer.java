@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import net.minecraftforkage.instsetup.IZipFile;
+import net.minecraftforkage.instsetup.AbstractZipFile;
 import net.minecraftforkage.instsetup.InstanceEnvironmentData;
 import net.minecraftforkage.instsetup.JarTransformer;
 
@@ -16,7 +16,7 @@ public class IC2JarTransformer extends JarTransformer {
 	}
 	
 	@Override
-	public void transform(IZipFile zipFile) throws Exception {
+	public void transform(AbstractZipFile zipFile) throws Exception {
 		byte[] buffer = new byte[32768];
 		System.out.println("[IC2] Extracting lib/ejml-0.23.jar");
 		try (ZipInputStream ejml_in = new ZipInputStream(zipFile.read("lib/ejml-0.23.jar"))) {
