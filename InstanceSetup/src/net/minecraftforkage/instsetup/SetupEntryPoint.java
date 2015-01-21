@@ -106,7 +106,8 @@ public class SetupEntryPoint {
 			
 			for(Stage stage : new JarTransformer.Stage[] {
 				JarTransformer.Stage.CLASS_GENERATION_STAGE,
-				JarTransformer.Stage.MAIN_STAGE
+				JarTransformer.Stage.MAIN_STAGE,
+				JarTransformer.Stage.CLASS_INFO_EXTRACTION_STAGE
 			}) {
 				if(transformersByStage.containsKey(stage)) {
 					for(JarTransformer jt : DependencySorter.sort(transformersByStage.get(stage))) {
@@ -121,7 +122,7 @@ public class SetupEntryPoint {
 		}
 	}
 	
-	private static void writeListFile(IZipFile bakedJarIZF, Set<String> list, String path) throws IOException {
+	private static void writeListFile(AbstractZipFile bakedJarIZF, Set<String> list, String path) throws IOException {
 		try (OutputStream out = bakedJarIZF.write(path)) {
 			for(String item : list) {
 				out.write(item.getBytes(StandardCharsets.UTF_8));

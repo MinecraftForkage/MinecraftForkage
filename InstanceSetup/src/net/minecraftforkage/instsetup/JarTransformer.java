@@ -26,7 +26,7 @@ public abstract class JarTransformer implements DependencySortedObject {
 	/**
 	 * Main entry point for a JAR transformer.
 	 */
-	public abstract void transform(IZipFile zipFile) throws Exception;
+	public abstract void transform(AbstractZipFile zipFile) throws Exception;
 	
 	
 	/**
@@ -54,5 +54,11 @@ public abstract class JarTransformer implements DependencySortedObject {
 		 * Most transformers should run in MAIN_STAGE.
 		 */
 		public static final Stage MAIN_STAGE = new Stage();
+		
+		/**
+		 * Transformers in CLASS_INFO_EXTRACTION_STAGE can build indexes
+		 * based on class files, but not modify any class files.
+		 */
+		public static final Stage CLASS_INFO_EXTRACTION_STAGE = new Stage();
 	}
 }

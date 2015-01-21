@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-class ZipFileSystemAdapter implements IZipFile, Closeable {
+class ZipFileSystemAdapter extends AbstractZipFile implements Closeable {
 
 	final FileSystem fs;
 	final Path root;
