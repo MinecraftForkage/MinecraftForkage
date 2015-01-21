@@ -9,9 +9,15 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 public abstract class AbstractZipFile {
 	/**
@@ -133,6 +139,37 @@ public abstract class AbstractZipFile {
 		try (Writer out = writeUTF8(path)) {
 			gsonInstance.toJson(object, out);
 		}
+	}
+
+	/**
+	 * If the file does not exist, write the given list to it as a JSON array.
+	 * If the file does exist, it must contain a JSON array. The elements in the given list
+	 * will be appended to the array.
+	 */
+	public synchronized void appendGSONArray(String path, List<?> list) throws IOException {
+
+		List<Object> objects = new ArrayList<Object>();
+		
+		if(doesPathExist(path))
+			for(JsonElement existingElement : readGSON(path, JsonArray.class))
+				objects.add(existingElement);
+		
+		objects.addAll(list);
+		
+		writeGSON(path, objects);
+	}
+	
+	
+	
+	/* ===== PROPERTIES FILE UTILITY METHODS ===== */
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Map<String, String> readProperties(String path) throws IOException {
+		Properties p = new Properties();
+		try (InputStream in = read(path)) {
+			p.load(in);
+		}
+		return (Map<String, String>)(Map)p;
 	}
 	
 }
