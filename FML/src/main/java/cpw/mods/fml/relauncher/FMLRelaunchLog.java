@@ -47,12 +47,14 @@ public class FMLRelaunchLog {
     private static void configureLogging()
     {
         log.myLog = LogManager.getLogger("FML");
-        ThreadContext.put("side", side.name().toLowerCase(Locale.ENGLISH));
+        ThreadContext.put("side", side == null ? "SETUP" : side.name().toLowerCase(Locale.ENGLISH));
         configured = true;
         
-        FMLRelaunchLog.fine("Injecting tracing printstreams for STDOUT/STDERR.");
-        System.setOut(new TracingPrintStream(LogManager.getLogger("STDOUT"), System.out));
-        System.setErr(new TracingPrintStream(LogManager.getLogger("STDERR"), System.err));
+        if(side != null) {
+	        FMLRelaunchLog.fine("Injecting tracing printstreams for STDOUT/STDERR.");
+	        System.setOut(new TracingPrintStream(LogManager.getLogger("STDOUT"), System.out));
+	        System.setErr(new TracingPrintStream(LogManager.getLogger("STDERR"), System.err));
+        }
     }
 
     public static void log(String targetLog, Level level, String format, Object... data)
