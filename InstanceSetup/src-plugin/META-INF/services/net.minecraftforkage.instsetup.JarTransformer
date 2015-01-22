@@ -1,1 +1,2 @@
 net.minecraftforkage.setup_plugin.FMLModSearchTransformer
+net.minecraftforkage.setup_plugin.OptionalTransformer

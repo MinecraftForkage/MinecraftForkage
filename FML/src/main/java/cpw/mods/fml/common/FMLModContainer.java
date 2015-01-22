@@ -337,14 +337,6 @@ public class FMLModContainer implements ModContainer
     {
         SetMultimap<String, ASMData> annotations = asmDataTable.getAnnotationsFor(this);
 
-        parseSimpleFieldAnnotation(annotations, Instance.class.getName(), new Function<ModContainer, Object>()
-        {
-            @Override
-            public Object apply(ModContainer mc)
-            {
-                return mc.getMod();
-            }
-        });
         parseSimpleFieldAnnotation(annotations, Metadata.class.getName(), new Function<ModContainer, Object>()
         {
             @Override
@@ -491,7 +483,7 @@ public class FMLModContainer implements ModContainer
             {
                 eventBus.post(new FMLFingerprintViolationEvent(source.isDirectory(), source, ImmutableSet.copyOf(this.sourceFingerprints), expectedFingerprint));
             }
-            ProxyInjector.inject(this, event.getASMHarvestedData(), FMLCommonHandler.instance().getSide(), getLanguageAdapter());
+            getLanguageAdapter().setInternalProxies(this, FMLCommonHandler.instance().getSide(), Loader.instance().getModClassLoader());
             processFieldAnnotations(event.getASMHarvestedData());
         }
         catch (Throwable e)

@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import net.minecraftforkage.internal.FieldInjection;
+
 import org.apache.logging.log4j.Level;
 
 import com.google.common.base.CharMatcher;
@@ -516,8 +518,10 @@ public class Loader
                 }
             }
         }
+        FieldInjection.injectSidedProxies();
         modController.transition(LoaderState.CONSTRUCTING, false);
         modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, discoverer.getASMTable(), reverseDependencies);
+        FieldInjection.injectModInstances();
         FMLLog.fine("Mod signature data");
         for (ModContainer mod : getActiveModList())
         {

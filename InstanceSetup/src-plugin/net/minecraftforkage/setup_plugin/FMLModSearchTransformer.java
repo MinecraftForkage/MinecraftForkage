@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,26 +33,34 @@ import net.minecraftforkage.instsetup.JarTransformer;
 
 public class FMLModSearchTransformer extends JarTransformer {
 
-	static class SidedProxyInfo {
-		String className;
-		String fieldName;
+	private static class ProxyFieldInjectionData {
 		String clientSideClass;
 		String serverSideClass;
-		String type = "sided-proxy";
 	}
 	
-	static class InstanceFieldInfo {
+	private static class ModInstanceInjectionData {
+		String mod;
+	}
+	
+	private static class FieldInjectionEntry {
 		String className;
 		String fieldName;
-		String mod;
-		String type = "mod-instance";
+		String type;
+		Object data;
+		
+		FieldInjectionEntry(String clazz, String field, String type, Object extraData) {
+			this.className = clazz;
+			this.fieldName = field;
+			this.type = type;
+			this.data = extraData;
+		}
 	}
 	
 	private List<Object> mods = new ArrayList<>();
 	private Map<String, String> modClasses = new HashMap<>(); // class name -> mod ID
 	
 	// one of the few places in FML where the word "inject" is actually correct
-	private List<Object> fieldsToInject = new ArrayList<>();
+	private List<FieldInjectionEntry> fieldsToInject = new ArrayList<>();
 	
 	private class ModSearchClassVisitor extends ClassVisitor {
 
@@ -62,7 +72,6 @@ public class FMLModSearchTransformer extends JarTransformer {
 		
 		Map<String, Object> modObject = new HashMap<>();
 		{
-			modObject.put("modContainerClass", "cpw.mods.fml.common.FMLContainer");
 			modObject.put("initData", initDataObject);
 		}
 		
@@ -134,14 +143,51 @@ public class FMLModSearchTransformer extends JarTransformer {
 							}
 						}
 						
+						modObject.put("modContainerClass", "cpw.mods.fml.common.FMLContainer");
 						modObject.put("modid", fields.remove("modid"));
 						initDataObject.put("modAnnotation", fields);
+						initDataObject.put("modClass", className);
 						modObject.put("dependencies", dependencies);
 						modObject.put("sortingRules", sortingRules);
 						isMod = true;
 					}
 				};
 			}
+			
+			if(desc.equals("Lcpw/mods/fml/common/API;") && className.endsWith(".package-info")) {
+				return new AnnotationVisitor(Opcodes.ASM5) {
+					
+					Map<String, Object> fields = new HashMap<>();
+					
+					@Override
+					public void visit(String name, Object value) {
+						fields.put(name, value);
+					}
+					
+					@Override
+					public void visitEnd() {
+						modObject.put("modid", fields.remove("provides"));
+						initDataObject.put("modAnnotation", fields);
+						initDataObject.put("package", className.substring(0, className.lastIndexOf('.')));
+						
+						if(fields.containsKey("owner") && !fields.get("owner").equals(modObject.get("modid"))) {
+							Map<String, Object> ownerSortingRule = new HashMap<>();
+							ownerSortingRule.put("mod", fields.get("owner"));
+							ownerSortingRule.put("type", "after");
+							modObject.put("sortingRules", Arrays.asList(ownerSortingRule));
+						
+						} else {
+							modObject.put("sortingRules", Collections.emptyList());
+						}
+						
+						modObject.put("modContainerClass", "cpw.mods.fml.common.ModAPIManager$APIContainer");
+						modObject.put("dependencies", Collections.emptyList());
+						
+						isMod = true;
+					}
+				};
+			}
+			
 			return null;
 		}
 		
@@ -160,36 +206,28 @@ public class FMLModSearchTransformer extends JarTransformer {
 				public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
 					if(desc.equals("Lcpw/mods/fml/common/SidedProxy;")) {
 						return new AnnotationVisitor(Opcodes.ASM5) {
-							SidedProxyInfo spi = new SidedProxyInfo();
-							{
-								spi.className = className;
-								spi.fieldName = fieldName;
-							}
+							ProxyFieldInjectionData data = new ProxyFieldInjectionData();
 							@Override
 							public void visit(String name, Object value) {
-								if(name.equals("clientSide")) spi.clientSideClass = (String)value;
-								if(name.equals("serverSide")) spi.serverSideClass = (String)value;
+								if(name.equals("clientSide")) data.clientSideClass = (String)value;
+								if(name.equals("serverSide")) data.serverSideClass = (String)value;
 							}
 							@Override
 							public void visitEnd() {
-								fieldsToInject.add(spi);
+								fieldsToInject.add(new FieldInjectionEntry(className, fieldName, "sided-proxy", data));
 							}
 						};
 					}
 					if(desc.equals("Lcpw/mods/fml/common/Mod$Instance;")) {
 						return new AnnotationVisitor(Opcodes.ASM5) {
-							InstanceFieldInfo ifi = new InstanceFieldInfo();
-							{
-								ifi.className = className;
-								ifi.fieldName = fieldName;
-							}
+							ModInstanceInjectionData data = new ModInstanceInjectionData();
 							@Override
 							public void visit(String name, Object value) {
-								if(name.equals("value")) ifi.mod = (String)value;
+								if(name.equals("value")) data.mod = (String)value;
 							}
 							@Override
 							public void visitEnd() {
-								fieldsToInject.add(ifi);
+								fieldsToInject.add(new FieldInjectionEntry(className, fieldName, "mod-instance", data));
 							}
 						};
 					}
@@ -206,7 +244,7 @@ public class FMLModSearchTransformer extends JarTransformer {
 	
 	@Override
 	public Stage getStage() {
-		return Stage.CLASS_INFO_EXTRACTION_STAGE;
+		return Stage.MOD_IDENTIFICATION_STAGE;
 	}
 
 	@Override
@@ -223,15 +261,15 @@ public class FMLModSearchTransformer extends JarTransformer {
 		
 		// fill in mod value for mod-instance injections where it's unknown
 		// - it needs to be any mod from the same original JAR file
-		for(Object obj : fieldsToInject)
-			if(obj instanceof InstanceFieldInfo) {
-				InstanceFieldInfo ifi = (InstanceFieldInfo)obj;
+		for(FieldInjectionEntry obj : fieldsToInject)
+			if(obj.data instanceof ModInstanceInjectionData) {
+				ModInstanceInjectionData ifi = (ModInstanceInjectionData)obj.data;
 				if(ifi.mod == null) {
-					if(!classToSourceMap.containsKey(ifi.className))
-						throw new RuntimeException(ifi.className+"."+ifi.fieldName+" is marked @Instance(), but from an unknown source so we can't find a mod ID to fill it with");
-					ifi.mod = findModBySource(classToSourceMap, classToSourceMap.get(ifi.className));
+					if(!classToSourceMap.containsKey(obj.className))
+						throw new RuntimeException(obj.className+"."+obj.fieldName+" is marked @Instance(), but from an unknown source so we can't find a mod ID to fill it with");
+					ifi.mod = findModBySource(classToSourceMap, classToSourceMap.get(obj.className));
 					if(ifi.mod == null)
-						throw new RuntimeException(ifi.className+"."+ifi.fieldName+" is marked @Instance(), but from a source with no mods so we can't find a mod ID to fill it with");
+						throw new RuntimeException(obj.className+"."+obj.fieldName+" is marked @Instance(), but from a source with no mods so we can't find a mod ID to fill it with");
 				}
 			}
 		

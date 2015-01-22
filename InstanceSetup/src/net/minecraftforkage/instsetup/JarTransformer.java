@@ -43,7 +43,7 @@ public abstract class JarTransformer implements DependencySortedObject {
 		private Stage() {}
 		
 		/**
-		 * Stages that only generate new classes can run here.
+		 * Transformers that only generate new classes can run here.
 		 * 
 		 * This runs before other stages, so that transformers in
 		 * other stages get a chance to transform the generated classes.
@@ -51,12 +51,18 @@ public abstract class JarTransformer implements DependencySortedObject {
 		public static final Stage CLASS_GENERATION_STAGE = new Stage();
 		
 		/**
+		 * Transformers that add mods should ideally run in this stage, so that other
+		 * transformers can use mod information.
+		 */
+		public static final Stage MOD_IDENTIFICATION_STAGE = new Stage();
+		
+		/**
 		 * Most transformers should run in MAIN_STAGE.
 		 */
 		public static final Stage MAIN_STAGE = new Stage();
 		
 		/**
-		 * Transformers in CLASS_INFO_EXTRACTION_STAGE can build indexes
+		 * Transformers in CLASS_INFO_EXTRACTION_STAGE should build indexes
 		 * based on class files, but not modify any class files.
 		 */
 		public static final Stage CLASS_INFO_EXTRACTION_STAGE = new Stage();

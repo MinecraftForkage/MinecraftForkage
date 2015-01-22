@@ -102,6 +102,8 @@ public interface ILanguageAdapter {
         @Override
         public void setInternalProxies(ModContainer mod, Side side, ClassLoader loader)
         {
+            // TODO move this field location to instance setup as well
+            
             // For Scala mods, we want to enable authors to write them like so:
             // object ModName {
             //   @SidedProxy(...)

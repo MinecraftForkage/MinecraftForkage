@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import cpw.mods.fml.common.asm.transformers.ModAPITransformer;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ASMDataTable.ASMData;
 import cpw.mods.fml.common.discovery.ModCandidate;
@@ -23,9 +22,6 @@ import cpw.mods.fml.common.versioning.VersionParser;
 
 public class ModAPIManager {
     public static final ModAPIManager INSTANCE = new ModAPIManager();
-    @SuppressWarnings("unused")
-    private ModAPITransformer transformer;
-    private ASMDataTable dataTable;
     private Map<String,APIContainer> apiContainers;
 
     private static class APIContainer extends DummyModContainer {
@@ -132,8 +128,6 @@ public class ModAPIManager {
     }
     public void registerDataTableAndParseAPI(ASMDataTable dataTable)
     {
-        this.dataTable = dataTable;
-
         Set<ASMData> apiList = dataTable.getAll("cpw.mods.fml.common.API");
 
         apiContainers = Maps.newHashMap();
@@ -212,7 +206,6 @@ public class ModAPIManager {
     public void manageAPI(ModClassLoader modClassLoader, ModDiscoverer discoverer)
     {
         registerDataTableAndParseAPI(discoverer.getASMTable());
-        transformer = modClassLoader.addModAPITransformer(dataTable);
     }
 
     public void injectAPIModContainers(List<ModContainer> mods, Map<String, ModContainer> nameLookup)

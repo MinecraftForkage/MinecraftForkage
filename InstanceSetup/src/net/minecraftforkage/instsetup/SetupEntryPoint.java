@@ -106,6 +106,7 @@ public class SetupEntryPoint {
 			
 			for(Stage stage : new JarTransformer.Stage[] {
 				JarTransformer.Stage.CLASS_GENERATION_STAGE,
+				JarTransformer.Stage.MOD_IDENTIFICATION_STAGE,
 				JarTransformer.Stage.MAIN_STAGE,
 				JarTransformer.Stage.CLASS_INFO_EXTRACTION_STAGE
 			}) {
