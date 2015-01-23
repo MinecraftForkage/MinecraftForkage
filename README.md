@@ -29,12 +29,9 @@ To set up a workspace for developing Minecraft Forkage:
    If you are on Windows, you should run this in Cygwin.
    MSYS may also work, but has not been tested by the Minecraft Forkage team.
 
-6. If patching fails, run `make clean` and try again. This is probably related to
-   nondeterminism in FernFlower. You might need to try a few times.
+6. Open the MinecraftForkage project in Eclipse.
 
-7. Open the MinecraftForkage project in Eclipse.
-
-8. Once Eclipse finishes building the workspace, you are now set up.
+7. Once Eclipse finishes building the workspace, you are now set up.
    There are predefined "MCF Client" and "MCF Server" run configurations. Note that they
    will not be in the drop-down menu - you will need to select them in the run configurations
    dialog the first time you use them.
