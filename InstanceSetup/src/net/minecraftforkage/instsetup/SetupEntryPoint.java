@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -75,6 +78,8 @@ public class SetupEntryPoint {
 		
 		List<String> coremodClassList = new ArrayList<>();
 		
+		long wholeProcessStartTime = System.nanoTime();
+		
 		createInitialBakedJar(mods, args.patchedVanillaJarLocation, args.bakedJarLocation, coremodClassList);
 		
 		System.out.println("Baked JAR: " + args.bakedJarLocation.getAbsolutePath());
@@ -91,7 +96,7 @@ public class SetupEntryPoint {
 		
 		FileSystem fs = FileSystems.newFileSystem(Paths.get(args.bakedJarLocation.toURI()), null);
 		try (ZipFileSystemAdapter bakedJarIZF = new ZipFileSystemAdapter(fs)) {
-		
+			
 			
 			URLClassLoader setupModClassLoader = new URLClassLoader(setupMods.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader());
 		
@@ -112,7 +117,13 @@ public class SetupEntryPoint {
 			}) {
 				if(transformersByStage.containsKey(stage)) {
 					for(JarTransformer jt : DependencySorter.sort(transformersByStage.get(stage))) {
+						
+						final String idString = jt.getID() + " (" + jt.getClass().getName() + ")";
+						
+						long startTime = System.nanoTime();
 						jt.transform(bakedJarIZF);
+						long endTime = System.nanoTime();
+						System.out.println(((endTime - startTime) / 1000000)+" milliseconds: " + idString);
 					}
 				}
 			}
@@ -121,6 +132,9 @@ public class SetupEntryPoint {
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.coremodsToIgnore, "mcforkage-ignored-coremods.txt");
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.extraModContainers, "mcforkage-mod-container-classes.txt");
 		}
+		
+		long wholeProcessEndTime = System.nanoTime();
+		System.out.println("Instance setup completed in "+((wholeProcessEndTime - wholeProcessStartTime) / 1000000)+" milliseconds");
 	}
 	
 	private static void writeListFile(AbstractZipFile bakedJarIZF, Set<String> list, String path) throws IOException {
@@ -307,7 +321,9 @@ public class SetupEntryPoint {
 			try {
 				inputParsed = JsonReader.readJSON(new StringReader(new String(input, StandardCharsets.UTF_8)));
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				System.err.println(new String(input, StandardCharsets.UTF_8));
+				new RuntimeException("Error reading mcmod.info file", e).printStackTrace();
+				continue;
 			}
 			
 			if(inputParsed instanceof List<?>)
