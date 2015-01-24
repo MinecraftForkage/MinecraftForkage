@@ -35,7 +35,6 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.network.FMLOutboundHandler.OutboundTarget;
 import cpw.mods.fml.common.network.handshake.NetworkDispatcher;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;

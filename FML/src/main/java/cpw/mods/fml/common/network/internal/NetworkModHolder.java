@@ -14,19 +14,14 @@ package cpw.mods.fml.common.network.internal;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Set;
 import org.apache.logging.log4j.Level;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.SetMultimap;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.discovery.ASMDataTable;
-import cpw.mods.fml.common.discovery.ASMDataTable.ASMData;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import cpw.mods.fml.common.versioning.InvalidVersionSpecificationException;
