@@ -80,7 +80,7 @@ public class FMLContainer extends DummyModContainer implements WorldAccessContai
     @Subscribe
     public void modConstruction(FMLConstructionEvent evt)
     {
-        NetworkRegistry.INSTANCE.register(this, this.getClass(), null, evt.getASMHarvestedData());
+        NetworkRegistry.INSTANCE.register(this, this.getClass(), null);
         FMLNetworkHandler.registerChannel(this, evt.getSide());
     }
 

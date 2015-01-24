@@ -231,6 +231,19 @@ public class FMLModSearchTransformer extends JarTransformer {
 							}
 						};
 					}
+					if(desc.equals("Lcpw/mods/fml/common/Mod$Metadata;")) {
+						return new AnnotationVisitor(Opcodes.ASM5) {
+							ModInstanceInjectionData data = new ModInstanceInjectionData();
+							@Override
+							public void visit(String name, Object value) {
+								if(name.equals("value")) data.mod = (String)value;
+							}
+							@Override
+							public void visitEnd() {
+								fieldsToInject.add(new FieldInjectionEntry(className, fieldName, "mod-metadata", data));
+							}
+						};
+					}
 					return null;
 				}
 			};

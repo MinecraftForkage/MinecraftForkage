@@ -520,8 +520,8 @@ public class Loader
         }
         FieldInjection.injectSidedProxies();
         modController.transition(LoaderState.CONSTRUCTING, false);
-        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, discoverer.getASMTable(), reverseDependencies);
-        FieldInjection.injectModInstances();
+        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, reverseDependencies);
+        FieldInjection.injectModInstancesAndMetadata();
         FMLLog.fine("Mod signature data");
         for (ModContainer mod : getActiveModList())
         {

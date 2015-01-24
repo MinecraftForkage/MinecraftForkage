@@ -89,9 +89,9 @@ public class FieldInjection {
 	}
 
 	/**
-	 * Injects all mod instances. Called after mod objects are constructed (and only once).
+	 * Injects all mod instances and metadata objects. Called after mod objects are constructed (and only once).
 	 */
-	public static void injectModInstances() {
+	public static void injectModInstancesAndMetadata() {
 		for(Entry e : entries) {
 			if(e.type.equals("mod-instance")) {
 				String mod = e.data.get("mod");
@@ -100,6 +100,16 @@ public class FieldInjection {
 						e.inject(Loader.instance().getIndexedModList().get(mod).getMod());
 					} catch(ReflectiveOperationException ex) {
 						throw new RuntimeException("Failed to inject mod instance, to "+e.className+"."+e.fieldName+", of mod "+mod, ex);
+					}
+			}
+			
+			if(e.type.equals("mod-metadata")) {
+				String mod = e.data.get("mod");
+				if(Loader.isModLoaded(mod))
+					try {
+						e.inject(Loader.instance().getIndexedModList().get(mod).getMetadata());
+					} catch(ReflectiveOperationException ex) {
+						throw new RuntimeException("Failed to inject mod metadata, to "+e.className+"."+e.fieldName+", of mod "+mod, ex);
 					}
 			}
 		}
