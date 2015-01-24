@@ -31,6 +31,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+
 import net.minecraftforkage.instsetup.JarTransformer.Stage;
 import net.minecraftforkage.instsetup.depsort.DependencySortedObject;
 import net.minecraftforkage.instsetup.depsort.DependencySorter;
@@ -314,27 +319,31 @@ public class SetupEntryPoint {
 		
 		List<Object> mods = new ArrayList<>();
 		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
 		for(byte[] input : inputs) {
 			
-			Object inputParsed;
+			JsonElement inputParsed;
 			
 			try {
-				inputParsed = JsonReader.readJSON(new StringReader(new String(input, StandardCharsets.UTF_8)));
-			} catch (IOException e) {
+				inputParsed = gson.fromJson(new String(input, StandardCharsets.UTF_8), JsonElement.class);
+			} catch (JsonSyntaxException e) {
 				System.err.println(new String(input, StandardCharsets.UTF_8));
 				new RuntimeException("Error reading mcmod.info file", e).printStackTrace();
 				continue;
 			}
 			
-			if(inputParsed instanceof List<?>)
-				mods.addAll((List<?>)inputParsed);
-			else if(inputParsed instanceof Map<?,?> && ((Map<?,?>)inputParsed).containsKey("modList"))
-				mods.addAll((List<?>)((Map<?,?>)inputParsed).get("modList"));
+			if(inputParsed.isJsonArray())
+				for(JsonElement mod : inputParsed.getAsJsonArray())
+					mods.add(mod);
+			else if(inputParsed.isJsonObject() && inputParsed.getAsJsonObject().has("modList"))
+				for(JsonElement mod : inputParsed.getAsJsonObject().get("modList").getAsJsonArray())
+					mods.add(mod);
 			else
 				throw new RuntimeException("unrecognized mcmod.info format");
 		}
 		
-		return JsonWriter.toString(mods).getBytes(StandardCharsets.UTF_8);
+		return gson.toJson(mods).getBytes(StandardCharsets.UTF_8);
 	}
 
 	private static void copyStream(InputStream in, OutputStream out) throws IOException {
