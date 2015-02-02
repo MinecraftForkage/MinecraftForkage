@@ -26,7 +26,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
  */
 public class StaticFieldFixingTransformer implements IClassTransformer {
 	private static Map<String, String> fieldTypes = new HashMap<String, String>();
-	private static Set<String> seenClasses = new HashSet<>();
+	private static Set<String> seenClasses = new HashSet<String>();
 	
 	@Override
 	public byte[] transform(String arg0, String arg1, byte[] arg2) {
