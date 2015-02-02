@@ -1,0 +1,5 @@
+--- ../src-base/minecraft/net/minecraft/client/resources/FolderResourcePack.java
++++ ../src-work/minecraft/net/minecraft/client/resources/FolderResourcePack.java
+@@ -42,1 +42,1 @@
+-            File[] afile = file1.listFiles(DirectoryFileFilter.DIRECTORY);
++            File[] afile = file1.listFiles((java.io.FileFilter)DirectoryFileFilter.DIRECTORY);

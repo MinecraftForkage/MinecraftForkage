@@ -1,9 +1,3 @@
-[submodule "MinecraftForge"]
-	path = MinecraftForge
-	url = git@github.com:MinecraftForkage/MinecraftForge.git
-[submodule "FML"]
-	path = FML
-	url = git@github.com:MinecraftForkage/FML.git
 [submodule "fernflower"]
 	path = fernflower
 	url = git@github.com:MinecraftForkage/fernflower.git
