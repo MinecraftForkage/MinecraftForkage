@@ -29,10 +29,12 @@ space=$(noop) $(noop)
 SOURCE_DIRS=FML/src/main/java FML/src/main/resources MinecraftForge/src/main/java MinecraftForge/src/main/resources FML/vanilla-src
 DEOBF_DATA=FML/src/main/resources/deobfuscation_data-missing.lzma
 
-BUILDTOOLS_BIN_DIR=eclipse/BuildTools/bin
+BUILDTOOLS_SRC_DIRS=BuildTools/src BuildTools/BON
+BUILDTOOLS_BIN_DIR=build/BuildTools
 BUILDTOOLS=java -cp $(BUILDTOOLS_BIN_DIR)
+BUILDTOOLS_DEP=build/BuildTools.jar
 
-LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)")
+LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)" | tr '\n' ' ')
 
 ifeq ($(OSTYPE),cygwin)
 	CLASSPATH_SEPARATOR := \;
@@ -66,6 +68,7 @@ clean:
 	rm -f build/install.json
 	rm -f build/install.properties
 	rm -f build/install-data.zip.lzma
+	rm -rf build/BuildTools
 	rm -rf $(TEMPDIR)
 .PHONY: clean
 cleanlibs:
@@ -89,13 +92,13 @@ build/download/vanilla.json:
 
 ####################### DECOMP BYTECODE PROCESSING ##########################
 
-build/minecraft_merged.jar: build/download/minecraft.jar build/download/minecraft_server.jar
+build/minecraft_merged.jar: build/download/minecraft.jar build/download/minecraft_server.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.JarMerger "build/download/minecraft.jar" "build/download/minecraft_server.jar" "$@" $(MCP_MERGE_CFG)
 
-build/minecraft_merged_remapped.jar: build/minecraft_merged.jar FML/conf/joined.srg
+build/minecraft_merged_remapped.jar: build/minecraft_merged.jar FML/conf/joined.srg $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.ApplySRG FML/conf/joined.srg "$<" "$@"
 
-build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGEAT) $(EXCEPTOR_JSON) $(EXC)
+build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGEAT) $(EXCEPTOR_JSON) $(EXC) $(BUILDTOOLS_DEP)
 	cat "$<" | \
 		$(BUILDTOOLS) bytecode.ApplyExceptorJson "$(EXCEPTOR_JSON)" | \
 		$(BUILDTOOLS) bytecode.ApplyAT "$(FMLAT)" | \
@@ -106,13 +109,13 @@ build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGE
 		$(BUILDTOOLS) bytecode.RemoveGenericMethods | \
 	cat > "$@"
 
-build/processed_binary_trimmed.jar: build/processed_binary.jar
+build/processed_binary_trimmed.jar: build/processed_binary.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.TrimBytecode < "$<" > "$@"
 
-build/processed_binary_trimmed_sorted.jar: build/processed_binary_trimmed.jar
+build/processed_binary_trimmed_sorted.jar: build/processed_binary_trimmed.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.SortZipEntries "$<" > "$@"
 
-build/bytecode-orig.txt: build/processed_binary_trimmed_sorted.jar
+build/bytecode-orig.txt: build/processed_binary_trimmed_sorted.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.Bytecode2Text < "$<" > "$@"
 
 build/raw_source.zip: build/processed_binary.jar
@@ -212,7 +215,7 @@ build/instance-setup-src.zip: $(shell find InstanceSetup/src -type f)
 	rm -f "$@"
 	cd InstanceSetup/src; zip -r "$$OLDPWD/$@" *
 
-build/instance-setup.jar: build/instance-setup-src.zip
+build/instance-setup.jar: build/instance-setup-src.zip $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) decompsource.CompileZip "$<" "$(LIBRARIES_DIR)" > "$@"
 
 build/test-setup-plugin-src.zip: $(shell find InstanceSetup/src-plugin -type f)
@@ -225,11 +228,14 @@ build/test-setup-plugin.jar: build/test-setup-plugin-src.zip build/instance-setu
 
 ################### INSTALLER CREATION ##########################
 
-
-
-build/BuildTools.jar: $(shell find $(BUILDTOOLS_BIN_DIR) -type f)
+build/BuildTools.jar: $(shell find $(BUILDTOOLS_SRC_DIRS) -type f)
 	rm -f "$@"
-	cd $(BUILDTOOLS_BIN_DIR); zip -r "$$OLDPWD/$@" .
+	rm -rf $(BUILDTOOLS_BIN_DIR)
+	mkdir $(BUILDTOOLS_BIN_DIR)
+	cp -rf $(foreach dir, $(BUILDTOOLS_SRC_DIRS), $(dir)/*) $(BUILDTOOLS_BIN_DIR)
+	javac -d $(BUILDTOOLS_BIN_DIR) `find $(BUILDTOOLS_SRC_DIRS) -type f -name '*.java'`
+	find $(BUILDTOOLS_BIN_DIR) -name '*.java' -exec rm '{}' \;
+	jar -cvf "$@" -C $(BUILDTOOLS_BIN_DIR) .
 
 build/installer-code.jar: build/BuildTools.jar
 	rm -rf $(TEMPDIR)
