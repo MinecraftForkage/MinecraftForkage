@@ -34,7 +34,7 @@ BUILDTOOLS_BIN_DIR=build/BuildTools
 BUILDTOOLS=java -cp $(BUILDTOOLS_BIN_DIR)
 BUILDTOOLS_DEP=build/BuildTools.jar
 
-LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)" | tr '\n' ' ')
+LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)" | tr '\r\n' '  ')
 
 ifeq ($(OSTYPE),cygwin)
 	CLASSPATH_SEPARATOR := \;
