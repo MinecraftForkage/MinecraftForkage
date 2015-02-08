@@ -1,8 +1,8 @@
 * text eol=lf
-*.bat text eol=crlf
+*.bat text
 *.patch text eol=lf
-*.java text eol=lf
-*.gradle text eol=crlf
+*.java text
+*.gradle text
 *.png binary
 *.exe binary
 *.dll binary
@@ -10,5 +10,5 @@
 *.lzma binary
 *.zip binary
 *.pyd binary
-*.cfg text eol=lf
-*.py text eol=lf
+*.cfg text
+*.py text
