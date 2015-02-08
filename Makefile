@@ -9,8 +9,8 @@ FORGE_PATCHES=$(shell find MinecraftForge/patches -type f)
 FERNFLOWER_JAR=build/download/fernflower.jar
 FFTEMP=build/fftemp
 
-FMLAT=FML/src/main/resources/fml_at.cfg
-FORGEAT=MinecraftForge/src/main/resources/forge_at.cfg
+FMLAT=new-src/fml_at.cfg
+FORGEAT=new-src/forge_at.cfg
 EXCEPTOR_JSON=FML/conf/exceptor.json
 EXC=FML/conf/joined.exc
 SRG=FML/conf/joined.srg
@@ -26,8 +26,8 @@ TEMPDIR=build/temp
 noop=
 space=$(noop) $(noop)
 
-SOURCE_DIRS=FML/src/main/java FML/src/main/resources MinecraftForge/src/main/java MinecraftForge/src/main/resources FML/vanilla-src
-DEOBF_DATA=FML/src/main/resources/deobfuscation_data-missing.lzma
+SOURCE_DIRS=new-src vanilla-src
+DEOBF_DATA=new-src/deobfuscation_data-missing.lzma
 
 BUILDTOOLS_SRC_DIRS=BuildTools/src BuildTools/BON
 BUILDTOOLS_BIN_DIR=build/BuildTools
@@ -48,8 +48,8 @@ all: build/deobf_source.zip $(DEOBF_DATA)
 .PHONY: all
 
 extractsrc: build/deobf_source.zip $(DEOBF_DATA)
-	[ -d FML/vanilla-src ] && rm -r FML/vanilla-src; exit 0
-	unzip "build/deobf_source.zip" -d FML/vanilla-src
+	[ -d vanilla-src ] && rm -r vanilla-src; exit 0
+	unzip "build/deobf_source.zip" -d vanilla-src
 .PHONY: extractsrc
 
 .DELETE_ON_ERROR:
