@@ -183,8 +183,7 @@
                  worldserver.func_73041_k();
              }
          }
-@@ -1451,7 +1450,6 @@
-         return "";
+@@ -1452,6 +1451,5 @@
      }
  
 -    @SideOnly(Side.SERVER)
