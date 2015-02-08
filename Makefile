@@ -3,8 +3,8 @@ MCFVERSION=1.1
 
 VERSION_NAME_IN_LAUNCHER=MCForkage-$(MCVERSION)-$(MCFVERSION)
 
-FML_PATCHES=$(shell find FML/patches -type f)
-FORGE_PATCHES=$(shell find MinecraftForge/patches -type f)
+FML_PATCHES=$(shell find patches/fml -type f)
+FORGE_PATCHES=$(shell find patches/forge -type f)
 
 FERNFLOWER_JAR=build/download/fernflower.jar
 FFTEMP=build/fftemp
