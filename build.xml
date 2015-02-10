@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    
+    <mkdir dir="build"/>
+    <mkdir dir="build/download"/>
+    
+    <property name="downloaded-client-jar" value="build/download/minecraft.jar"/>
+    <property name="downloaded-server-jar" value="build/download/minecraft_server.jar"/>
+    
+    <target name="compile-buildtools">
+        
+        <mkdir dir="build/BuildTools"/>
+        <delete><fileset dir="build/BuildTools" includes="**/*"/></delete>
+        
+        <javac destdir="build/BuildTools" debug="on" includeAntRuntime="true">
+            <src path="BuildTools/src"/>
+            <src path="BuildTools/BON"/>
+        	<include name="**/*.java"/>
+        </javac>
+        
+        <copy todir="build/BuildTools">
+            <fileset dir="BuildTools/src">
+                <exclude name="**/*.java"/>
+            </fileset>
+            <fileset dir="BuildTools/BON">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        
+        <jar destfile="build/BuildTools.jar" basedir="build/BuildTools" />
+        
+        <path id="buildtools.path">
+            <pathelement path="build/BuildTools.jar"/>
+        </path>
+        
+        <!-- all custom tasks start with x- for easy identification -->
+        <taskdef name="x-getlibs" classname="net.mcforkage.ant.DownloadLibrariesTask" classpathref="buildtools.path" />
+        <taskdef name="x-download" classname="net.mcforkage.ant.DownloadIfNotExistsTask" classpathref="buildtools.path" />
+        <taskdef name="x-merge-jars" classname="net.mcforkage.ant.MergeJarsTask" classpathref="buildtools.path" />
+        <taskdef name="x-apply-srg" classname="net.mcforkage.ant.ApplySRGTask" classpathref="buildtools.path" />
+        <taskdef name="x-process-jar" classname="net.mcforkage.ant.RunJarProcessorTask" classpathref="buildtools.path" />
+        <taskdef name="x-process-zip" classname="net.mcforkage.ant.RunZipProcessorTask" classpathref="buildtools.path" />
+        <taskdef name="x-csv2srg" classname="net.mcforkage.ant.CSV2SRGTask" classpathref="buildtools.path" />
+        <taskdef name="x-invert-srg" classname="net.mcforkage.ant.InvertSRGTask" classpathref="buildtools.path" />
+        <taskdef name="x-remap-sources" classname="net.mcforkage.ant.RemapSourcesTask" classpathref="buildtools.path" />
+    </target>
+    
+    
+    <target name="get-libraries" depends="compile-buildtools">
+        <mkdir dir="libraries"/>
+        <mkdir dir="libraries/natives"/>
+        <x-getlibs jsonfile="FML/jsons/1.7.10-dev.json" libsdir="libraries" nativesdir="libraries/natives"/>
+    </target>
+    
+    <target name="download-minecraft" depends="compile-buildtools">
+        <x-download file="${downloaded-client-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/1.7.10.jar"/>
+        <x-download file="${downloaded-server-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/minecraft_server.1.7.10.jar"/>
+    </target>
+    
+    <target name="process-bytecode" depends="download-minecraft">
+        
+        <x-merge-jars
+            client="${downloaded-client-jar}" server="${downloaded-server-jar}"
+            output="build/minecraft_merged.jar" config="FML/mcp_merge.cfg"/>
+        
+        <x-apply-srg input="build/minecraft_merged.jar" output="build/temp_bytecode.jar" srg="FML/conf/joined.srg"/>
+        <x-process-jar input="build/temp_bytecode.jar" output="build/temp_bytecode2.jar" config="FML/conf/exceptor.json" class="bytecode.ApplyExceptorJson"/>
+        <x-process-jar input="build/temp_bytecode2.jar" output="build/temp_bytecode3.jar" config="new-src/fml_at.cfg" class="bytecode.ApplyAT"/>
+        <x-process-jar input="build/temp_bytecode3.jar" output="build/temp_bytecode4.jar" config="new-src/forge_at.cfg" class="bytecode.ApplyAT"/>
+        <x-process-jar input="build/temp_bytecode4.jar" output="build/temp_bytecode5.jar" config="FML/conf/joined.exc" class="bytecode.ApplyExceptions"/>
+        <x-process-jar input="build/temp_bytecode5.jar" output="build/temp_bytecode6.jar" config="FML/conf/joined.exc" class="bytecode.ApplyParamNames"/>
+        <x-process-jar input="build/temp_bytecode6.jar" output="build/temp_bytecode7.jar" config="FML/conf/joined.exc" class="bytecode.AddOBFID"/>
+        <x-process-jar input="build/temp_bytecode7.jar" output="build/processed_binary.jar" class="bytecode.RemoveGenericMethods"/>
+
+    </target>
+    
+    <target name="compile-fernflower">
+        
+        <mkdir dir="build/fernflower-bin"/>
+        <delete><fileset dir="build/fernflower-bin" includes="**/*"/></delete>
+        
+        <javac destdir="build/fernflower-bin" debug="on" includeAntRuntime="false">
+            <src path="fernflower/src"/>
+            <include name="**/*.java"/>
+        </javac>
+        
+        <path id="fernflower.path">
+            <pathelement path="build/fernflower-bin"/>
+        </path>
+    </target>
+    
+    <target name="decompile" depends="process-bytecode, compile-fernflower">
+        
+        <mkdir dir="build/fftemp"/>
+        <delete><fileset dir="build/fftemp" includes="**/*"/></delete>
+        <java fork="true" classname="org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler" classpathref="fernflower.path"
+            maxmemory="512M">
+            <arg value="-din=1"/>
+            <arg value="-rbr=0"/>
+            <arg value="-dgs=1"/>
+            <arg value="-asc=1"/>
+            <arg value="-log=ALL"/>
+            <arg value="build/processed_binary.jar"/>
+            <arg value="build/fftemp"/>
+        </java>
+		<move file="build/fftemp/processed_binary.jar" tofile="build/raw_source.zip" overwrite="true"/>
+		<delete dir="build/fftemp" includeEmptyDirs="true"/>
+    </target>
+    
+    <target name="process-source" depends="compile-buildtools, decompile">
+        <concat destfile="build/fml.patch">
+            <fileset dir="patches/fml" includes="**/*.patch"/>
+        </concat>
+        <concat destfile="build/forge.patch">
+            <fileset dir="patches/forge" includes="**/*.patch"/>
+        </concat>
+        <x-process-zip input="build/raw_source.zip" output="build/temp_source.zip" config="FML/conf/astyle.cfg" class="decompsource.MCPCleanup"/>
+        <x-process-zip input="build/temp_source.zip" output="build/patched_source_fml.zip" config="build/fml.patch" class="decompsource.ApplyUnifiedDiffs"/>
+        <x-process-zip input="build/patched_source_fml.zip" output="build/patched_source_forge.zip" config="build/forge.patch" class="decompsource.ApplyUnifiedDiffs"/>
+        <x-remap-sources input="build/patched_source_forge.zip" output="build/processed_source.zip" methods="FML/conf/methods.csv" fields="FML/conf/fields.csv" params="FML/conf/params.csv" nojavadocs="true"/>
+    </target>
+    
+    <target name="extractsrc" depends="process-source">
+        <delete dir="vanilla-src" failonerror="false"/>
+        <mkdir dir="vanilla-src"/>
+        
+        <unzip src="build/processed_source.zip" dest="vanilla-src"/>
+    </target>
+    
+    <target name="recompile" depends="compile-buildtools">
+        
+        <delete dir="build/edited-classes" failonerror="false"/>
+        <mkdir dir="build/edited-classes"/>
+        
+        <javac destdir="build/edited-classes" debug="on" includeAntRuntime="false">
+            <src path="vanilla-src"/>
+            <src path="new-src"/>
+            <include name="**/*.java"/>
+            <classpath>
+                <fileset dir="libraries">
+                	<include name="*.jar"/>
+            	</fileset>
+            </classpath>
+        </javac>
+        <copy todir="build/edited-classes">
+            <fileset dir="vanilla-src" excludes="**/*.java"/>
+            <fileset dir="new-src" excludes="**/*.java"/>
+        </copy>
+        <jar destfile="build/recomp.jar" basedir="build/edited-classes"/>
+        
+        <x-csv2srg methods="FML/conf/methods.csv" fields="FML/conf/fields.csv" srg="FML/conf/joined.srg" output="build/srg-to-mcp.srg"/>
+        <x-invert-srg input="build/srg-to-mcp.srg" output="build/mcp-to-srg.srg"/>
+        
+        <x-apply-srg input="build/recomp.jar" output="build/reobf.jar" srg="build/mcp-to-srg.srg"/>
+    </target>
+    
+    <target name="setup" depends="get-libraries, download-minecraft">
+        
+    </target>
+    
+    <target name="clean">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="build" excludes="download/*"/>
+        </delete>
+        <delete dir="vanilla-src" failonerror="false"/>
+    </target>
+</project>
