@@ -1,0 +1,43 @@
+When distributing the contents of the repository you may need to be aware
+of the following restrictions:
+
+The package decompsource.com.github.abrarsyed.jastyle (in BuildTools) is
+made available to us under the GPLv3 or later. See the file
+JASTYLE-LICENSE.TXT in that package for details.
+
+The package decompsource.net.minecraftforge.gradle.extrastuff (in BuildTools)
+is made available to us under the LGPLv2.1. See the file
+FORGEGRADLE-LICENSE.TXT in that package for details.
+
+The package lzma, and subpackages (in BuildTools) is made available to us
+under the Apache License 2.0. See the file LZMA-JAVA-LICENSE.TXT in that
+package for details.
+
+The packages org.objectweb.asm, and immibis.bon.org.objectweb.asm, and
+subpackages (in BuildTools) are made available to us under the BSD 3-Clause
+license. See the LICENSE.TXT file in org.objectweb.asm, or the
+JAVA-ASM-LICENSE.TXT file in the BON submodule, for details.
+
+The package immibis.bon, and subpackages, excluding
+immibis.bon.org.objectweb.asm and subpackages, is made available to us under
+the MIT license. See the LICENSE.TXT file in the BON submodule for details.
+
+Minecraft Forge is made available to us under the Minecraft Forge Public
+License. See the file new-src/MinecraftForge-License.txt for details.
+
+FML is made available to us under the LGPLv2.1. See FML/LICENSE-fml.txt for
+details.
+
+FML contains components under an unspecified BSD license and the
+Apache License 2.0. See FML/LICENSE-fml.txt for details.
+
+The class paulscode.sound.codecs.CodecIBXM is made available to us, via Forge,
+under the "SoundSystem CodecIBXM Class License". See the file in that package
+"Paulscode SoundSystem CodecIBXM License.txt" for details.
+
+The ibxm package is made available to us, via Forge, under the BSD 3-Clause
+license. See the file "Paulscode IBXM Library License.txt" in that package for
+details.
+
+
+If you notice any violations of these, please create an issue.

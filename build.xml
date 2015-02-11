@@ -7,6 +7,8 @@
     <property name="downloaded-client-jar" value="build/download/minecraft.jar"/>
     <property name="downloaded-server-jar" value="build/download/minecraft_server.jar"/>
     
+    <property name="launcher-version-name" value="MCForkage-1.7.10-1.1"/>
+    
     <target name="compile-buildtools">
         
         <mkdir dir="build/BuildTools"/>
@@ -26,6 +28,7 @@
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
+        <move file="build/BuildTools/LICENSE.TXT" tofile="build/BuildTools/BON-LICENSE.TXT"/>
         
         <jar destfile="build/BuildTools.jar" basedir="build/BuildTools" />
         
@@ -43,6 +46,12 @@
         <taskdef name="x-csv2srg" classname="net.mcforkage.ant.CSV2SRGTask" classpathref="buildtools.path" />
         <taskdef name="x-invert-srg" classname="net.mcforkage.ant.InvertSRGTask" classpathref="buildtools.path" />
         <taskdef name="x-remap-sources" classname="net.mcforkage.ant.RemapSourcesTask" classpathref="buildtools.path" />
+        <taskdef name="x-sort-and-filter-zip" classname="net.mcforkage.ant.SortZipEntriesTask" classpathref="buildtools.path" />
+        <taskdef name="x-bytecode2text" classname="net.mcforkage.ant.Bytecode2TextTask" classpathref="buildtools.path" />
+        <taskdef name="x-diff" classname="net.mcforkage.ant.CreateDiffTask" classpathref="buildtools.path" />
+        <taskdef name="x-pack200" classname="net.mcforkage.ant.Pack200Task" classpathref="buildtools.path" />
+        <taskdef name="x-make-install-json" classname="net.mcforkage.ant.MakeInstallJsonTask" classpathref="buildtools.path" />
+        <taskdef name="x-lzma" classname="net.mcforkage.ant.LzmaTask" classpathref="buildtools.path" />
     </target>
     
     
@@ -55,6 +64,7 @@
     <target name="download-minecraft" depends="compile-buildtools">
         <x-download file="${downloaded-client-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/1.7.10.jar"/>
         <x-download file="${downloaded-server-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/minecraft_server.1.7.10.jar"/>
+        <x-download file="build/download/vanilla.json" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/1.7.10.json"/>
     </target>
     
     <target name="process-bytecode" depends="download-minecraft">
@@ -132,7 +142,7 @@
         <delete dir="build/edited-classes" failonerror="false"/>
         <mkdir dir="build/edited-classes"/>
         
-        <javac destdir="build/edited-classes" debug="on" includeAntRuntime="false">
+        <javac destdir="build/edited-classes" debug="on" includeAntRuntime="false" source="1.6" target="1.6">
             <src path="vanilla-src"/>
             <src path="new-src"/>
             <include name="**/*.java"/>
@@ -154,8 +164,58 @@
         <x-apply-srg input="build/recomp.jar" output="build/reobf.jar" srg="build/mcp-to-srg.srg"/>
     </target>
     
-    <target name="setup" depends="get-libraries, download-minecraft">
-        
+    
+    <target name="make-bytecode-text" depends="compile-buildtools, recompile, process-bytecode">
+        <x-process-jar input="build/reobf.jar" output="build/reobf_trimmed.jar" class="bytecode.TrimBytecode"/>
+        <x-sort-and-filter-zip input="build/reobf_trimmed.jar" output="build/reobf_trimmed_sorted_filtered.jar" filter="build/processed_binary.jar"/>
+		<x-bytecode2text input="build/reobf_trimmed_sorted_filtered.jar" output="build/bytecode-new.txt"/>
+		
+		<x-process-jar input="build/processed_binary.jar" output="build/processed_binary_trimmed.jar" class="bytecode.TrimBytecode"/>
+		<x-sort-and-filter-zip input="build/processed_binary_trimmed.jar" output="build/processed_binary_trimmed_sorted.jar"/>
+		<x-bytecode2text input="build/processed_binary_trimmed_sorted.jar" output="build/bytecode-old.txt"/>
+	</target>
+	
+	<target name="make-bytecode-patch" depends="compile-buildtools, make-bytecode-text">
+		<x-diff from="build/bytecode-old.txt" to="build/bytecode-new.txt" output="build/bytecode.patch"/>
+	</target>
+	
+	<target name="make-new-classes-pack" depends="compile-buildtools, recompile">
+	    <x-sort-and-filter-zip input="build/reobf.jar" filter="build/processed_binary.jar" output="build/new_classes.zip" invertfilter="true"/>
+	    <x-pack200 input="build/new_classes.zip" output="build/new-classes.pack"/>
+	</target>
+    
+    <target name="make-installer" depends="download-minecraft, compile-buildtools"><!--, make-bytecode-patch, make-new-classes-pack">-->
+        <x-make-install-json vanilla="build/download/vanilla.json" fml="FML/jsons/1.7.10-dev.json" version="${launcher-version-name}" output="build/install.json"/>
+<echo file="build/install.properties">#
+mcver=1.7.10
+launcherVersionName=${launcher-version-name}
+</echo>
+		<zip destfile="build/install-data.zip" compress="false">
+		    <fileset dir="build">
+		        <include name="new-classes.pack"/>
+		        <include name="bytecode.patch"/>
+		        <include name="install.properties"/>
+		        <include name="install.json"/>
+		    </fileset>
+		    <fileset dir="FML/conf">
+		        <include name="joined.srg"/>
+		        <include name="joined.exc"/>
+		        <include name="exceptor.json"/>
+		    </fileset>
+		    <fileset dir="FML">
+		        <include name="mcp_merge.cfg"/>
+		    </fileset>
+		    <fileset dir="new-src">
+		        <include name="fml_at.cfg"/>
+		        <include name="forge_at.cfg"/>
+		    </fileset>
+		</zip>
+		<!-- <x-lzma input="build/install-data.zip" output="build/install-data.zip.lzma"/>-->
+		<gzip src="build/install-data.zip" destfile="build/install-data.zip.gz"/>
+        <jar destfile="build/installer.jar" manifest="build/BuildTools/installer/META-INF/MANIFEST.MF">
+            <fileset dir="build/BuildTools"/>
+            <fileset dir="build" includes="install-data.zip.gz"/>
+        </jar>
     </target>
     
     <target name="clean">
