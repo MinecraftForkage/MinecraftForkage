@@ -184,7 +184,7 @@
 	    <x-pack200 input="build/new_classes.zip" output="build/new-classes.pack"/>
 	</target>
     
-    <target name="make-installer" depends="download-minecraft, compile-buildtools"><!--, make-bytecode-patch, make-new-classes-pack">-->
+    <target name="make-installer" depends="download-minecraft, compile-buildtools, make-bytecode-patch, make-new-classes-pack">-->
         <x-make-install-json vanilla="build/download/vanilla.json" fml="FML/jsons/1.7.10-dev.json" version="${launcher-version-name}" output="build/install.json"/>
 <echo file="build/install.properties">#
 mcver=1.7.10
