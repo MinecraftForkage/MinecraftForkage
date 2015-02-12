@@ -1,9 +1,9 @@
 {
-  "id": "@minecraft_version@-@project@@version@",
-  "time": "@timestamp@",
-  "releaseTime": "1960-01-01T00:00:00-0700",
+  "id": "@@LAUNCHER-VERSION-NAME@@",
+  "time": "2014-05-14T19:29:23+02:00",
+  "releaseTime": "2014-05-14T19:29:23+02:00",
   "type": "release",
-  "minecraftArguments": "--version FML_DEV --tweakClass cpw.mods.fml.common.launcher.FMLTweaker",
+  "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userProperties ${user_properties} --userType ${user_type} --tweakClass cpw.mods.fml.common.launcher.FMLTweaker",
   "minimumLauncherVersion": 13,
   "assets": "1.7.10",
   "libraries": [
