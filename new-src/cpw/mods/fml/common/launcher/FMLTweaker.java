@@ -20,6 +20,7 @@ import com.google.common.collect.Maps;
 
 import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import cpw.mods.fml.relauncher.FMLSecurityManager;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class FMLTweaker implements ITweaker {
     private File gameDir;
@@ -125,6 +126,14 @@ public class FMLTweaker implements ITweaker {
         classLoader.addTransformerExclusion("cpw.mods.fml.relauncher.");
         classLoader.addTransformerExclusion("cpw.mods.fml.common.asm.transformers.");
         classLoader.addClassLoaderExclusion("LZMA.");
+        
+        try {
+        	Class.forName("net.mcforkage.compat.MCFCompat").getMethod("init", LaunchClassLoader.class).invoke(null, classLoader);
+        } catch(ClassNotFoundException e) {
+        } catch(Exception e) {
+        	throw new RuntimeException(e);
+        }
+        
         FMLLaunchHandler.configureForClientLaunch(classLoader, this);
         FMLLaunchHandler.appendCoreMods();
     }

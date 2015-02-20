@@ -90,6 +90,16 @@ public class CoreModManager {
         {
             // NO OP
         }
+        
+        private static String replaceTransformerForCompat(String originalClassName) {
+        	try {
+        		return (String)Class.forName("net.mcforkage.compat.MCFCompat").getMethod("replaceTransformer", String.class).invoke(null, originalClassName);
+        	} catch(ClassNotFoundException e) {
+        		return originalClassName;
+        	} catch(Exception e) {
+        		throw new RuntimeException(e);
+        	}
+        }
 
         @Override
         public void injectIntoClassLoader(LaunchClassLoader classLoader)
@@ -98,7 +108,7 @@ public class CoreModManager {
             if (coreModInstance.getASMTransformerClass() != null) for (String transformer : coreModInstance.getASMTransformerClass())
             {
                 FMLRelaunchLog.finer("Registering transformer %s", transformer);
-                classLoader.registerTransformer(transformer);
+                classLoader.registerTransformer(replaceTransformerForCompat(transformer));
             }
             FMLRelaunchLog.fine("Injection complete");
 
