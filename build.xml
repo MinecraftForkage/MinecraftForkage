@@ -154,6 +154,7 @@
         <copy todir="build/edited-classes">
             <fileset dir="vanilla-src" excludes="**/*.java"/>
             <fileset dir="new-src" excludes="**/*.java"/>
+            <fileset dir="compat-src" excludes="**/*.java"/>
         </copy>
         <jar destfile="build/recomp.jar" basedir="build/edited-classes"/>
         
