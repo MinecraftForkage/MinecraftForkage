@@ -152,7 +152,12 @@
             </classpath>
         </javac>
         <copy todir="build/edited-classes">
-            <fileset dir="vanilla-src" excludes="**/*.java"/>
+            <fileset dir="vanilla-src">
+                <exclude name="**/*.java"/>
+                <exclude name="META-INF/MANIFEST.MF"/>
+                <exclude name="META-INF/*.DSA"/>
+                <exclude name="META-INF/*.SF"/>
+            </fileset>
             <fileset dir="new-src" excludes="**/*.java"/>
             <fileset dir="compat-src" excludes="**/*.java"/>
         </copy>
