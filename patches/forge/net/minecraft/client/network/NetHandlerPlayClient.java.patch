@@ -19,6 +19,12 @@
          entityxporb.field_70118_ct = p_147286_1_.func_148984_d();
          entityxporb.field_70117_cu = p_147286_1_.func_148983_e();
          entityxporb.field_70116_cv = p_147286_1_.func_148982_f();
+@@ -590,3 +590,2 @@
+-                    short short2 = datainputstream.readShort();
+-                    int l = short2 >> 4 & 4095;
+-                    int i1 = short2 & 15;
++                    int l = datainputstream.readShort() & 65535;
++                    int i1 = datainputstream.readByte() & 255;
 @@ -686,7 +689,11 @@
  
      public void func_147251_a(S02PacketChat p_147251_1_)

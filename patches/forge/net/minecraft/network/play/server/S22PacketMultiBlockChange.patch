@@ -1,0 +1,9 @@
+--- ../src-base/minecraft/net/minecraft/network/play/server/S22PacketMultiBlockChange.java
++++ ../src-work/minecraft/net/minecraft/network/play/server/S22PacketMultiBlockChange.java
+@@ -34,1 +34,1 @@
+-        int j = 4 * p_i45181_1_;
++        int j = 5 * p_i45181_1_;
+@@ -47,1 +47,2 @@
+-                dataoutputstream.writeShort((short)((Block.func_149682_b(p_i45181_3_.func_150810_a(l, j1, i1)) & 4095) << 4 | p_i45181_3_.func_76628_c(l, j1, i1) & 15));
++                dataoutputstream.writeShort(Block.func_149682_b(p_i45181_3_.func_150810_a(l, j1, i1)));
++                dataoutputstream.writeByte(p_i45181_3_.func_76628_c(l, j1, i1));
