@@ -139,6 +139,28 @@
              this.func_75824_a(p_75816_2_.func_76632_l(), nbttagcompound);
          }
          catch (Exception exception)
+@@ -310,7 +310,11 @@
+                 nbttagcompound1.func_74774_a("Y", (byte)(extendedblockstorage.func_76662_d() >> 4 & 255));
++                if(ExtendedBlockStorage.USING_16BIT_BLOCK_IDS)
++                    nbttagcompound1.func_74773_a("Blocks16", extendedblockstorage.get16BitBlockArray());
++                else {
+                 nbttagcompound1.func_74773_a("Blocks", extendedblockstorage.func_76658_g());
+ 
+                 if (extendedblockstorage.func_76660_i() != null)
+                 {
+                     nbttagcompound1.func_74773_a("Add", extendedblockstorage.func_76660_i().field_76585_a);
+                 }
++                }
+@@ -354,2 +430,5 @@
+             ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(b1 << 4, flag);
++            if(ExtendedBlockStorage.USING_16BIT_BLOCK_IDS)
++                extendedblockstorage.set16BitBlockArray(nbttagcompound1.getByteArray("Blocks16"));
++            else {
+             extendedblockstorage.func_76664_a(nbttagcompound1.func_74770_j("Blocks"));
+@@ -362,2 +438,3 @@
+                 extendedblockstorage.func_76673_a(new NibbleArray(nbttagcompound1.func_74770_j("Add"), 4));
+             }
++            }
 @@ -373,6 +449,12 @@
              chunk.func_76616_a(p_75823_2_.func_74770_j("Biomes"));
          }
