@@ -3,7 +3,7 @@
 @@ -9,2 +9,4 @@
  public class ExtendedBlockStorage
  {
-+    static final boolean USING_16BIT_BLOCK_IDS = net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS > 4096;
++    public static final boolean USING_16BIT_BLOCK_IDS = net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS > 4096;
 +
 @@ -15,2 +17,3 @@
      private byte[] field_76680_d;

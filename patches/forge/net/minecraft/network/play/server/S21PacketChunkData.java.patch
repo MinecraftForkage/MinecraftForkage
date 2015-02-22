@@ -77,3 +77,12 @@
          p_148840_1_.writeInt(this.field_149284_a);
          p_148840_1_.writeInt(this.field_149282_b);
          p_148840_1_.writeBoolean(this.field_149279_g);
+@@ -159,1 +178,1 @@
+-                if (aextendedblockstorage[l].func_76660_i() != null)
++                if (!ExtendedBlockStorage.USING_16BIT_BLOCK_IDS && aextendedblockstorage[l].func_76660_i() != null)
+@@ -171,1 +190,1 @@
+-                byte[] abyte1 = aextendedblockstorage[l].func_76658_g();
++                byte[] abyte1 = ExtendedBlockStorage.USING_16BIT_BLOCK_IDS ? aextendedblockstorage[l].get16BitBlockArray() : aextendedblockstorage[l].func_76658_g();
+@@ -212,1 +231,1 @@
+-        if (k > 0)
++        if (!ExtendedBlockStorage.USING_16BIT_BLOCK_IDS && k > 0)
