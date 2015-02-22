@@ -57,9 +57,9 @@ import cpw.mods.fml.common.registry.GameRegistry.Type;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class GameData {
-    static final int MIN_BLOCK_ID = 0;
-    static final int MAX_BLOCK_ID = 4095;
-    static final int MIN_ITEM_ID = 4096;
+    static final int MIN_BLOCK_ID = 4096;
+    static final int MAX_BLOCK_ID = 31999;
+    static final int MIN_ITEM_ID = 0;
     static final int MAX_ITEM_ID = 31999;
 
     private static final GameData mainData = new GameData();
