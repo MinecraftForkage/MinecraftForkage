@@ -36,3 +36,12 @@
  
                  if (item.func_77645_m())
                  {
+@@ -250,4 +250,4 @@
+-        field_75934_C = new StatBase[4096];
+-        field_75928_D = new StatBase[32000];
+-        field_75929_E = new StatBase[32000];
+-        field_75930_F = new StatBase[32000];
++        field_75934_C = new StatBase[net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS];
++        field_75928_D = new StatBase[net.minecraftforge.common.MinecraftForge.NUM_ITEM_IDS];
++        field_75929_E = new StatBase[net.minecraftforge.common.MinecraftForge.NUM_ITEM_IDS];
++        field_75930_F = new StatBase[net.minecraftforge.common.MinecraftForge.NUM_ITEM_IDS];

@@ -22,6 +22,15 @@ public class MinecraftForge
     public static final EventBus TERRAIN_GEN_BUS = new EventBus();
     public static final EventBus ORE_GEN_BUS = new EventBus();
     public static final String MC_VERSION = Loader.MC_VERSION;
+    
+    
+    public static final int NUM_BLOCK_IDS = getNumBlockIDs();
+    public static final int NUM_ITEM_IDS = getNumItemIDs();
+    
+    // Required for NUM_BLOCK_IDS and NUM_ITEM_IDS to not be compile-time constants (which would cause them to get inlined)
+    private static int getNumBlockIDs() {return 32000;}
+    private static int getNumItemIDs() {return 32000;}
+    
 
     static final ForgeInternalHandler INTERNAL_HANDLER = new ForgeInternalHandler();
 

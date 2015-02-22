@@ -23,9 +23,9 @@
 -    private int[] field_149849_a = new int[256];
 -    private int[] field_149848_b = new int[256];
 +    @Deprecated
-+    private int[] field_149849_a = new int[4096];
++    private int[] field_149849_a = new int[net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS];
 +    @Deprecated
-+    private int[] field_149848_b = new int[4096];
++    private int[] field_149848_b = new int[net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS];
      @SideOnly(Side.CLIENT)
      private IIcon[] field_149850_M;
      private static final String __OBFID = "CL_00000245";
@@ -205,7 +205,7 @@
              {
                  for (l = 0; l < 2; ++l)
                  {
-@@ -405,4 +420,101 @@
+@@ -405,4 +420,98 @@
      {
          return MapColor.field_151656_f;
      }
@@ -243,7 +243,7 @@
 +
 +    public void rebuildFireInfo()
 +    {
-+        for (int x = 0; x < 4096; x++)
++        for (int x = 0; x < net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS; x++)
 +        {
 +            //If we care.. we could detect changes in here and make sure we keep them, however 
 +            //it's my thinking that anyone who hacks into the private variables should DIAF and we don't care about them.
@@ -254,24 +254,21 @@
 +        for (Entry<Block, FireInfo> e : blockInfo.entrySet())
 +        {
 +            int id = Block.func_149682_b(e.getKey());
-+            if (id >= 0 && id < 4096)
-+            {
-+                field_149849_a[id] = e.getValue().encouragement;
-+                field_149848_b[id] = e.getValue().flammibility;
-+            }
++            field_149849_a[id] = e.getValue().encouragement;
++            field_149848_b[id] = e.getValue().flammibility;
 +        }
 +    }
 +
 +    public int getFlammability(Block block)
 +    {
 +        int id = Block.func_149682_b(block);
-+        return id >= 0 && id < 4096 ? field_149848_b[id] : 0;
++        return field_149848_b[id];
 +    }
 +
 +    public int getEncouragement(Block block)
 +    {
 +        int id = Block.func_149682_b(block);
-+        return id >= 0 && id < 4096 ? field_149849_a[id] : 0;
++        return field_149849_a[id];
 +    }
 +
 +    /**
