@@ -13,72 +13,72 @@
     {
       "name": "com.google.code.findbugs:jsr305:1.3.9",
       "children": [],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.ow2.asm:asm-debug-all:5.0.3",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "com.typesafe.akka:akka-actor_2.11:2.3.3",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "com.typesafe:config:1.2.1",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-actors-migration_2.11:1.1.0",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-compiler:2.11.1",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-library:2.11.1",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-parser-combinators:2.11.0-M4",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-reflect:2.11.1",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-swing:2.11.0-M4",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "org.scala-lang:scala-xml:2.11.0-M4",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name": "net.sf.jopt-simple:jopt-simple:4.5",
       "children" : ["sources"],
-      "url" : "http://repo.maven.apache.org/maven2"
+      "url" : "http://repo.maven.apache.org/maven2/"
     },
     {
       "name":"net.lingala.zip4j:zip4j:1.3.2",
