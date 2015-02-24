@@ -1,0 +1,57 @@
+commands.forge.usage=Use /forge  <subcomando>. Subcomandos são tps, track
+commands.forge.usage.tracking=Use /forge track <tipo> <duração>. Tipos válidos são\: te (Tile Entities). Duração é < 60. 
+commands.forge.tps.summary=%s \: Tempo médio por tick\: %d ms. TPS médio\: %d
+
+commands.forge.tracking.te.enabled=Rastreamento de Tile Entities habilitado por %d segundos.
+forge.texture.preload.warning=Aviso\: A textura %s não foi pré-carregada, isso irá causar erros de renderização\!
+forge.client.shutdown.internal=Desligando servidor interno...
+forge.update.newversion=Nova versão do Forge está disponível\: %s
+forge.update.beta.1=%sAVISO\: %sBeta do Forge
+forge.update.beta.2=Problemas graves podem estar presentes, verifique-os antes de relatar.
+
+forge.configgui.forgeConfigTitle=Configuração do Minecraft Forge
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Aqui é aonde você pode editar as opçoes contidas em forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Configurações Gerais
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Aqui é aonde você pode editar as opçoes contidas em forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Configurações Padrões do Carregador de Chunks do Forge
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Aqui é aonde você pode definir opções específicas de um mod que serão usadas ao invés das padrões.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Substituições de Mod
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Permite definir configurações para mods específicos que irão substituir as padrão. Um valor de zero em qualquer entrada desativa a funcionalidade de chunkloading para esse mod.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Adicionar Nova Substituição de Mod
+
+forge.configgui.biomeSkyBlendRange.tooltip=Control the range of sky blending for colored skies in biomes.
+forge.configgui.biomeSkyBlendRange=Biome Sky Blend Range
+forge.configgui.clumpingThreshold.tooltip=Controla o número limite em que o Packet51 é preferido sob o Packet52.
+forge.configgui.clumpingThreshold=Limite de Aglutinação de Pacotes
+forge.configgui.disableVersionCheck.tooltip=Defina como verdadeiro para desabilitar as mecânicas de verificação da versão do Forge. O Forge requer um pequeno arquivo json no nosso servidor para informação das versões. Para mais detalhes, veja a classe ForgeVersion no nosso github.
+forge.configgui.disableVersionCheck=Desabilitar Checagem de Versão do Forge
+forge.configgui.enableGlobalConfig=Habilitar a Configuração Global
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Marque para forçar um crash se mais de um bloco tentar referenciar o mesmo Fluido.
+forge.configgui.forceDuplicateFluidBlockCrash=Forçar Crash para Blocos Fluidos Duplicados
+forge.configgui.fullBoundingBoxLadders.tooltip=Marque para checar toda a caixa de colisão da entidade em escadas ao invés de apenas o bloco em que ela está. Causa diferenças visíveis nas mecânicas, por isso o comportamento padrão é o do Minecraft clássico.
+forge.configgui.fullBoundingBoxLadders=Caixa de Colisão Completa para Escadas
+forge.configgui.removeErroringEntities.tooltip=Marque para remover qualquer Entidade que lance um erro ao ser atualizada, ao invés em vez de encerrar o servidor e relatar o erro. NOTE QUE ISTO PODE QUEBRAR TUDO, USE COM MODERAÇÃO, NÓS NÃO SOMOS RESPONSÁVEIS POR QUAISQUER DANOS PROVOCADOS.
+forge.configgui.removeErroringEntities=Remover Entidades com Erros
+forge.configgui.removeErroringTileEntities.tooltip=Marque para remover qualquer TileEntity que lance um erro ao ser atualizada, ao invés em vez de encerrar o servidor e relatar o erro. NOTE QUE ISTO PODE QUEBRAR TUDO, USE COM MODERAÇÃO, NÓS NÃO SOMOS RESPONSÁVEIS POR QUAISQUER DANOS PROVOCADOS.
+forge.configgui.removeErroringTileEntities=Remover Tile Entities com Erros
+forge.configgui.sortRecipies.tooltip=Set to true to enable the post initialization sorting of crafting recipes using Forge's sorter. May cause desyncing on conflicting recipies. MUST RESTART MINECRAFT IF CHANGED FROM THE CONFIG GUI.
+forge.configgui.sortRecipies=Ordenar Receitas
+forge.configgui.zombieBabyChance.tooltip=Chance that a zombie (or subclass) is a baby. Allows changing the zombie spawning mechanic.
+forge.configgui.zombieBabyChance=Chance de Bebê Zumbi
+forge.configgui.zombieBaseSummonChance.tooltip=Base zombie summoning spawn chance. Allows changing the bonus zombie summoning mechanic.
+forge.configgui.zombieBaseSummonChance=Chance de Invocação de Zumbi
+forge.configgui.stencilbits=Enable GL Stencil Bits
+forge.configgui.spawnfuzz=Respawn Fuzz Diameter
+
+forge.configgui.modID.tooltip=O ID do mod para que você quer definir as configurações de substituição.
+forge.configgui.modID=ID do Mod
+forge.configgui.dormantChunkCacheSize.tooltip=Unloaded chunks can first be kept in a dormant cache for quicker loading times. Specify the size (in chunks) of that cache here.
+forge.configgui.dormantChunkCacheSize=Dormant Chunk Cache Size
+forge.configgui.enableModOverrides.tooltip=Habilite esta configuração para permitir configurações por mod personalizadas de serem definidas.
+forge.configgui.enableModOverrides=Habilitar Substituições de Mod
+forge.configgui.maximumChunksPerTicket.tooltip=This is the maximum number of chunks a single ticket can force.
+forge.configgui.maximumChunksPerTicket=Chunks Per Ticket Limit
+forge.configgui.maximumTicketCount.tooltip=Este é o número das solicitações de carregamento de chunk que um mod pode fazer.
+forge.configgui.maximumTicketCount=Mod Ticket Limit
+forge.configgui.playerTicketCount.tooltip=The number of tickets a player can be assigned instead of a mod. This is shared across all mods and it is up to the mods to use it.
+forge.configgui.playerTicketCount=Player Ticket Limit

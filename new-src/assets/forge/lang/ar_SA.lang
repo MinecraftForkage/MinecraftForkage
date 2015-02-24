@@ -1,0 +1,15 @@
+commands.forge.usage=استخدم /forge <subcommand> الأوامر الفرعية المتاحة "tps" و "tack"
+commands.forge.usage.tracking=استخدم forge track <type> <duration>/ . الأنواع المقبولة Tile Entities) te). يجب أن تكون المدة أقل من 60.
+commands.forge.tps.summary=%s \: تعني وقت الدقز \:  %d ميللي ثانية. Mean TPS\:%d
+
+commands.forge.tracking.te.enabled=بلاط تعقب الكيان ممكن ل %d ثوان.
+forge.texture.preload.warning=تحذير\: النسيج %s لم يتم تحميله مسبقا، مما سيؤدي لأخطاء في التجسيد\!
+forge.client.shutdown.internal=يتم إغلاق السيرفر الداخلي...
+forge.update.newversion=إصدار جديد من فورج موجود\: %s
+forge.update.beta.1=%sتحذير\:%s نسخة بيتا من فورج
+forge.update.beta.2=مشاكل كبيرة قد تظهر، تأك\\ قبل الإبلاغ.
+
+forge.configgui.forgeConfigTitle=خيارات ماينكرافت فورج
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=هنا يمكنك أن تغير الخيارات الموجودة في forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=الخيارات العامة
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=هنا حيث يمكنك تعديل الإعدادات المحتواة في forgeChunkLoading.cfg.

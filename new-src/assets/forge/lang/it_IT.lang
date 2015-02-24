@@ -1,0 +1,6 @@
+commands.forge.usage=Usa /forge <subcommand>. I subcomandi sono tps, track
+commands.forge.usage.tracking=Usa /forge track <type> <duration>. I tipi validi sono le entità piatte. La durata deve essere < 60. 
+commands.forge.tps.summary=%s \: Tempo medio dei tick\: %d ms. TPS medi\: %d
+
+commands.forge.tracking.te.enabled=Tracciamento delle entità piatte abilitata per %d secondi.
+forge.texture.preload.warning=Attenzione\: La grafica %s non è pre-caricata, questo causerà errori nel rendering\!

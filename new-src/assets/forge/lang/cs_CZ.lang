@@ -1,0 +1,44 @@
+commands.forge.usage=Použijte /forge <podpříkaz>. Podpříkazy jsou tps, track
+commands.forge.usage.tracking=Použijte /forge track <typ> <trvání>. Platné typy jsou te (Tile Entity). Trvání je < 60.
+commands.forge.tps.summary=%s \: Průměrná délka ticku\: %d ms. Průměrný počet ticků za vteřinu (TPS)\: %d
+
+commands.forge.tracking.te.enabled=Sledování Tile Entit zapnuto na %d sekund.
+forge.texture.preload.warning=Upozornění\: Textura %s nebyla načtena, to může způsobit chyby v grafice\!
+forge.client.shutdown.internal=Vypínám interní server...
+forge.update.newversion=Je k dispozici nová verze Forge\: %s
+forge.update.beta.1=%sVarování\: %sForge Beta
+forge.update.beta.2=Mohou se vyskytnout vážné problémy, prosím hlaste pouze reprodukovatelné chyby.
+
+forge.configgui.forgeConfigTitle=Nastavení Minecraft Forge
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Zde můžete upravovat nastavení uložená ve forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Obecná nastavení
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Zde můžete upravovat nastavení uložená ve forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Výchozí nastavení Forge Chunk Loaderu
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Zde můžete nastavit volby pro každou modifikaci (mod), tyto volby se použijí místo výchozích.
+
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Umožňují změnit nastavení pro každou modifikaci (mod) zvlášť, tato nastavení přepíší výchozí. Hodnota nula v jakékoliv položce způsobí zakázání načítání chunků pro danou modifikaci.
+
+forge.configgui.biomeSkyBlendRange.tooltip=Ovládá rozsah prolínání barev oblohy u biomů.
+forge.configgui.biomeSkyBlendRange=Rozsah prolínání barev oblohy
+
+forge.configgui.disableVersionCheck=Vypnout kontrolu verze Forge
+forge.configgui.enableGlobalConfig=Povolit globální nastavení
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Nastavte tuto položku na true, pokud chcete vynutit spadnutí v případě pokusu o propojení více než jednoho bloku ke stejné tekutině.
+forge.configgui.forceDuplicateFluidBlockCrash=Vynutit spadnutí při duplikaci bloku tekutiny
+
+forge.configgui.removeErroringEntities=Odstranit entity způsobující chyby
+
+forge.configgui.removeErroringTileEntities=Odstranit blokové entity způsobující chyby
+
+forge.configgui.sortRecipies=Řazení receptů
+
+forge.configgui.zombieBabyChance=Šance na zombie dítě
+
+forge.configgui.zombieBaseSummonChance=Šance vyvolání zombie
+forge.configgui.stencilbits=Povolit GL Stencil bity
+forge.configgui.spawnfuzz=Rozptyl průměru oživení
+
+forge.configgui.modID.tooltip=ID modu pro který chcete přidat přepisovací volby.
+forge.configgui.modID=ID modu
+
+forge.configgui.enableModOverrides=Povolit přepisovací pravidla modifikací

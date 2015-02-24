@@ -1,0 +1,57 @@
+commands.forge.usage=Használd a /forge <alparancs> parancsot. Alparancsok\: tps, track
+commands.forge.usage.tracking=Használd a /forge track <típus> <időtartam>. Elfogadható típusok az entitások. Az időtartam kisebb mint 60. \n
+commands.forge.tps.summary=%s \: Átlagos tick idő\: %d ms. Átlagos TPS\: %d
+
+commands.forge.tracking.te.enabled=Entitások figyelése aktiválva %d másodpercre.
+forge.texture.preload.warning=Figyelem\: A(z) %s textúra nem lett betöltve, ami megjelenítési hibákat okozhat\!
+forge.client.shutdown.internal=Integrált szerver leállítása...
+forge.update.newversion=Új forge verzió elérhető\: %s
+forge.update.beta.1=%s Figyelem\: %s Béta Forge Verzió
+forge.update.beta.2=Hibák előfordulhatnak, bizonyosodj meg felőle, hogy tényleg hiba e.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge konfiguráció
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Itt tudod módosítani a forge.cfg beállításait.
+forge.configgui.ctgy.forgeGeneralConfig=Általános beállítások
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Itt tudod módosítani a forgeChunkLoading.cfg beállításait.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Forge Chunk Betöltő alapbeállítások
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Itt tudod beállítani modonként a felülíró beállításokat, így ezeket fogja használni az alap beállítások helyett.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod felülírások
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Modonkénti felülírási beállításokat tudsz beállítani az alapértékek helyett. A nulla érték tejlesen kikapcsolja a chunk betöltési képességeit a kiválasztott modnak.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=Új mod felülírás hozzáadása
+
+forge.configgui.biomeSkyBlendRange.tooltip=Az ég színének éghajlatonkénti elmosásának a távolságát módosító szám.
+forge.configgui.biomeSkyBlendRange=Éghajlat égi színének elmosási távolsága
+forge.configgui.clumpingThreshold.tooltip=A küszöbérték számát módosítja ami a 51. Packet-hez rendeli az 52. Packet helyett.
+forge.configgui.clumpingThreshold=Packet halmozási küszöb
+forge.configgui.disableVersionCheck.tooltip=Tedd "true"-ra hogy bekapcsold a forge verzió ellenőrzését, ami egy kis json fájlon keresztül történik a fájlszerverünkön keresztül. Részletekért lást a "ForgeVersion" nevű class fájlt a github oldalunkon.
+forge.configgui.disableVersionCheck=Forge verzióellenőrzés kikapcsolása
+forge.configgui.enableGlobalConfig=Globális configuráció engedélyezése
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Engedélyezd ezt, hogy egy kényszerített crash-t okozz ha 1-nél több blokk ugyanarra a Folyadékra utal rá.
+forge.configgui.forceDuplicateFluidBlockCrash=Folyadék blokk crash kényszerítése
+forge.configgui.fullBoundingBoxLadders.tooltip=Engedélyezd ezt, hogy a minecraft az entititások hitboxát is ellenőrizze, ahelyett, hogy csak a blokkokéval vetné össze. Észrevehető változásokat okozhat 1-2 dologban, ugyanúgy mint a vanilla minecraft működésében is.
+forge.configgui.fullBoundingBoxLadders=Teljes határoló dobozú létrák
+forge.configgui.removeErroringEntities.tooltip=Tedd ezt igazzá, hogy eltávolítsd azokat az entititásokat, amik hibát jeleznek az helyett, hogy bezárnák a szervert és kicrashelnék azt. FIGYELEM\: TÖNKRE TEHET BÁRMIT, SEMMI FELELŐSSÉGET NEM VÁLLALUNK.
+forge.configgui.removeErroringEntities=Hibás entititások eltávolítása
+forge.configgui.removeErroringTileEntities.tooltip=Tedd ezt igazzá, hogy eltávolítsd azokat a blokk entititásokat, amik hibát jeleznek az helyett, hogy bezárnák a szervert és kicrashelnék azt. FIGYELEM\: TÖNKRE TEHET BÁRMIT, SEMMI FELELŐSSÉGET NEM VÁLLALUNK.
+forge.configgui.removeErroringTileEntities=Hibás blokk entititások eltávolítása
+forge.configgui.sortRecipies.tooltip=Tedd igazzá, hogy engedélyezd a késői recept rendezést a Forge recept rendező segítségével. Deszinkronizációt okozhat egyező receptek esetén. ÚJRA KELL INDÍTANI A MC-T HA A JÁTÉKON BELÜL VÁLTOZTATTAD MEG EZT A BEÁLLÍTÁST.
+forge.configgui.sortRecipies=Receptek rendezése
+forge.configgui.zombieBabyChance.tooltip=Esély egy zombi(vagy olyan fajta) élőlény bébi lesz. Ezzel tudod módosítani a zombi spawnolási mechanikát.
+forge.configgui.zombieBabyChance=Pici zombi esély
+forge.configgui.zombieBaseSummonChance.tooltip=Alap zombi spawnolási esély. Ezzel tudod személyre szabni a zombik spawnolási mechanikáját.
+forge.configgui.zombieBaseSummonChance=Zombi spawnolási esélye
+forge.configgui.stencilbits=Gl Stencil Bit-ek engedélyezése
+forge.configgui.spawnfuzz=Respawn távolság átmérője
+
+forge.configgui.modID.tooltip=A mod ID-je amit akarsz a felülíró beállítások definiálására.
+forge.configgui.modID=Mod ID
+forge.configgui.dormantChunkCacheSize.tooltip=A kitöltött chunkokat egy gyorsítótárba lehet helyezni a gyorsabb betöltődés érdekében. itt betudod állítani a tár méretét.
+forge.configgui.dormantChunkCacheSize=Chunk gyorsítótár mérete
+forge.configgui.enableModOverrides.tooltip=Engedélyezd ezt, hogy engedélyezt a modonkénti beállítások módosítását.
+forge.configgui.enableModOverrides=Mod felülírások engedélyezése
+forge.configgui.maximumChunksPerTicket.tooltip=Ez a maximum szám, amit egy darab chunk 1 db "ticket"-et tud kényszeríteni.
+forge.configgui.maximumChunksPerTicket=Chunkonkénti "ticket" limit
+forge.configgui.maximumTicketCount.tooltip=Ez a szám ami a azoknak a chunkoknak a számát adja meg, amit 1 mod betölthet.
+forge.configgui.maximumTicketCount=Mod "ticket" limit
+forge.configgui.playerTicketCount.tooltip=A maximum "ticket" szám, amit 1 playerhez köthet a mod. Ezek az összes mod között megosztva vannak és használhatják is azokat.
+forge.configgui.playerTicketCount=Játékos "ticket" limit

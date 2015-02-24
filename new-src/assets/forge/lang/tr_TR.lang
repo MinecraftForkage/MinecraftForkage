@@ -1,0 +1,11 @@
+commands.forge.usage=/forge <subcommand>'ı kullanın. Alt komutlar tps, track
+
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod Geçersiz Kılımları
+forge.configgui.removeErroringTileEntities=Hata veren blok-canlıları kaldır
+forge.configgui.zombieBabyChance=Zombi bebek şansı
+forge.configgui.zombieBaseSummonChance=Zombi çağrılma şansı
+forge.configgui.modID=Mod kimliği
+forge.configgui.enableModOverrides=Mod geçersiz kılmaları etkinleştir
+forge.configgui.maximumChunksPerTicket.tooltip=Bu tek bir biletin yapabileceği maksimum chunk değeridir.
+forge.configgui.playerTicketCount=Oyuncu bilet limiti
+

@@ -1,0 +1,57 @@
+commands.forge.usage=/forge <子指令>. 用法说明\: 子指令有tps, track
+commands.forge.usage.tracking=/forge track <类型> <持续时间>. 用法说明\: 有效类型为te (实体附加值).有效持续时间要小于60.
+commands.forge.tps.summary=%s \: 平均的 游戏刻 时间长度\: %d ms. 平均TPS\: %d
+
+commands.forge.tracking.te.enabled=实体附加值追踪已启用了 %d 秒.
+forge.texture.preload.warning=警告\: %s 材质未被预加载, 将会导致渲染错误\!
+forge.client.shutdown.internal=正在关闭内置服务端...
+forge.update.newversion=新的Forge版本已可用\: %s
+forge.update.beta.1=%s警告\: %sForge为Beta版
+forge.update.beta.2=可能会出现重要问题, 请在报告前进行确认.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge配置
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=你可以在这编辑包含于forge.cfg的设置.
+forge.configgui.ctgy.forgeGeneralConfig=通用设置
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=这里你可以编辑包含于forgeChunkLoading.cfg的设置.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Forge区块加载器默认设置
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=在这里你可以自定义会被优先采用的指定Mod的设置项以替代默认值.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod设置项覆盖
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=允许你自定义指定Mod中将会覆盖默认值的设置. 两项中任意一项取值为0会有效地禁用有关那个Mod的任何可能的区块加载.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ 添加新的Mod设置项覆盖
+
+forge.configgui.biomeSkyBlendRange.tooltip=控制不同生物群系中已着色天空之间的天空混色取值序列.
+forge.configgui.biomeSkyBlendRange=生物群系天空混色取值序列
+forge.configgui.clumpingThreshold.tooltip=控制使Packet51优先于Packet52被选择的数字临界值.
+forge.configgui.clumpingThreshold=Packet成簇临界值
+forge.configgui.disableVersionCheck.tooltip=设置为true会禁用Forge版本检测机制. Forge会在我们的服务器上对比查询一个比较小的json文件以获取版本信息. 想获取更多细节请参见在我们GitHub上的ForgeVersion class文件.
+forge.configgui.disableVersionCheck=禁用Forge版本检测
+forge.configgui.enableGlobalConfig=启用全局配置
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=将该项设为true会在多于一个方块试图链接到同一流体时强制崩溃.
+forge.configgui.forceDuplicateFluidBlockCrash=复制流体方块时强制崩溃
+forge.configgui.fullBoundingBoxLadders.tooltip=设置该项为true会检测整个实体针对梯子的碰撞箱而不仅仅是他们所在的方块. 会在机制上导致显著差别所以默认情况下其为MC原生行为.
+forge.configgui.fullBoundingBoxLadders=对梯子的完全碰撞箱
+forge.configgui.removeErroringEntities.tooltip=设置该项为true会移除任何在其更新方法中产生了错误的实体而不是关闭服务端并记录一个崩溃日志. §o小心, 这个可能会搞砸所有东西请谨慎使用, 我们不会对任何损失负责.§r§e
+forge.configgui.removeErroringEntities=移除出现错误的实体
+forge.configgui.removeErroringTileEntities.tooltip=设置该项为true会移除任何在其更新方法中产生了错误的实体实体附加值而不是关闭服务端并记录一个崩溃日志. §o小心, 这个可能会搞砸所有东西请谨慎使用, 我们不会对任何损失负责.§r§e
+forge.configgui.removeErroringTileEntities=移除出现错误的实体附加值
+forge.configgui.sortRecipies.tooltip=设置为true会启用使用了Forge整理器的后初始化合成表整理. 可能会在冲突的合成表上造成不同步. §o如果是在Config GUI进行的更改那么必须重启Minecraft.§r§e
+forge.configgui.sortRecipies=整理合成表
+forge.configgui.zombieBabyChance.tooltip=生成的一个僵尸(或者其子类)幼年期的概率. 允许更改僵尸刷新机制.
+forge.configgui.zombieBabyChance=幼年僵尸概率
+forge.configgui.zombieBaseSummonChance.tooltip=僵尸召唤的基础刷怪概率. 允许更改召唤额外僵尸的机制.
+forge.configgui.zombieBaseSummonChance=僵尸召唤概率
+forge.configgui.stencilbits=启用GL模版位元
+forge.configgui.spawnfuzz=重生点范围模糊半径
+
+forge.configgui.modID.tooltip=你想要为其定义设置项覆盖的Mod的ID.
+forge.configgui.modID=Mod ID
+forge.configgui.dormantChunkCacheSize.tooltip=未加载区块会被首先保留在一个未被使用的缓存内以使加载耗时更短. 请在这里明确其大小(单位为区块数).
+forge.configgui.dormantChunkCacheSize=休眠区块缓存大小
+forge.configgui.enableModOverrides.tooltip=启用该项设置会允许自定义为每个Mod单独配置的设置.
+forge.configgui.enableModOverrides=启用Mod设置项覆盖
+forge.configgui.maximumChunksPerTicket.tooltip=该项为单独一个标签可以影响的最大区块数目.
+forge.configgui.maximumChunksPerTicket=每个标签内的区块数限制
+forge.configgui.maximumTicketCount.tooltip=该项为一个Mod的区块加载请求能够被允许提出的最大数量.
+forge.configgui.maximumTicketCount=Mod标签数量限制
+forge.configgui.playerTicketCount.tooltip=可以分配给一个玩家而不是一个Mod的最大标签数量. 该项对所有Mod共享, 由使用它的Mod的不同而确定.
+forge.configgui.playerTicketCount=玩家标签数量限制

@@ -1,0 +1,57 @@
+commands.forge.usage=Gebruik /forge <subcommando>. Subcommando's zijn tps, track
+commands.forge.usage.tracking=Gebruik /forge track <soort> <tijd>. Geldige soorten zijn te (Tile Entities). Tijd moet <60 zijn.
+commands.forge.tps.summary=%s \: Gemiddelde tick tijd\: %d ms. Gemiddelde TPS\: %d
+
+commands.forge.tracking.te.enabled=Tile Entity volgen is ingeschakeld voor %d seconden.
+forge.texture.preload.warning=Waarschuwing\: Texture %s is niet voorgeladen, zal render glitches veroorzaken\!
+forge.client.shutdown.internal=Interne server wordt afgesloten...
+forge.update.newversion=Nieuwe Forge versie beschikbaar\: %s
+forge.update.beta.1=%sWAARSCHUWING\: %sForge Beta
+forge.update.beta.2=Grote problemen kunnen bovenkomen, controleer voor te rapporteren.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge Configuratie
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Hier kun je de instellingen uit forge.cfg aanpassen.
+forge.configgui.ctgy.forgeGeneralConfig=Algemene Instellingen
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Hier kun je de instellingen uit forgeChunkLoading.cfg aanpassen.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Forge Chunk Lader Standaard Instellingen
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Dit is waar je mod-specifieke overschrijvende instellingen kan definiëren die gebruikt zullen worden in plaats van de standaardwaarden.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod overschrijvingen
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Staat je toe om mod-specifieke instellingen te definiëren die de standaardwaarden overschrijden. Een waarde van nul in eender item schakelt de chunkladermogelijkheden van die mod uit.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Voeg een nieuwe mod overschrijving toe
+
+forge.configgui.biomeSkyBlendRange.tooltip=Bestuur het bereik van de luchtmenging voor gekleurde luchten in biomes.
+forge.configgui.biomeSkyBlendRange=Biome Luchtmenging Grootte
+forge.configgui.clumpingThreshold.tooltip=Bepaalt de drempel waarbij Packet51 over Packet52 verkozen wordt.
+forge.configgui.clumpingThreshold=Pakket Klonteren Limiet
+forge.configgui.disableVersionCheck.tooltip=Zet op true om de versie controles van Forge uit te schakelen. Forge vraagt een klein json bestand op van onze server voor versie informatie. Voor meer info zie de ForgeVersion class in onze github.
+forge.configgui.disableVersionCheck=Zet Forge's versie check uit
+forge.configgui.enableGlobalConfig=Globale Configuratie Inschakelen
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Zet dit op true om een crash te forceren als meer dan één blok probeert te linken als dezelfde Vloeistof.
+forge.configgui.forceDuplicateFluidBlockCrash=Forceer Duplicaat Vloeistof Block Crash
+forge.configgui.fullBoundingBoxLadders.tooltip=Zet dit op true om de hele entiteit botsingsdoos te controleren voor ladders in plaats van enkel de blok waar deze in is. Veroorzaakt opmerkelijke verschillen in mechaniek dus standaard is vanilla.
+forge.configgui.fullBoundingBoxLadders=Volledige Botsingsdoos Ladders
+forge.configgui.removeErroringEntities.tooltip=Zet dit op true om elke entiteit te verwijderen die een fout maakt in zijn update methode in plaats van de server te sluiten en een crash te rapporteren. LET OP DIT KAN ALLES VERKNOEIEN GEBRUIK ZELDEN WIJ ZIJN NIET VERANTWOORDELIJK VOOR SCHADE.
+forge.configgui.removeErroringEntities=Verwijder Foutmeldende Entiteiten
+forge.configgui.removeErroringTileEntities.tooltip=Zet dit op true om elke tegelentiteit te verwijderen die een fout maakt in zijn update methode in plaats van de server te sluiten en een crash te rapporteren. LET OP DIT KAN ALLES VERKNOEIEN GEBRUIK ZELDEN WIJ ZIJN NIET VERANTWOORDELIJK VOOR SCHADE.
+forge.configgui.removeErroringTileEntities=Verwijder Crashende Tile Entities
+forge.configgui.sortRecipies.tooltip=Zet dit op true om het post-initialisatie sorteren van vervaardigingsrecepten door Forge's sorteerder te activeren. Kan desynchronizatie veroorzaken op conflicterende recepten. MINECRAFT MOET OPNIEUW OPGESTART WORDEN INDIEN VERANDERD IN HET CONFIGURATIESCHERM.
+forge.configgui.sortRecipies=Sorteer Recepten
+forge.configgui.zombieBabyChance.tooltip=Kans dat een zombie (of een subclass ervan) een baby is. Laat wijzigingen in het zombie spawn systeem toe.
+forge.configgui.zombieBabyChance=Zombie Baby Kans
+forge.configgui.zombieBaseSummonChance.tooltip=Basis Zombie oproepingskans. Staat toe de bonus zombie oproepingsmechaniek te veranderen.
+forge.configgui.zombieBaseSummonChance=Zombie Oproep Kans
+forge.configgui.stencilbits=Schakel GL Stencil Bits in
+forge.configgui.spawnfuzz=Respawn de Fuzz Diameter
+
+forge.configgui.modID.tooltip=Het Mod ID waar U overschrijfinstellingen voor wilt definiëren.
+forge.configgui.modID=Mod ID
+forge.configgui.dormantChunkCacheSize.tooltip=ongeladen chunks kunnen eerst worden bewaard in een dormant cache voor snellere laadtijden. geef de grote van de cache in chucks.
+forge.configgui.dormantChunkCacheSize=De Cache grote van een Dormant Chunk
+forge.configgui.enableModOverrides.tooltip=Schakel deze instelling in om aangepaste instellingen voor individuele Mods te definiëren.
+forge.configgui.enableModOverrides=sta Mod Overrides toe
+forge.configgui.maximumChunksPerTicket.tooltip=Dit is de maximale aantal chunks dat een ticket kan forceren.
+forge.configgui.maximumChunksPerTicket=Chunks Per Ticket Limiet
+forge.configgui.maximumTicketCount.tooltip=Dit is het aantal aanvragen om een Chunk te laden dat een Mod is toegestaan te doen.
+forge.configgui.maximumTicketCount=Mod Ticket limiet
+forge.configgui.playerTicketCount.tooltip=Het aantal tickets dat een speler kan toewijzen in plaats van een mod. dit is van invloed op alle mods en het aan de mod zelf om het te gebruiken.
+forge.configgui.playerTicketCount=Speler Ticket Limiet

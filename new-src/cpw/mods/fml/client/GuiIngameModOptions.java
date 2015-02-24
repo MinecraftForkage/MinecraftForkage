@@ -8,7 +8,7 @@ import net.minecraft.client.resources.I18n;
 public class GuiIngameModOptions extends GuiScreen
 {
     private final GuiScreen parentScreen;
-    protected String title = "Mod Options";
+    protected String title = I18n.format("fml.menu.title.modoptions");
     private GuiModOptionList optionList;
 
     public GuiIngameModOptions(GuiScreen parentScreen)

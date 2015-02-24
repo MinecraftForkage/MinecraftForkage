@@ -1,6 +1,42 @@
-commands.forge.usage=Nutzte /forge <subbefehl>. Subbefehle sind tps, track
-commands.forge.usage.tracking=Nutze /forge track <typ> <Dauer>. Gültige Typen sind te (Tile Entities). Dauer ist < 60. 
-commands.forge.tps.summary=%s : Mittlere tick-Zeit: %d ms. Mittlere TPS: %d
+commands.forge.usage=Verwende /forge <Befehl>. Mögliche Befehle sind\: tps, track
+commands.forge.usage.tracking=Verwende /forge track <Typ> <Dauer in s>. Gültige Typen sind te (Tile Entities). Dauer ist < 60. 
+commands.forge.tps.summary=%s \: Durchschnittliche Zeit pro Tick\: %d ms. Durchschnittliche TPS\: %d
 
-commands.forge.tracking.te.enabled=Tile-Entity-Tracking aktiviert für %d Sekunden.
-forge.texture.preload.warning=Warnung: Textur %s nicht vorgeladen, wird Render-Probleme verursachen!
+commands.forge.tracking.te.enabled=Tile-Entity-Tracking für %d Sekunden aktiviert.
+forge.texture.preload.warning=Warnung\: Textur %s nicht geladen, dies wird Rendering-Fehler verursachen\!
+forge.client.shutdown.internal=Interner Server wird heruntergefahren...
+forge.update.newversion=Neue Forge-Version verfügbar\: %s
+forge.update.beta.1=%sWARNUNG\: %sForge Beta
+forge.update.beta.2=Größere Probleme könnten auftreten, bitte nur reproduzierbare Fehler melden.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge-Konfiguration
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Hier können sie die in forge.cfg gespeicherten Einstellungen bearbeiten.
+forge.configgui.ctgy.forgeGeneralConfig=Allgemeine Einstellungen
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Hier können sie die in forgeChunkLoading.cfg gespeicherten Einstellungen bearbeiten.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Forge Chunk Loader Standard Einstellungen
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Hier kannst du mod-spezifische Einstellungen überschreiben, welche statt dem Standard genutzt werden.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod Überlagerungen
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Erlaubt dir, mod-spezifische Einstellungen festzulegen, welche die Standardwerte überschreiben. Ein Wert von 0 deaktiviert effektiv jede Chunkloading Fähigkeiten einer Mod.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Füge neue Mod Überlagerung hinzu
+
+forge.configgui.disableVersionCheck=Deaktiviere den Forge Versions-Check
+forge.configgui.enableGlobalConfig=Nutze globale Konfiguration
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Setz dies auf true um einen Absturz zu erzwingen, wenn mehr als ein Block versucht sich zu einer Flüssigkeit zu verbinden.
+
+forge.configgui.removeErroringEntities=Entferne fehlerhafte Entities
+
+forge.configgui.removeErroringTileEntities=Entferne fehlerhafte Tile Entities
+
+forge.configgui.sortRecipies=Rezepte sortieren
+forge.configgui.zombieBabyChance.tooltip=Wahrscheinlichkeit, dass ein Zombie (oder Unterklasse) ein Baby ist. Erlaubt das Ändern des Zombie-Spawning-Verhaltens.
+
+forge.configgui.stencilbits=GL-Stencil-Bits aktivieren
+forge.configgui.spawnfuzz=Respawn Fuzz Diameter
+
+forge.configgui.modID.tooltip=Die Mod-ID für die du eigene Einstellungen setzen willst.
+
+forge.configgui.enableModOverrides.tooltip=Aktiviere diese Einstellung um eigene per-Mod Einstellungen zu definieren.
+forge.configgui.enableModOverrides=Mod-Overrides aktivieren
+forge.configgui.maximumChunksPerTicket.tooltip=Dies ist die maximale Anzahl an Chunks die ein einzelnes Ticket erzwingen kann.
+
+forge.configgui.maximumTicketCount.tooltip=Dies ist die Nummer an Chunk Ladeanfragen die eine Mod machen darf.

@@ -1,0 +1,28 @@
+commands.forge.usage=Använd /forge <kommando>. Kommandon är tps, track
+commands.forge.usage.tracking=Använd /forge track <typ> <varaktighet>. Godkända typer är te (Tile Entities). Varaktighet ska vara < 60. 
+commands.forge.tps.summary=%s \: Medel uppdateringstid\: %d ms. Medel TPS\: %d
+
+commands.forge.tracking.te.enabled=Tile Entity spårning aktiverad i %d sekunder.
+forge.texture.preload.warning=Varning\: Textur %s förladdades inte och kommer orsaka renderingsbuggar\!
+forge.client.shutdown.internal=Stänger av intern server...
+forge.update.newversion=Ny Forge version är tillgänglig\: %s
+
+forge.configgui.forgeConfigTitle=Minecraft Forge konfiguration
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Här kan du redigera de inställningar som finns i forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Allmänna inställningar
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Här kan du redigera de inställningar som finns i forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Standardinställningar för Forge Chunk Loader
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Här kan du definiera mod-specifika inställningar som åsidosätter defaultinställningarna.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod-specifika åsidosättningar
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Här kan du definiera mod-specifika inställningar som åsidosätter defaultinställningarna. Värdet noll kommer att inaktivera chunk-loading för den modden.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Lägg till ny åsidosättning för mod
+
+forge.configgui.biomeSkyBlendRange.tooltip=Styr omfånget av färgblandning för färgad himmel i biomer.
+forge.configgui.biomeSkyBlendRange=Färgblandning för himmel
+forge.configgui.clumpingThreshold.tooltip=Styr tröskelvärdet där Packet51 är att föredra framför Packet52.
+forge.configgui.clumpingThreshold=Tröskelvärde för Packet Clumping
+forge.configgui.disableVersionCheck.tooltip=Sätt till sant för att inaktivera Forge's versionscheckningsmekanik där Forge frågar efter en liten json fil. För mer information se klassen ForgeVersion i våran github.
+forge.configgui.disableVersionCheck=Stäng av versionskoll
+forge.configgui.enableGlobalConfig=Aktivera globala inställningar
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Sätt till sant för att skapa en krasch om mer än ett block försöker länka tillbaka till samma vätska.
+forge.configgui.forceDuplicateFluidBlockCrash=Forcera Krasch för Multipla Vätskeblock

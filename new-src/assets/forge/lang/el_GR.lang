@@ -1,0 +1,19 @@
+commands.forge.usage=Χρησιμοποιήστε /forge<subcommand> . Οι υποεντολές είναι tps, track
+commands.forge.usage.tracking=Χρησιμοποιήστε /forge track <type> <duration>. Έγκυροι τύποι είναι te (Tile Entities).H Διάρκεια είναι <60.
+commands.forge.tps.summary=%s \: Μέσος χρόνος tick \: %d ms. Μέσος TPS\: %d
+
+commands.forge.tracking.te.enabled=Εντοπισμός Tile Entity ενεργοποιημένος για %d δευτερόλεπτα.
+forge.texture.preload.warning=Προειδοποίηση\: Το Texture %s δεν είναι προφορτωμένο και αυτό θα προκαλέσει πρόβληματα στο render\!
+forge.client.shutdown.internal=Τερματισμός του εσωτερικού διακομιστή...
+forge.update.newversion=Νέα έκδοση του Forge διαθέσιμη\: %s
+forge.update.beta.1=%sΠΡΟΣΟΧΗ\:%sForge Beta
+forge.update.beta.2=Σοβαρά προβλήματα μπορεί να προκύψουν, επαληθεύστε πριν το αναφέρεται.
+
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Από εδώ μπορείτε να επεξεργαστείτε τις ρυθμίσεις που περιέχονται στο forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Γενικές Ρυθμίσεις
+
+forge.configgui.disableVersionCheck=Απενεργοποίηση ελέγχου έκδοσης Forge
+
+forge.configgui.sortRecipies=Ταξινόμηση Συνταγών
+
+

@@ -1,0 +1,17 @@
+commands.forge.usage=/Forge <subcommand>를 사용하세요. 하위 명령은 tps 과 track 입니다
+commands.forge.usage.tracking=/forge track <유형><기간>을 사용하세요. 사용할 수 있는 유형들\: (Tile Entities). <기간>은 60 이하여야 합니다. 
+commands.forge.tps.summary=%s \: 1틱당 평균 시간\: %d ms. 평균 TPS\: %d
+
+commands.forge.tracking.te.enabled=타일 엔터티 추적이 %d초 동안 활성화 되었습니다.
+forge.texture.preload.warning=경고\: 텍스쳐 %s가 미리 로드되지 않았습니다, 렌더링 오류가 발생할 것입니다\!
+forge.client.shutdown.internal=내부 서버를 종료합니다...
+forge.update.newversion=사용가능한 새로운 포지 버전\: %s
+forge.update.beta.1=%s주의\: %s포지 베타버전
+forge.update.beta.2=주요 문제 발생, 보고하기 전에 확인해 주세요
+
+forge.configgui.forgeConfigTitle=마인크래프트 포지 구성
+
+forge.configgui.ctgy.forgeGeneralConfig=일반 설정
+
+forge.configgui.zombieBaseSummonChance=좀비 소환 확률
+

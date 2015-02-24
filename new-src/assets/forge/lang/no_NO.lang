@@ -1,0 +1,20 @@
+commands.forge.usage=Bruk /forge <underkommando>. Underkommandoer er tps, track
+commands.forge.usage.tracking=Bruk /forge track <type> <varighet>. Gyldige typer er te (Tile Entities). Varighet er < 60. 
+commands.forge.tps.summary=%s \: Gjennomsnittlig tikktid\: %d ms. Gjennomsnittlig TPS\: %d
+
+commands.forge.tracking.te.enabled=Tile Entity-sporing aktivert i %d sekunder.
+forge.texture.preload.warning=Advarsel\: Tekstur %s ikke forhåndslastet, dette vil føre til grafiske feil\!
+forge.client.shutdown.internal=Shutting down internal server...
+forge.update.newversion=Ny Forge-versjon tilgjengelig\: %s
+forge.update.beta.1=%sADVARSEL\: %sForge Beta
+forge.update.beta.2=Store problemer kan oppstå, kontroller før du rapporterer.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge-konfigurasjon
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Dette er stedet du kan endre innstillingene i forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Generelle innstillinger
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Dette er stedet du kan endre innstillingene i forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Standardinnstillinger for Forge Chunk Loader
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Dette er stedet du kan definere mod-spesifikke innstillinger som vil overstyre standardinnstillingene.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Lar deg definere mod-spesifikke innstillinger som vil overstyre standardinnstillingene. Verdien null i en av oppføringene vil deaktivere chunklastingskapabilitetene for den modden.
+
+forge.configgui.clumpingThreshold.tooltip=Kontrollerer verditerskelen for når Packet51 foretrekkes over Packet52.
