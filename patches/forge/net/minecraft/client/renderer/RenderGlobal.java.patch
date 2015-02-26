@@ -128,3 +128,24 @@
              this.field_147593_P.put(chunkcoordinates, positionedsoundrecord);
              this.field_72777_q.func_147118_V().func_147682_a(positionedsoundrecord);
          }
+@@ -2287,10 +2287,20 @@
+             case 2001:
+                 block = Block.func_149729_e(p_72706_6_ & 4095);
+ 
+                 if (block.func_149688_o() != Material.field_151579_a)
+                 {
+                     this.field_72777_q.func_147118_V().func_147682_a(new PositionedSoundRecord(new ResourceLocation(block.field_149762_H.func_150495_a()), (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, (float)p_72706_3_ + 0.5F, (float)p_72706_4_ + 0.5F, (float)p_72706_5_ + 0.5F));
+                 }
+ 
+                 this.field_72777_q.field_71452_i.func_147215_a(p_72706_3_, p_72706_4_, p_72706_5_, block, p_72706_6_ >> 12 & 255);
+                 break;
++            case 1991:
++                block = Block.func_149729_e(p_72706_6_ & 65535);
++
++                if (block.func_149688_o() != Material.field_151579_a)
++                {
++                    this.field_72777_q.func_147118_V().func_147682_a(new PositionedSoundRecord(new ResourceLocation(block.field_149762_H.func_150495_a()), (block.field_149762_H.func_150497_c() + 1.0F) / 2.0F, block.field_149762_H.func_150494_d() * 0.8F, (float)p_72706_3_ + 0.5F, (float)p_72706_4_ + 0.5F, (float)p_72706_5_ + 0.5F));
++                }
++
++                this.field_72777_q.field_71452_i.func_147215_a(p_72706_3_, p_72706_4_, p_72706_5_, block, p_72706_6_ >> 16 & 255);
++                break;
