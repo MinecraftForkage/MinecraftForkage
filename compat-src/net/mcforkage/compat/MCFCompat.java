@@ -17,7 +17,7 @@ public class MCFCompat {
 		
 		
 		cl.registerTransformer("net.mcforkage.compat.HardcoreEnderExpansionTransformer");
-		
+		cl.registerTransformer("net.mcforkage.compat.UndergroundBiomesConstructsTransformer");
 		
 		
 		

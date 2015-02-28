@@ -5,24 +5,25 @@
  {
 +    public static final boolean USING_16BIT_BLOCK_IDS = net.minecraftforge.common.MinecraftForge.NUM_BLOCK_IDS > 4096;
 +
-@@ -15,2 +17,3 @@
+@@ -15,2 +17,4 @@
      private byte[] field_76680_d;
-+    private short[] block16BArray;
++    /** Do not use this if you can help it - use getBlockByExtId and func_150818_a with Block objects */
++    public short[] block16BArray;
      private NibbleArray field_76681_e;
-@@ -24,3 +27,3 @@
+@@ -24,3 +28,3 @@
 -        this.field_76680_d = new byte[4096];
 -        this.field_76678_f = new NibbleArray(this.field_76680_d.length, 4);
 -        this.field_76679_g = new NibbleArray(this.field_76680_d.length, 4);
 +        if(USING_16BIT_BLOCK_IDS) this.block16BArray = new short[4096]; else this.field_76680_d = new byte[4096];
 +        this.field_76678_f = new NibbleArray(4096, 4);
 +        this.field_76679_g = new NibbleArray(4096, 4);
-@@ -27,1 +30,1 @@
+@@ -27,1 +31,1 @@
 -            this.field_76685_h = new NibbleArray(this.field_76680_d.length, 4);
 +            this.field_76685_h = new NibbleArray(4096, 4);
-@@ -36,1 +39,2 @@
+@@ -36,1 +40,2 @@
 +        if(USING_16BIT_BLOCK_IDS) return Block.func_149729_e(this.block16BArray[p_150819_2_ << 8 | p_150819_3_ << 4 | p_150819_1_] & 65535);
          int l = this.field_76680_d[p_150819_2_ << 8 | p_150819_3_ << 4 | p_150819_1_] & 255;
-@@ -48,8 +51,1 @@
+@@ -48,8 +52,1 @@
 -        int l = this.field_76680_d[p_150818_2_ << 8 | p_150818_3_ << 4 | p_150818_1_] & 255;
 -
 -        if (this.field_76681_e != null)
@@ -32,10 +33,10 @@
 -
 -        Block block1 = Block.func_149729_e(l);
 +        Block block1 = func_150819_a(p_150818_1_, p_150818_2_, p_150818_3_);
-@@ -82,1 +78,2 @@
+@@ -82,1 +79,2 @@
 +        if(USING_16BIT_BLOCK_IDS) {this.block16BArray[p_150818_2_ << 8 | p_150818_3_ << 4 | p_150818_1_] = (short)i1; return;}
          this.field_76680_d[p_150818_2_ << 8 | p_150818_3_ << 4 | p_150818_1_] = (byte)(i1 & 255);
-@@ -168,15 +171,18 @@
+@@ -168,15 +172,18 @@
      public byte[] func_76658_g()
      {
 +        if(USING_16BIT_BLOCK_IDS) throw new UnsupportedOperationException("Cannot access 12-bit arrays in 16-bit mode");
@@ -54,7 +55,7 @@
 +        if(USING_16BIT_BLOCK_IDS) throw new UnsupportedOperationException("Cannot access 12-bit arrays in 16-bit mode");
          return this.field_76681_e;
      }
-@@ -202,9 +202,11 @@
+@@ -202,9 +203,11 @@
      public void func_76664_a(byte[] p_76664_1_)
      {
 +        if(USING_16BIT_BLOCK_IDS) throw new UnsupportedOperationException("Cannot access 12-bit arrays in 16-bit mode");
@@ -66,7 +67,7 @@
 +        if(USING_16BIT_BLOCK_IDS) throw new UnsupportedOperationException("Cannot access 12-bit arrays in 16-bit mode");
          this.field_76681_e = p_76673_1_;
      }
-@@ -226,7 +227,24 @@
+@@ -226,7 +228,24 @@
      @SideOnly(Side.CLIENT)
      public NibbleArray func_76667_m()
      {
