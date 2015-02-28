@@ -49,3 +49,6 @@
              }
          }
      }
+@@ -1620,1 +1631,1 @@
+-                        iattributeinstance = baseattributemap.func_111150_b(new RangedAttribute(snapshot.func_151409_a(), 0.0D, 2.2250738585072014E-308D, Double.MAX_VALUE));
++                        iattributeinstance = baseattributemap.func_111150_b(new RangedAttribute(snapshot.func_151409_a(), 0.0D, -Double.MAX_VALUE, Double.MAX_VALUE));

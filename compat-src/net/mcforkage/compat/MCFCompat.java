@@ -16,6 +16,9 @@ public class MCFCompat {
 	public static void init(LaunchClassLoader cl) {
 		
 		
+		cl.registerTransformer("net.mcforkage.compat.HardcoreEnderExpansionTransformer");
+		
+		
 		
 		
 		final LaunchClassLoader old = Launch.classLoader;
