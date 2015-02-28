@@ -10,7 +10,8 @@
  import java.util.zip.Inflater;
 @@ -26,6 +27,7 @@
      private int field_149285_h;
-     private static byte[] field_149286_i = new byte[196864];
+-    private static byte[] field_149286_i = new byte[196864];
++    private static byte[] field_149286_i = new byte[229632];
      private static final String __OBFID = "CL_00001304";
 +    private Semaphore deflateGate;
  
