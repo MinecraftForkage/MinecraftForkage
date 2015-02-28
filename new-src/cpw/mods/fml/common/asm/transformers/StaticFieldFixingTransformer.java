@@ -30,6 +30,7 @@ public class StaticFieldFixingTransformer implements IClassTransformer {
 	
 	@Override
 	public byte[] transform(String arg0, String arg1, byte[] arg2) {
+		if(arg2 == null) return null;
 		if(arg0.startsWith("net.minecraft.")) {
 			
 			new ClassReader(arg2).accept(new ClassVisitor(Opcodes.ASM5) {
