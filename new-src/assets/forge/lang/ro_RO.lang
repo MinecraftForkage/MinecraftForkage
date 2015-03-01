@@ -1,0 +1,57 @@
+commands.forge.usage=Folosește /forge <subcommand>. Subcomenzile sunt tps, track
+commands.forge.usage.tracking=Folosește /forge track <type> <duration>. Tipurile valide sunt te (Tile Entities). Durata este < 60. 
+commands.forge.tps.summary=%s \: Timp mediu pentru momente\: %d ms. TPS mediu\: %d
+
+commands.forge.tracking.te.enabled=Urmărirea pentru Tile Entities activată pentru %d secunde.
+forge.texture.preload.warning=Atenție\: Textura %s nu este preîncărcată, va cauza erori de randare\!
+forge.client.shutdown.internal=Se oprește serverul intern...
+forge.update.newversion=Versiune nouă de Forge disponibilă\: %s
+forge.update.beta.1=%sATENȚIE\: %sForge Beta
+forge.update.beta.2=Se poate să apară probleme majore, verifică înainte de a semnala.
+
+forge.configgui.forgeConfigTitle=Configurare Minecraft Forge
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Aici poți modifica setările aflate în forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Setări generale
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Aici poți modifica setările aflate în forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Setări implicite Forge Chunk Loader
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Aici poți defini setări de înlocuire specifice fiecărui mod care vor fi folosite în loc de cele implicite.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Înlocuiri de moduri
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Îți permite să definești setări specifice fiecărui mod care vor înlocui implicitele. O valoare de zero în oricare intrare dezactivează efectiv capacitățile de încărcare de chunkuri pentru acel mod.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Adaugă o înlocuire nouă de moduri
+
+forge.configgui.biomeSkyBlendRange.tooltip=Controlează distanța contopirii cerului pentru ceruri colorate în biomuri.
+forge.configgui.biomeSkyBlendRange=Distanța contopirii cerurilor biomurilor
+forge.configgui.clumpingThreshold.tooltip=Controlează pragul numeric la care Packet51 este preferat decât Packet52.
+forge.configgui.clumpingThreshold=Pragul alipirii packetelor
+forge.configgui.disableVersionCheck.tooltip=Setează la true pentru a dezactiva mecanica Forge de verificare a versiunii. Forge interoghează un fișier mic json pe serverul nostru pentru informații despre versiune. Pentru mai multe detalii vezi clasa ForgeVersion în github-ul nostru.
+forge.configgui.disableVersionCheck=Dezactivează verificarea versiunii Forge
+forge.configgui.enableGlobalConfig=Activează configurarea globală
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Setează la true pentru a forța un crash dacă mai mult de un bloc încearcă să lege înapoi la același Fluid.
+forge.configgui.forceDuplicateFluidBlockCrash=Forțează crash la duplicarea blocului fluid
+forge.configgui.fullBoundingBoxLadders.tooltip=Setează la true pentru a verifica coliziunea întregii cutii de încadrare a entității în loc de numai blocul pe care se află. Provoacă diferențe notabile de funcționare, deci comportamentul implicit este cel din vanilla.
+forge.configgui.fullBoundingBoxLadders=Toată cutia de încadrare pentru scări
+forge.configgui.removeErroringEntities.tooltip=Setează la true pentru a elimina orice entitate care aruncă o eroare în metoda sa de actualizare în loc de a închide serverul și de a semnala un crash log. ATENȚIE ACEST LUCRU AR PUTEA STRICA TOTUL FOLOSEȘTE CU MODERAȚIE NU SUNTEM RESPONSABILI PENTRU DAUNE.
+forge.configgui.removeErroringEntities=Elimină entitățile cu erori
+forge.configgui.removeErroringTileEntities.tooltip=Setează la true pentru a elimina orice entitate de bloc care aruncă o eroare în metoda sa de actualizare în loc de a închide serverul și de a semnala un crash log. ATENȚIE ACEST LUCRU AR PUTEA STRICA TOTUL FOLOSEȘTE CU MODERAȚIE NU SUNTEM RESPONSABILI PENTRU DAUNE.
+forge.configgui.removeErroringTileEntities=Elimină entitățile de bloc cu erori
+forge.configgui.sortRecipies.tooltip=Setează la true pentru a activa sortarea rețetelor de fabricare după inițializare folosind sortatorul Forge. Poate cauza desincronizare la rețete contradictorii. TREBUIE SĂ REPORNEȘTI MINECRAFT DACĂ SCHIMBI OPȚIUNEA DE LA INTERFAȚA DE CONFIGURARE.
+forge.configgui.sortRecipies=Sortează rețetele
+forge.configgui.zombieBabyChance.tooltip=Șansa ca un zombi (sau o subclasă) să fie copil. Permite schimbarea mecanicii de apariție a zombilor.
+forge.configgui.zombieBabyChance=Șansă de copii zombi
+forge.configgui.zombieBaseSummonChance.tooltip=Șansa de bază de apariție a zombilor invocați. Permite schimbarea mecanicii de invocare a zombilor bonus.
+forge.configgui.zombieBaseSummonChance=Șansa de invocare a zombilor
+forge.configgui.stencilbits=Activează GL Stencil Bits
+forge.configgui.spawnfuzz=Diametrul variației la reapariție
+
+forge.configgui.modID.tooltip=ID-ul de mod pentru care vrei să definești setări de înlocuire.
+forge.configgui.modID=ID de mod
+forge.configgui.dormantChunkCacheSize.tooltip=Chunkurile descărcate pot fi păstrate la început într-un cache latent pentru încărcare mai rapidă. Specifică mărimea (în chunkuri) a acelui cache aici.
+forge.configgui.dormantChunkCacheSize=Mărimea cache-ului pentru chunkuri latente
+forge.configgui.enableModOverrides.tooltip=Activează această setare pentru a permite definirea setărilor personalizate pentru fiecare mod.
+forge.configgui.enableModOverrides=Activează înlocuiri de moduri
+forge.configgui.maximumChunksPerTicket.tooltip=Acesta este numărul maxim de chunkuri pe care le poate forța un singur bilet.
+forge.configgui.maximumChunksPerTicket=Limita chunkurilor pe bilet
+forge.configgui.maximumTicketCount.tooltip=Acesta este numărul de solicitări de încărcare de chunkuri pe care are voie să le facă un mod.
+forge.configgui.maximumTicketCount=Limită de bilete pe mod
+forge.configgui.playerTicketCount.tooltip=Numărul de bilete care pot fi atribuite unui jucător în loc de unui mod. Acesta este același pentru toate modurile și folosirea lui este la latitudinea modurilor.
+forge.configgui.playerTicketCount=Limită de bilete pe jucător

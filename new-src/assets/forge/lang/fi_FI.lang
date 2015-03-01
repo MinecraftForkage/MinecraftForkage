@@ -1,0 +1,6 @@
+commands.forge.usage=Käytä /forge <alikomentoja>. Alikomennot ovat tps, track
+commands.forge.usage.tracking=Käytä /forge track <tyyppi> <kestoaika>. Oikeat tyypit ovat te (Tile Entities). Kestoaika on < 60. 
+commands.forge.tps.summary=%s \: Tarkoittaa päivitysväliä\: %d ms. Tarkoittaa TPS\: %d
+
+commands.forge.tracking.te.enabled=Tile Entity seuranta käynnissä %d sekunttia.
+forge.texture.preload.warning=Varoitus\: Tekstuuri %s ei ole ennalta ladattu, tämä aiheuttaa renderöinti virheitä\!

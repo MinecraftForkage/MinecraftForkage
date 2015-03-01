@@ -1,0 +1,57 @@
+commands.forge.usage=Użyj /forge <subcommand>. Podpolecenia to\: tps, track
+commands.forge.usage.tracking=Użyj /forge track <type> <duration>. Poprawne typy\: (Tile Entities). Czas trwania musi być mniejszy niż 60. 
+commands.forge.tps.summary=%s \: Średni czas tick'u\: %d ms. Średni TPS\: %d
+
+commands.forge.tracking.te.enabled=Śledzenie Tile Entity włączone na %d sekund.
+forge.texture.preload.warning=Uwaga\: Tekstura %s nie została wczytana, wystąpią błędy renderowania\!
+forge.client.shutdown.internal=Zamykanie serwera wewnętrznego...
+forge.update.newversion=Nowa wersja Forge\: %s
+forge.update.beta.1=%sOstrzeżenie\: %sForge Beta
+forge.update.beta.2=Mogą pojawić się poważne błędy. Wymagana jest dokładna weryfikacja przed dokonaniem zgłoszenia.
+
+forge.configgui.forgeConfigTitle=Konfiguracja Minecraft Forge
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Tutaj można edytować ustawienia z forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Główne ustawienia
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Tutaj można edytować ustawienia z forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Domyślne ustawienia Forge Chunk Loader
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Tutaj można zdefiniować ustawienia dla poszczególnych modyfikacji, które zostaną użyte zamiast domyślnych.
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Modyfikacja zastępuje
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Pozwala zdefiniować ustawienia dla poszczególnych modyfikacji, które zastępują domyślne. Wartość zero w jakimkolwiek polu wyłącza możliwość wczytywania chunk'ów dla danej modyfikacji.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Dodaj nową modyfikację zastępująca
+
+forge.configgui.biomeSkyBlendRange.tooltip=Kontrola poziomu mieszania kolorów nieba w biomach.
+forge.configgui.biomeSkyBlendRange=Poziom mieszania kolorów nieba w biomach
+forge.configgui.clumpingThreshold.tooltip=Określa wartość progową, w której Packet51 jest mianowany przez Packet52.
+forge.configgui.clumpingThreshold=Pakiet grupowania progu
+forge.configgui.disableVersionCheck.tooltip=Ustaw na 'true' aby wyłączyć mechanizm sprawdzania wersji Forge, który odbywa się poprzez zapytanie o mały plik json na danym serwerze z informacją o wersji. Więcej szczegółów znajduje się w klasie ForgeVersion na oficjalnym GitGub'ie Minecraft Forge.
+forge.configgui.disableVersionCheck=Wyłącz sprawdzanie wersji Minecraft Forge
+forge.configgui.enableGlobalConfig=Włącz ustawienia globalne
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Ustaw na 'true', aby wymusić błąd, gdy więcej niż jeden blok odnosi się do tej samej cieczy.
+forge.configgui.forceDuplicateFluidBlockCrash=Poziom błędu cieczy wywołujący awarię
+forge.configgui.fullBoundingBoxLadders.tooltip=Ustaw na 'true', aby sprawdzać całe pole ograniczające entity dla drabinek, zamiast tylko bloku, w którym są. Powoduje zauważalne zmiany w mechanice gry, dlatego domyślnie jest wyłączone.
+forge.configgui.fullBoundingBoxLadders=Pełny wymiar pola drabiny
+forge.configgui.removeErroringEntities.tooltip=Ustaw na 'true', aby usunąć dowolny Entity, który zgłasza błąd w metodzie aktualizacji zamiast zamykania serwera oraz zgłasza awarię. UWAGA\! MOŻE TO POWAŻNIE USZKODZIĆ ZNACZNĄ CZĘŚĆ GRY\! MINECRAFT FORGE NIE BIERZE ODPOWIEDZIALNOŚCI ZA EWENTUALNE SZKODY.
+forge.configgui.removeErroringEntities=Usuń wszystkie błędne entity
+forge.configgui.removeErroringTileEntities.tooltip=Ustaw na 'true', aby usunąć dowolny TileEntity, który zgłasza błąd w metodzie aktualizacji zamiast zamykania serwera oraz zgłasza awarię. UWAGA\! MOŻE TO POWAŻNIE USZKODZIĆ ZNACZNĄ CZĘŚĆ GRY\! MINECRAFT FORGE NIE BIERZE ODPOWIEDZIALNOŚCI ZA EWENTUALNE SZKODY.
+forge.configgui.removeErroringTileEntities=Usuń błędy Tile Entities
+forge.configgui.sortRecipies.tooltip=Ustaw na 'true', aby włączyć automatyczne sortowanie receptur przez specjalne narzędzia Forge. Może spowodować utratę synchronizacji przy sprzecznych recepturach. WYMAGA PONOWNEGO URUCHOMIENIA GRY MINECRAFT, JEŻELI ZMIANA DOTYCZY RÓWNIEŻ KONFIGURACJI GUI.
+forge.configgui.sortRecipies=Sortowanie receptur
+forge.configgui.zombieBabyChance.tooltip=Szansa na stworzenie zombie (lub podklasy) jako dziecko. Pozwala na zmianę mechaniki powstawania zombie.
+forge.configgui.zombieBabyChance=Szansa na zombie dziecko
+forge.configgui.zombieBaseSummonChance.tooltip=Podstawowa szansa na tworzenie się zombie. Pozwala na zmianę dodatkowej mechaniki tworzenia się zombie.
+forge.configgui.zombieBaseSummonChance=Szansa na tworzenie się zombie
+forge.configgui.stencilbits=Włącz schemat GL bitów
+forge.configgui.spawnfuzz=Odradzanie średniego rozmycia
+
+forge.configgui.modID.tooltip=ID modyfikacji, które chcesz zastosować, zastępuję ustawienia.
+forge.configgui.modID=ID modyfikacji
+forge.configgui.dormantChunkCacheSize.tooltip=Niezaładowane chunk'i mogą być pierwotnie przechowywane w zwolnionej pamięci podręcznej. Określ ilość chunk'ów, które mogą być przechowywane w ten sposób.
+forge.configgui.dormantChunkCacheSize=Bezczynna pamięć podręczna chunk'u
+forge.configgui.enableModOverrides.tooltip=Włącz, aby ustawić niestandardową konfigurację domyślą dla modyfikacji.
+forge.configgui.enableModOverrides=Włącz tryb nadpisywania modyfikacji
+forge.configgui.maximumChunksPerTicket.tooltip=Maksymalna liczba chunk'ów, którą może wymusić dany tick.
+forge.configgui.maximumChunksPerTicket=Limit ticket'ów na chunk
+forge.configgui.maximumTicketCount.tooltip=Jest to liczba załadowanych chunk'ów, które są dopuszczone do tworzenia przez modyfikację.
+forge.configgui.maximumTicketCount=Limit ticket'ów modyfikacji
+forge.configgui.playerTicketCount.tooltip=Liczba tick'ów, które gracz może mieć przyporządkowane zamiast modyfikacji. Jest to współużytkowanie przez wszystkie modyfikacje.
+forge.configgui.playerTicketCount=Limit tick'ów określonych przez gracza

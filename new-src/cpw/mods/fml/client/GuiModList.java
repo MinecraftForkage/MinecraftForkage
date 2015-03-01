@@ -97,8 +97,8 @@ public class GuiModList extends GuiScreen
         }
         listWidth=Math.min(listWidth, 150);
         this.buttonList.add(new GuiButton(6, this.width / 2 - 75, this.height - 38, I18n.format("gui.done")));
-        configModButton = new GuiButton(20, 10, this.height - 60, this.listWidth, 20, "Config");
-        disableModButton = new GuiButton(21, 10, this.height - 38, this.listWidth, 20, "Disable");
+        configModButton = new GuiButton(20, 10, this.height - 60, this.listWidth, 20, I18n.format("fml.configgui.button.config"));
+        disableModButton = new GuiButton(21, 10, this.height - 38, this.listWidth, 20, I18n.format("fml.configgui.button.disable"));
         this.buttonList.add(configModButton);
         this.buttonList.add(disableModButton);
         this.modList=new GuiSlotModList(this, mods, listWidth);
@@ -141,7 +141,7 @@ public class GuiModList extends GuiScreen
     public void drawScreen(int p_571_1_, int p_571_2_, float p_571_3_)
     {
         this.modList.drawScreen(p_571_1_, p_571_2_, p_571_3_);
-        this.drawCenteredString(this.fontRendererObj, "Mod List", this.width / 2, 16, 0xFFFFFF);
+        this.drawCenteredString(this.fontRendererObj, I18n.format("fml.configgui.title.modlist"), this.width / 2, 16, 0xFFFFFF);
         int offset = this.listWidth  + 20;
         if (selectedMod != null) {
             GL11.glEnable(GL11.GL_BLEND);

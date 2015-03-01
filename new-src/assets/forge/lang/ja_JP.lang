@@ -1,0 +1,6 @@
+commands.forge.usage=/forge <subcommand>を使用しましょう。Subcommandはtpsとtrackです。
+commands.forge.usage.tracking=/forge track <type> <duration>を使用しましょう。有効なtypeは、te (TileEntities) です。Durationは60より小さい値です。
+commands.forge.tps.summary=%s\: 1tickあたりの時間\: %d ms. 1秒あたりのtick数(TPS)\: %d
+
+commands.forge.tracking.te.enabled=タイル エンティティのトラッキングを %d 秒間有効にします。
+forge.texture.preload.warning=警告\: テクスチャである%sがプリロードされなかったので描画がおかしくなってしまいます！

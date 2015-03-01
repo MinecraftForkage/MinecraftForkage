@@ -1,5 +1,40 @@
-commands.forge.usage=Usa /forge <subcomando>. Los subcomandos son tps, track
-commands.forge.usage.tracking=Usa /forge track <tipo> <duración>. Los tipos válidos te (Tile Entities). La duración es < 60. 
-commands.forge.tps.summary=%s : Tiempo de tick medio: %d ms. TPS medio: %d
+commands.forge.usage=Utilice /forge <subcomando>. Los subcomandos son tps, track
+commands.forge.usage.tracking=Use /forge track <tipo> <duración>. Los tipos válidos son te (Tile Entities). La duración es < 60. 
+commands.forge.tps.summary=%s \: Tiempo medio por tick\: %d ms. TPS medio\: %d
 
-commands.forge.tracking.te.enabled=Rastreo de Tile Entity activado durante %d segundos.
+commands.forge.tracking.te.enabled=Seguimiento de Tile Entity activado por %d segundos.
+forge.texture.preload.warning=ADVERTENCIA\: Textura %s no precargada, causará fallos gráficos\!
+forge.client.shutdown.internal=Apagando el servidor interno...
+forge.update.newversion=Nueva versión de Forge disponible\: %s
+forge.update.beta.1=%sADVERTENCIA\: %sForge Beta
+forge.update.beta.2=Problemas mayores pueden surgir, verificar antes de reportar.
+
+forge.configgui.forgeConfigTitle=Configuración de Minecraft Forge
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Aquí es donde puedes editar la configuración contenida en forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Configuración General
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Aquí es donde puedes editar la configuración contenida en forgeChunkLoading.cfg.
+forge.configgui.ctgy.forgeChunkLoadingConfig=Configuración Por Defecto Del Cargador De Divisiones De Forge
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=Aquí es donde puedes definir configuraciones específicas para los mods, que se utilizaran envés de las configuraciones predeterminadas.  
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Sobrecarga Por Mod
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig.tooltip=Permite definir una modificación por cada mod respecto de los valores por defecto. Un valor en cero en cualquiera de los campos previene al mod de cargar divisiones de el mod.
+forge.configgui.ctgy.forgeChunkLoadingAddModConfig=+ Agregar Sobrecarga Por Mod
+
+forge.configgui.biomeSkyBlendRange.tooltip=Controla el rango de la mezcla para cielos colorizados por biomas.
+forge.configgui.biomeSkyBlendRange=Rango De Mezcla Del Cielo Por Bioma
+forge.configgui.clumpingThreshold.tooltip=Controla el umbral en el cual un Packet51 es preferido sobre un Packet52.
+forge.configgui.clumpingThreshold=Umbral De Corte De Paquete
+forge.configgui.disableVersionCheck.tooltip=Establecer en true para deshabilitar la comprobación de la versión de Forge. Forge consulta un pequeño archivo json en nuestro servidor para obtener información de la versión. Para mas detalles puede consultar la clase ForgeVersion en nuestro repositorio github.
+forge.configgui.disableVersionCheck=Deshabilitar La Comprobación De Versión De Forge
+forge.configgui.enableGlobalConfig=Habilitar La Configuración Global
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Establecer en true para forzar una detención si mas de un Liquido intenta ocupar el mismo bloque al mismo tiempo.
+forge.configgui.forceDuplicateFluidBlockCrash=Forzar Detención En Duplicación De Bloque Liquido
+forge.configgui.fullBoundingBoxLadders.tooltip=Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior.
+forge.configgui.fullBoundingBoxLadders=Full Bounding Box Ladders
+forge.configgui.removeErroringEntities.tooltip=Set this to true to remove any Entity that throws an error in its update method instead of closing the server and reporting a crash log. BE WARNED THIS COULD SCREW UP EVERYTHING USE SPARINGLY WE ARE NOT RESPONSIBLE FOR DAMAGES.
+forge.configgui.removeErroringEntities=Quitar Entidades con Errores
+forge.configgui.removeErroringTileEntities.tooltip=Pon esto en true para quitar cualquier TileEntity que aviente un error en su metodo de actualización en vez de cerrar el servidor y reportar el crash log. ADVERTENCIA ESTO PUEDE ARRUINAR TODO, USAR CON PRECAUCIÓN, NO SOMOS RESPONSABLES POR CUALQUIER DAÑO OCASIONADO.
+forge.configgui.removeErroringTileEntities=Quitar Tile Entities con Errores
+forge.configgui.sortRecipies.tooltip=Poner en true para permitir el ordenamiento post inicializacion de recetas de crafteo usando el clasificador de Forge. Puede causar un desempate en recetas con conflictos. SE DEBE REINICIAR MINECRAFT SI HUBO CAMBIOS EN EL INTERFAZ DE CONFIGURACION "CONFIG GUI".
+forge.configgui.sortRecipies=Ordenar Recetas
+forge.configgui.zombieBabyChance.tooltip=Probabilidad de que un zombie (o subclase) sea un bebé. Permite cambiar la mecanica de generación de zombies.
+forge.configgui.zombieBabyChance=Probablildad de Zombie bebé

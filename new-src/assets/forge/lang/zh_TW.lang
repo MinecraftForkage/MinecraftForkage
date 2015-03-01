@@ -1,0 +1,18 @@
+commands.forge.usage=使用 /forge <subcommand>。可使用的命令為 tps 和 track
+commands.forge.usage.tracking=使用 /forge track <type> <duration>。有效的類型(type)為 te (實體附加值)。時間長度(duration)不大於60。
+commands.forge.tps.summary=%s：平均一刻時間：%d ms。平均每秒刻數：%d
+
+commands.forge.tracking.te.enabled=已開啟實體附加值追踪 %d 秒。
+forge.texture.preload.warning=警告：材質 %s 未被預載，可能會導致畫面異常！
+forge.client.shutdown.internal=正在關閉內置伺服端...
+forge.update.newversion=新的Forge版本已可用：%s
+forge.update.beta.1=%s警告：%sForge為Beta版
+forge.update.beta.2=可能會出現重要問題，請在報告前進行確認。
+
+forge.configgui.forgeConfigTitle=Minecraft Forge配置
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=你可以在這裡編輯包含于forge.cfg的設定
+forge.configgui.ctgy.forgeGeneralConfig=通用設定
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=你可以在此編輯包含于forgeChunkLoading.cfg的設置。
+forge.configgui.ctgy.forgeChunkLoadingConfig=Forge區塊加載器默認設置
+forge.configgui.ctgy.forgeChunkLoadingModConfig.tooltip=在此你可以自定義會被優先採用的置頂Mod的設定項以替代默認值。
+forge.configgui.ctgy.forgeChunkLoadingModConfig=Mod設定項覆蓋

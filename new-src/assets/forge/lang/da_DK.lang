@@ -1,0 +1,39 @@
+commands.forge.tps.summary=%s \: Gennemsnitlig tick tid\: %d ms. Gennemsnitlig TPS\: %d
+
+forge.texture.preload.warning=Advarsel\: Tekstur %s ikke forudindlæst, dette vil foresage grafiske fejl\!
+forge.client.shutdown.internal=Lukker intern server...
+forge.update.newversion=Ny Forge version tilgængelig\: %s
+forge.update.beta.1=%sADVARSEL\: %sForge Beta
+forge.update.beta.2=Store problemer kan finde sted, tjek før du rapporterer.
+
+forge.configgui.forgeConfigTitle=Minecraft Forge Konfiguration
+forge.configgui.ctgy.forgeGeneralConfig.tooltip=Her kan du redigere de indstillinger, der findes i forge.cfg.
+forge.configgui.ctgy.forgeGeneralConfig=Generelle indstillinger
+forge.configgui.ctgy.forgeChunkLoadingConfig.tooltip=Her kan du redigere de indstillinger, der findes i forgeChunkLoading.cfg.
+
+forge.configgui.biomeSkyBlendRange.tooltip=Kontroller rækkevidden af himmel blanding for farvede himle i biomer.
+forge.configgui.biomeSkyBlendRange=Biome Himmelblandings Rækkevidde
+
+forge.configgui.clumpingThreshold=Pakkesammenklumpningstærskel
+forge.configgui.disableVersionCheck.tooltip=Set til sand for at deaktivere Forge's verions tjeknings mekanik. Forge henter en lille json fil fra vores server for versionsinformation. For flere detaljer se ForgeVersion klassen på vores github.
+forge.configgui.disableVersionCheck=Deaktiver Forge Versionstjek
+forge.configgui.enableGlobalConfig=Aktiver Global Konfiguration
+forge.configgui.forceDuplicateFluidBlockCrash.tooltip=Set dette til sand for at fremtvinge et crash hvis mere end en block førsoger at koble tilbage til den samme væske.
+forge.configgui.forceDuplicateFluidBlockCrash=Tving Duplikat Væske Block Crash
+
+forge.configgui.sortRecipies=Sorter Opskrifter
+forge.configgui.zombieBabyChance.tooltip=Chancen hvorpå en zombie (eller underklasse) er en baby. Tillader ændringen af zombie spawn mekanikken.
+forge.configgui.zombieBabyChance=Zombie Baby Chance
+forge.configgui.zombieBaseSummonChance.tooltip=Grundlæggende zombie fremmanings spawn chance. Tillader ændringen af bonus zombie fremmaningsmekanikken.
+forge.configgui.zombieBaseSummonChance=Zombie Fremmanings Chance
+forge.configgui.stencilbits=Aktiver GL Stencil Bits
+forge.configgui.spawnfuzz=Genoplivningsvariations Diameter
+
+forge.configgui.modID.tooltip=Mod ID'en du ønsker at overskrive indstillinger for.
+
+forge.configgui.enableModOverrides.tooltip=Aktiver den indstilling for at tillade definitionen af brugerdefinerede pr. mod indstillinger.
+forge.configgui.enableModOverrides=Aktiver Mod Overskrivning
+
+forge.configgui.maximumTicketCount=Mod Billet Begrænsning
+forge.configgui.playerTicketCount.tooltip=Mængden af billeter en spiller kan tildeles i stedet for et mod. Dette er delt over alle mods, og det er op til mods'ene at bruge det.
+forge.configgui.playerTicketCount=Player Ticket Limit

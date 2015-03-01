@@ -67,10 +67,13 @@ fml.config.sample.stringListPattern=Pattern Validated String List
 fml.config.sample.title=This is for playing with the Config GUI behavior. Changes are not saved.
 
 fml.configgui.applyGlobally=Apply globally
+fml.configgui.button.config=Config
+fml.configgui.button.disable=Disable
 fml.configgui.confirmRestartMessage=I Understand
 fml.configgui.gameRestartRequired=One or more changed settings requires that Minecraft be restarted before taking effect.
 fml.configgui.gameRestartTitle=Minecraft Restart Required
 fml.configgui.sampletext=Sample Text
+fml.configgui.title.modlist=Mod List
 fml.configgui.tooltip.addNewEntryAbove=Add New Entry Above
 fml.configgui.tooltip.applyGlobally=Apply Undo Changes or Reset to Default globally.
 fml.configgui.tooltip.removeEntry=Remove Entry
@@ -80,3 +83,10 @@ fml.configgui.tooltip.undoAll=Undo All Changes. If the Apply globally checkbox i
 fml.configgui.tooltip.undoChanges=Undo Changes
 fml.configgui.tooltip.default=[default: %s]
 fml.configgui.tooltip.defaultNumeric=[range: %s ~ %s, default: %s]
+
+fml.menu.button.mods=Mods
+fml.menu.button.modoptions=Mod Options...
+fml.menu.text.test1=Test 1
+fml.menu.text.test2=TEST 2
+fml.menu.text.disabled=DISABLED
+fml.menu.title.modoptions=Mod Options
