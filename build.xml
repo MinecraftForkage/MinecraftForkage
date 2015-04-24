@@ -17,6 +17,7 @@
         <javac destdir="build/BuildTools" debug="on" includeAntRuntime="true">
             <src path="BuildTools/src"/>
             <src path="BuildTools/BON"/>
+            <src path="BuildTools/fernflower/src"/>
         	<include name="**/*.java"/>
         </javac>
         
@@ -43,6 +44,7 @@
         <taskdef name="x-apply-srg" classname="net.mcforkage.ant.ApplySRGTask" classpathref="buildtools.path" />
         <taskdef name="x-process-jar" classname="net.mcforkage.ant.RunJarProcessorTask" classpathref="buildtools.path" />
         <taskdef name="x-process-zip" classname="net.mcforkage.ant.RunZipProcessorTask" classpathref="buildtools.path" />
+        <taskdef name="x-process-multi" classname="net.mcforkage.ant.RunMultipleProcessorsTask" classpathref="buildtools.path" />
         <taskdef name="x-csv2srg" classname="net.mcforkage.ant.CSV2SRGTask" classpathref="buildtools.path" />
         <taskdef name="x-invert-srg" classname="net.mcforkage.ant.InvertSRGTask" classpathref="buildtools.path" />
         <taskdef name="x-remap-sources" classname="net.mcforkage.ant.RemapSourcesTask" classpathref="buildtools.path" />
@@ -67,43 +69,30 @@
         <x-download file="${downloaded-server-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/minecraft_server.1.7.10.jar"/>
     </target>
     
-    <target name="process-bytecode" depends="download-minecraft">
+    <target name="process-bytecode" depends="compile-buildtools, download-minecraft">
         
         <x-merge-jars
             client="${downloaded-client-jar}" server="${downloaded-server-jar}"
             output="build/minecraft_merged.jar" config="FML/mcp_merge.cfg"/>
         
         <x-apply-srg input="build/minecraft_merged.jar" output="build/temp_bytecode.jar" srg="FML/conf/joined.srg"/>
-        <x-process-jar input="build/temp_bytecode.jar" output="build/temp_bytecode2.jar" config="FML/conf/exceptor.json" class="bytecode.ApplyExceptorJson"/>
-        <x-process-jar input="build/temp_bytecode2.jar" output="build/temp_bytecode3.jar" config="new-src/fml_at.cfg" class="bytecode.ApplyAT"/>
-        <x-process-jar input="build/temp_bytecode3.jar" output="build/temp_bytecode4.jar" config="new-src/forge_at.cfg" class="bytecode.ApplyAT"/>
-        <x-process-jar input="build/temp_bytecode4.jar" output="build/temp_bytecode5.jar" config="FML/conf/joined.exc" class="bytecode.ApplyExceptions"/>
-        <x-process-jar input="build/temp_bytecode5.jar" output="build/temp_bytecode6.jar" config="FML/conf/joined.exc" class="bytecode.ApplyParamNames"/>
-        <x-process-jar input="build/temp_bytecode6.jar" output="build/temp_bytecode7.jar" config="FML/conf/joined.exc" class="bytecode.AddOBFID"/>
-        <x-process-jar input="build/temp_bytecode7.jar" output="build/processed_binary.jar" class="bytecode.RemoveGenericMethods"/>
+        <x-process-multi input="build/temp_bytecode.jar" output="build/processed_binary.jar">
+            <processor config="FML/conf/exceptor.json" class="bytecode.ApplyExceptorJson"/>
+        	<processor config="new-src/fml_at.cfg" class="bytecode.ApplyAT"/>
+        	<processor config="new-src/forge_at.cfg" class="bytecode.ApplyAT"/>
+        	<processor config="FML/conf/joined.exc" class="bytecode.ApplyExceptions"/>
+        	<processor config="FML/conf/joined.exc" class="bytecode.ApplyParamNames"/>
+        	<processor config="FML/conf/joined.exc" class="bytecode.AddOBFID"/>
+        	<processor class="bytecode.RemoveGenericMethods"/>
+        </x-process-multi>
 
     </target>
     
-    <target name="compile-fernflower">
-        
-        <mkdir dir="build/fernflower-bin"/>
-        <delete><fileset dir="build/fernflower-bin" includes="**/*"/></delete>
-        
-        <javac destdir="build/fernflower-bin" debug="on" includeAntRuntime="false">
-            <src path="fernflower/src"/>
-            <include name="**/*.java"/>
-        </javac>
-        
-        <path id="fernflower.path">
-            <pathelement path="build/fernflower-bin"/>
-        </path>
-    </target>
-    
-    <target name="decompile" depends="process-bytecode, compile-fernflower">
+    <target name="decompile" depends="compile-buildtools, process-bytecode">
         
         <mkdir dir="build/fftemp"/>
         <delete><fileset dir="build/fftemp" includes="**/*"/></delete>
-        <java fork="true" classname="org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler" classpathref="fernflower.path"
+        <java fork="true" classname="org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler" classpathref="buildtools.path"
             maxmemory="512M">
             <arg value="-din=1"/>
             <arg value="-rbr=0"/>
@@ -230,7 +219,7 @@ launcherVersionName=${launcher-version-name}
         </jar>
     </target>
     
-    <target name="clean">
+    <target name="clean" description="Delete temporary files, except download cache">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="build" excludes="download/*"/>
         </delete>
