@@ -11,6 +11,12 @@
  @SideOnly(Side.CLIENT)
  public class SoundManager
  {
+@@ -60,4 +64,5 @@
+     private final Map field_148624_n;
+     private static final String __OBFID = "CL_00001141";
++    private java.util.Set<String> pausedChannels = new java.util.HashSet<String>(); // MCFORKAGE
+ 
+     public SoundManager(SoundHandler p_i45119_1_, GameSettings p_i45119_2_)
 @@ -69,6 +73,7 @@
          {
              SoundSystemConfig.addLibrary(LibraryLWJGLOpenAL.class);
@@ -50,3 +56,13 @@
                              }
  
                              field_148621_b.debug(field_148623_a, "Playing sound {} for event {} as channel {}", new Object[] {soundpoolentry.func_148652_a(), soundeventaccessorcomposite.func_148729_c(), s});
+@@ -392,5 +403,6 @@
+             String s = (String)iterator.next();
+             field_148621_b.debug(field_148623_a, "Pausing channel {}", new Object[] {s});
+             this.field_148620_e.pause(s);
++            this.pausedChannels.add(s); // MCFORKAGE
+         }
+     }
+@@ -400,1 +411,1 @@
+-        Iterator iterator = this.field_148629_h.keySet().iterator();
++        Iterator iterator = this.pausedChannels.iterator(); // MCFORKAGE
