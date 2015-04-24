@@ -13,10 +13,14 @@
 package cpw.mods.fml.common.discovery;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.Level;
+
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -84,8 +88,13 @@ public class ModDiscoverer
 
     public void findModDirMods(File modsDir)
     {
+        findModDirMods(modsDir, Collections.<File>emptyList());
+    }
+
+    public void findModDirMods(File modsDir, Collection<File> supplementalModFileCandidates)
+    {
         File[] modList = FileListHelper.sortFileList(modsDir, null);
-        modList = FileListHelper.sortFileList(ObjectArrays.concat(modList, ModListHelper.additionalMods.values().toArray(new File[0]), File.class));
+        modList = FileListHelper.sortFileList(ObjectArrays.concat(modList, supplementalModFileCandidates.toArray(new File[0]), File.class));
 
         for (File modFile : modList)
         {

@@ -12,7 +12,7 @@
 
 package cpw.mods.fml.common;
 
-public class LoaderException extends RuntimeException
+public class LoaderException extends EnhancedRuntimeException
 {
     /**
      *
@@ -27,4 +27,11 @@ public class LoaderException extends RuntimeException
     public LoaderException()
     {
     }
+
+    public LoaderException(String message)
+    {
+        super(message);
+    }
+
+    @Override protected void printStackTrace(WrappedPrintStream stream){}
 }

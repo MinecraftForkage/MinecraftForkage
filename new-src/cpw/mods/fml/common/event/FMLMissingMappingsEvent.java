@@ -52,7 +52,11 @@ public class FMLMissingMappingsEvent extends FMLEvent {
         /**
          * Remap this name to a new name (add a migration mapping)
          */
-        REMAP
+        REMAP,
+        /**
+         * Allow a block to exist without itemblock anymore
+         */
+        BLOCKONLY
     }
     public static class MissingMapping {
         public final GameRegistry.Type type;
@@ -73,7 +77,7 @@ public class FMLMissingMappingsEvent extends FMLEvent {
         @Deprecated
         public void setAction(Action target)
         {
-            if (target == Action.DEFAULT || target == Action.REMAP) throw new IllegalArgumentException();
+            if (target == Action.DEFAULT || target == Action.REMAP || target == Action.BLOCKONLY) throw new IllegalArgumentException();
 
             this.action = target;
         }
@@ -138,6 +142,12 @@ public class FMLMissingMappingsEvent extends FMLEvent {
             this.target = target;
         }
 
+        public void skipItemBlock()
+        {
+            if (type != GameRegistry.Type.ITEM) throw new IllegalArgumentException("Cannot skip an item that is a block");
+            if (GameData.getBlockRegistry().getRaw(id) == null) throw new IllegalArgumentException("Cannot skip an ItemBlock that doesn't have a Block");
+            action = Action.BLOCKONLY;
+        }
         // internal
 
         public Action getAction()

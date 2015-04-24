@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.apache.logging.log4j.Level;
 
 import javax.imageio.ImageIO;
@@ -12,10 +13,11 @@ import net.minecraft.client.resources.FileResourcePack;
 
 import com.google.common.base.Charsets;
 
+import cpw.mods.fml.common.FMLContainerHolder;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModContainer;
 
-public class FMLFileResourcePack extends FileResourcePack {
+public class FMLFileResourcePack extends FileResourcePack implements FMLContainerHolder {
 
     private ModContainer container;
 
@@ -57,5 +59,10 @@ public class FMLFileResourcePack extends FileResourcePack {
     public BufferedImage getPackImage() throws IOException
     {
         return ImageIO.read(getInputStreamByName(container.getMetadata().logoFile));
+    }
+    
+    @Override
+    public ModContainer getFMLContainer() {
+    	return container;
     }
 }

@@ -34,11 +34,11 @@ public class OreDictionary
 {
     private static boolean hasInit = false;
     private static List<String>          idToName = new ArrayList<String>();
-    private static Map<String, Integer>  nameToId = new HashMap<String, Integer>();
-    private static List<ArrayList<ItemStack>> idToStack = Lists.newArrayList(); //ToDo: Unqualify to List when possible {1.8}
-    private static List<ArrayList<ItemStack>> idToStackUn = Lists.newArrayList(); //ToDo: Unqualify to List when possible {1.8}
-    private static Map<Integer, List<Integer>> stackToId = Maps.newHashMap();
-    public static final ArrayList<ItemStack> EMPTY_LIST = new UnmodifiableArrayList(Lists.newArrayList()); //ToDo: Unqualify to List when possible {1.8}
+    private static Map<String, Integer>  nameToId = new HashMap<String, Integer>(128);
+    private static List<ArrayList<ItemStack>> idToStack = Lists.newArrayList(); // TODO: Unqualify to List when possible
+    private static List<ArrayList<ItemStack>> idToStackUn = Lists.newArrayList(); // TODO: Unqualify to List when possible
+    private static Map<Integer, List<Integer>> stackToId = new HashMap<Integer, List<Integer>>(128);
+    public static final ArrayList<ItemStack> EMPTY_LIST = new UnmodifiableArrayList<ItemStack>(Lists.<ItemStack>newArrayList()); //TODO: Unqualify to List when possible
 
     /**
      * Minecraft changed from -1 to Short.MAX_VALUE in 1.5 release for the "block wildcard". Use this in case it
@@ -348,6 +348,44 @@ public class OreDictionary
     }
 
     /**
+     * Retrieves the List of items that are registered to this ore type at this instant.
+     * If the flag is true, then it will create the list as empty if it did not exist.
+     * 
+     * This option should be used by modders who are doing blanket scans in postInit.
+     * It greatly reduces clutter in the OreDictionary is the responsible and proper
+     * way to use the dictionary in a large number of cases.
+     * 
+     * The other function above is utilized in OreRecipe and is required for the
+     * operation of that code.
+     * 
+     * @param name The ore name, directly calls getOreID if the flag is TRUE
+     * @param alwaysCreateEntry Flag - should a new entry be created if empty
+     * @return An arraylist containing ItemStacks registered for this ore
+     */
+    public static List<ItemStack> getOres(String name, boolean alwaysCreateEntry)
+    {
+    	if (alwaysCreateEntry) {
+    		return getOres(getOreID(name));
+    	}
+    	return nameToId.get(name) != null ? getOres(getOreID(name)) : EMPTY_LIST;
+    }
+
+    /**
+     * Returns whether or not an oreName exists in the dictionary.
+     * This function can be used to safely query the Ore Dictionary without
+     * adding needless clutter to the underlying map structure.
+     * 
+     * Please use this when possible and appropriate.
+     * 
+     * @param name The ore name
+     * @return Whether or not that name is in the Ore Dictionary.
+     */
+    public static boolean doesOreNameExist(String name)
+    {
+    	return nameToId.get(name) != null;
+    }
+
+    /**
      * Retrieves a list of all unique ore names that are already registered.
      *
      * @return All unique ore names that are currently registered.
@@ -447,7 +485,16 @@ public class OreDictionary
      */
     private static void registerOreImpl(String name, ItemStack ore)
     {
-        if ("Unknown".equals(name)) return; //prevent bad IDs.
+        if (name == null || name.isEmpty() || "Unknown".equals(name))
+        {
+        	FMLLog.bigWarning("Invalid name in an ore registration attempt. Item is "+ore);
+        	return; // prevent bad IDs. TODO: this should throw an exception
+        }
+        if (ore == null || ore.getItem() == null)
+        {
+        	FMLLog.bigWarning("Invalid registration attempt for an Ore Dictionary item with name %s has occurred. The registration has been denied to prevent crashes. The mod responsible for the registration needs to correct this.", name);
+        	return; //prevent bad ItemStacks. TODO: this should throw an exception
+        }
 
         int oreID = getOreID(name);
         int hash = Item.getIdFromItem(ore.getItem());

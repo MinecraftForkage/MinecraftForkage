@@ -42,13 +42,20 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
     protected float quantaPerBlockFloat = 8F;
     protected int density = 1;
     protected int densityDir = -1;
-	protected int temperature = 295;
+    protected int temperature = 295;
 
     protected int tickRate = 20;
     protected int renderPass = 1;
     protected int maxScaledLight = 0;
 
     protected final String fluidName;
+
+    /**
+     * This is the fluid used in the constructor. Use this reference to configure things
+     * like icons for your block. It might not be active in the registry, so do
+     * NOT expose it.
+     */
+    protected final Fluid definedFluid;
 
     public BlockFluidBase(Fluid fluid, Material material)
     {
@@ -65,6 +72,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
         this.densityDir = fluid.density > 0 ? -1 : 1;
         fluid.setBlock(this);
 
+        this.definedFluid = fluid;
         displacements.putAll(defaultDisplacements);
     }
 
@@ -135,18 +143,18 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
         }
 
         int density = getDensity(world, x, y, z);
-        if (density == Integer.MAX_VALUE) 
+        if (density == Integer.MAX_VALUE)
         {
-        	 return true;
+            return true;
         }
         
         if (this.density > density)
         {
-        	return true;
+            return true;
         }
         else
         {
-        	return false;
+            return false;
         }
     }
 
@@ -183,19 +191,19 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
         }
 
         int density = getDensity(world, x, y, z);
-        if (density == Integer.MAX_VALUE) 
+        if (density == Integer.MAX_VALUE)
         {
-        	 block.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
-        	 return true;
+            block.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
+            return true;
         }
         
         if (this.density > density)
         {
-        	return true;
+            return true;
         }
         else
         {
-        	return false;
+            return false;
         }
     }
 
@@ -224,6 +232,11 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
     public boolean func_149698_L()
     {
         return false;
+    }
+
+    public boolean canPlaceBlockAt(World world, int x, int y, int z)
+    {
+        return canDisplace(world, x, y, z);
     }
 
     @Override
@@ -345,7 +358,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
         }
         return ((BlockFluidBase)block).density;
     }
-	
+
     public static final int getTemperature(IBlockAccess world, int x, int y, int z)
     {
         Block block = world.getBlock(x, y, z);

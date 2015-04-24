@@ -7,7 +7,7 @@
     <property name="downloaded-client-jar" value="build/download/minecraft.jar"/>
     <property name="downloaded-server-jar" value="build/download/minecraft_server.jar"/>
     
-    <property name="launcher-version-name" value="MCForkage-1.7.10-1.3"/>
+    <property name="launcher-version-name" value="MCForkage-1.7.10-1.4"/>
     
     <target name="compile-buildtools">
         

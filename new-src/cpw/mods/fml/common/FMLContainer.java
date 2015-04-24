@@ -208,7 +208,6 @@ public class FMLContainer extends DummyModContainer implements WorldAccessContai
                 }
             }
             failedElements = GameData.injectWorldIDMap(dataList, ImmutableSet.<String>of(), ImmutableSet.<String>of(), true, true);
-
         }
         else if (tag.hasKey("ItemData"))
         {
@@ -272,7 +271,21 @@ public class FMLContainer extends DummyModContainer implements WorldAccessContai
                     itemSubstitutions.add(dataTag.getString("K"));
                 }
             }
-            failedElements = GameData.injectWorldIDMap(dataList, blockedIds, blockAliases, itemAliases, blockSubstitutions, itemSubstitutions, true, true);
+            try
+            {
+                failedElements = GameData.injectWorldIDMap(dataList, blockedIds, blockAliases, itemAliases, blockSubstitutions, itemSubstitutions, true, true);
+            } catch (IllegalStateException ex)
+            {
+               // In the case of IllegalArgumentException the state map is utterly toast. We should immediately abort
+                String msg = "The world state is utterly corrupted and this save is NOT loadable\n\n"
+                        + "There is a high probability that something has broken the\n"
+                        + "ID map and there is\n"
+                        + "NOTHING FML or Forge can do to recover this save.\n\n"
+                        + "If you changed your mods, try reverting the change";
+                FMLLog.log(Level.FATAL, ex, msg);
+                StartupQuery.notify(msg);
+                StartupQuery.abort();
+            }
         }
 
         if (failedElements != null && !failedElements.isEmpty())

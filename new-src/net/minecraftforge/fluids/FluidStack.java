@@ -2,7 +2,10 @@
 package net.minecraftforge.fluids;
 
 import java.util.Locale;
+
 import com.google.common.base.Strings;
+
+import cpw.mods.fml.common.registry.RegistryDelegate;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -18,25 +21,27 @@ import net.minecraft.nbt.NBTTagCompound;
  */
 public class FluidStack
 {
-    public int fluidID;
     public int amount;
     public NBTTagCompound tag;
+    private RegistryDelegate<Fluid> fluidDelegate;
 
     public FluidStack(Fluid fluid, int amount)
     {
-        this.fluidID = fluid.getID();
+        if (fluid == null)
+        {
+            throw new IllegalArgumentException("Cannot create a fluidstack from a null fluid.");
+        }
+        else if (!FluidRegistry.isFluidRegistered(fluid))
+        {
+            throw new IllegalArgumentException("Cannot create a fluidstack from an unregistered fluid "+fluid.getName()+" (type "+fluid.getClass().getName()+")");
+        }
+    	this.fluidDelegate = FluidRegistry.makeDelegate(fluid);
         this.amount = amount;
     }
 
-    public FluidStack(int fluidID, int amount)
+    public FluidStack(Fluid fluid, int amount, NBTTagCompound nbt)
     {
-        this.fluidID = fluidID;
-        this.amount = amount;
-    }
-
-    public FluidStack(int fluidID, int amount, NBTTagCompound nbt)
-    {
-        this(fluidID, amount);
+        this(fluid, amount);
 
         if (nbt != null)
         {
@@ -46,7 +51,19 @@ public class FluidStack
 
     public FluidStack(FluidStack stack, int amount)
     {
-        this(stack.fluidID, amount, stack.tag);
+        this(stack.getFluid(), amount, stack.tag);
+    }
+
+    @Deprecated // Use Fluid instead of fluid ID
+    public FluidStack(int fluidID, int amount)
+    {
+    	this(FluidRegistry.getFluid(fluidID), amount);
+    }
+
+    @Deprecated // Use Fluid instead of fluid ID
+    public FluidStack(int fluidID, int amount, NBTTagCompound nbt)
+    {
+    	this(FluidRegistry.getFluid(fluidID), amount, nbt);
     }
 
     /**
@@ -60,32 +77,23 @@ public class FluidStack
             return null;
         }
         String fluidName = nbt.getString("FluidName");
-        if (Strings.isNullOrEmpty(fluidName))
-        {
-            fluidName = nbt.hasKey("LiquidName") ? nbt.getString("LiquidName").toLowerCase(Locale.ENGLISH) : null;
-            fluidName = Fluid.convertLegacyName(fluidName);
-        }
 
-        if (fluidName ==null || FluidRegistry.getFluid(fluidName) == null)
+        if (fluidName == null || FluidRegistry.getFluid(fluidName) == null)
         {
             return null;
         }
-        FluidStack stack = new FluidStack(FluidRegistry.getFluidID(fluidName), nbt.getInteger("Amount"));
+        FluidStack stack = new FluidStack(FluidRegistry.getFluid(fluidName), nbt.getInteger("Amount"));
 
         if (nbt.hasKey("Tag"))
         {
             stack.tag = nbt.getCompoundTag("Tag");
-        }
-        else if (nbt.hasKey("extra"))
-        {
-            stack.tag = nbt.getCompoundTag("extra");
         }
         return stack;
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        nbt.setString("FluidName", FluidRegistry.getFluidName(fluidID));
+        nbt.setString("FluidName", FluidRegistry.getFluidName(getFluid()));
         nbt.setInteger("Amount", amount);
 
         if (tag != null)
@@ -95,9 +103,10 @@ public class FluidStack
         return nbt;
     }
 
+    /** TODO why is there no setFluid method? */
     public final Fluid getFluid()
     {
-        return FluidRegistry.getFluid(fluidID);
+        return fluidDelegate.get();
     }
 
     public String getLocalizedName()
@@ -115,7 +124,7 @@ public class FluidStack
      */
     public FluidStack copy()
     {
-        return new FluidStack(fluidID, amount, tag);
+        return new FluidStack(getFluid(), amount, tag);
     }
 
     /**
@@ -127,7 +136,7 @@ public class FluidStack
      */
     public boolean isFluidEqual(FluidStack other)
     {
-        return other != null && fluidID == other.fluidID && isFluidStackTagEqual(other);
+        return other != null && getFluid() == other.getFluid() && isFluidStackTagEqual(other);
     }
 
     private boolean isFluidStackTagEqual(FluidStack other)
@@ -192,7 +201,12 @@ public class FluidStack
     @Override
     public final int hashCode()
     {
-        return fluidID;
+    	int code = 1;
+    	code = 31*code + getFluid().hashCode();
+    	code = 31*code + amount;
+    	if (tag != null)
+    		code = 31*code + tag.hashCode();
+    	return code;
     }
 
     /**

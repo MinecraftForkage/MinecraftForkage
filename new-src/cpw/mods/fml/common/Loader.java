@@ -53,6 +53,7 @@ import com.google.common.collect.TreeMultimap;
 
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.ModContainer.Disableable;
+import cpw.mods.fml.common.ProgressManager.ProgressBar;
 import cpw.mods.fml.common.discovery.ModDiscoverer;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLLoadEvent;
@@ -70,6 +71,7 @@ import cpw.mods.fml.common.toposort.ModSortingException.SortingExceptionData;
 import cpw.mods.fml.common.toposort.TopologicalSort;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionParser;
+import cpw.mods.fml.relauncher.ModListHelper;
 import cpw.mods.fml.relauncher.Side;
 
 /**
@@ -152,6 +154,7 @@ public class Loader
     private ImmutableMap<String, String> fmlBrandingProperties;
     private File forcedModFile;
     private ModDiscoverer discoverer;
+    private ProgressBar progressBar;
 
     public static Loader instance()
     {
@@ -182,7 +185,7 @@ public class Loader
         if (!mccversion.equals(MC_VERSION))
         {
             FMLLog.severe("This version of FML is built for Minecraft %s, we have detected Minecraft %s in your minecraft jar file", mccversion, MC_VERSION);
-            throw new LoaderException();
+            throw new LoaderException(String.format("This version of FML is built for Minecraft %s, we have detected Minecraft %s in your minecraft jar file", mccversion, MC_VERSION));
         }
 
         minecraft = new MinecraftDummyContainer(MC_VERSION);
@@ -335,9 +338,11 @@ public class Loader
         discoverer.findClasspathMods(modClassLoader);
         FMLLog.fine("Minecraft jar mods loaded successfully");
 
-        if(!Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR")) {
+    	if(!Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR")) {
+        	FMLLog.getLogger().log(Level.INFO, "Found {} mods from the command line. Injecting into mod discoverer",ModListHelper.additionalMods.size());
+
 	        FMLLog.info("Searching %s for mods", canonicalModsDir.getAbsolutePath());
-	        discoverer.findModDirMods(canonicalModsDir);
+	        discoverer.findModDirMods(canonicalModsDir, ModListHelper.additionalMods.values());
 	        File versionSpecificModsDir = new File(canonicalModsDir,mccversion);
 	        if (versionSpecificModsDir.isDirectory())
 	        {
@@ -429,7 +434,7 @@ public class Loader
             if (!dirMade)
             {
                 FMLLog.severe("Unable to create the mod directory %s", canonicalModsPath);
-                throw new LoaderException();
+                throw new LoaderException(String.format("Unable to create the mod directory %s", canonicalModsPath));
             }
             FMLLog.info("Mod directory created successfully");
         }
@@ -471,6 +476,8 @@ public class Loader
      */
     public void loadMods()
     {
+    	progressBar = ProgressManager.push("FML", 5);
+    	progressBar.step("Constructing");
         initializeLoader();
         mods = Lists.newArrayList();
         namedMods = Maps.newHashMap();
@@ -510,6 +517,7 @@ public class Loader
         {
             FMLLog.fine("No user mod signature data found");
         }
+        progressBar.step("Preinitialization");
         modController.transition(LoaderState.PREINITIALIZATION, false);
     }
 
@@ -523,6 +531,7 @@ public class Loader
         ObjectHolderRegistry.INSTANCE.findObjectHolders(discoverer.getASMTable());
         modController.distributeStateMessage(LoaderState.PREINITIALIZATION, discoverer.getASMTable(), canonicalConfigDir);
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
+        progressBar.step("Initialization");
         modController.transition(LoaderState.INITIALIZATION, false);
     }
 
@@ -687,7 +696,7 @@ public class Loader
         if (parseFailure)
         {
             FMLLog.log(Level.WARN, "Unable to parse dependency string %s", dependencyString);
-            throw new LoaderException();
+            throw new LoaderException(String.format("Unable to parse dependency string %s", dependencyString));
         }
     }
 
@@ -700,15 +709,19 @@ public class Loader
     {
         // Mod controller should be in the initialization state here
         modController.distributeStateMessage(LoaderState.INITIALIZATION);
+        progressBar.step("Postinitialization");
         modController.transition(LoaderState.POSTINITIALIZATION, false);
         modController.distributeStateMessage(FMLInterModComms.IMCEvent.class);
         modController.distributeStateMessage(LoaderState.POSTINITIALIZATION);
+        progressBar.step("Finishing up");
         modController.transition(LoaderState.AVAILABLE, false);
         modController.distributeStateMessage(LoaderState.AVAILABLE);
         GameData.freezeData();
         // Dump the custom registry data map, if necessary
         GameData.dumpRegistry(minecraftDir);
         FMLLog.info("Forge Mod Loader has successfully loaded %d mod%s", mods.size(), mods.size() == 1 ? "" : "s");
+        ProgressManager.pop(progressBar);
+        progressBar = null;
     }
 
     public ICrashCallable getCallableCrashInformation()

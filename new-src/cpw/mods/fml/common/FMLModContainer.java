@@ -92,9 +92,27 @@ public class FMLModContainer implements ModContainer
         this.source = container.getModContainer();
         this.candidate = container;
         this.descriptor = modDescriptor;
-        this.modLanguage = (String) modDescriptor.get("modLanguage");
-        this.languageAdapter = "scala".equals(modLanguage) ? new ILanguageAdapter.ScalaAdapter() : new ILanguageAdapter.JavaAdapter();
         this.eventMethods = ArrayListMultimap.create();
+
+        this.modLanguage = (String) modDescriptor.get("modLanguage");
+        String languageAdapterType = (String)modDescriptor.get("modLanguageAdapter");
+        if (Strings.isNullOrEmpty(languageAdapterType))
+        {
+            this.languageAdapter = "scala".equals(modLanguage) ? new ILanguageAdapter.ScalaAdapter() : new ILanguageAdapter.JavaAdapter();
+        }
+        else
+        {
+            try
+            {
+                this.languageAdapter = (ILanguageAdapter)Class.forName(languageAdapterType, true, Loader.instance().getModClassLoader()).newInstance();
+                FMLLog.finer("Using custom language adapter %s (type %s) for %s (modid %s)", this.languageAdapter, languageAdapterType, this.className, getModId());
+            }
+            catch (Exception ex)
+            {
+                FMLLog.log(Level.ERROR, ex, "Error constructing custom mod language adapter %s (referenced by %s) (modid: %s)", languageAdapterType, this.className, getModId());
+                throw new LoaderException(ex);
+            }
+        }
     }
 
     private ILanguageAdapter getLanguageAdapter()
@@ -497,7 +515,6 @@ public class FMLModContainer implements ModContainer
         catch (Throwable e)
         {
             controller.errorOccurred(this, e);
-            Throwables.propagateIfPossible(e);
         }
     }
 
