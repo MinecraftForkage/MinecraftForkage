@@ -15,7 +15,7 @@
      {
          String s1 = String.format("textures/models/armor/%s_layer_%d%s.png", new Object[] {field_82424_k[p_110858_0_.field_77880_c], Integer.valueOf(p_110858_1_ == 2 ? 2 : 1), p_110858_2_ == null ? "" : String.format("_%s", new Object[]{p_110858_2_})});
 @@ -84,7 +86,7 @@
-             if (item instanceof ItemArmor)
+             if (item instanceof ItemArmor)
              {
                  ItemArmor itemarmor = (ItemArmor)item;
 -                this.func_110776_a(func_110857_a(itemarmor, p_77032_2_));
@@ -81,11 +81,11 @@
  
              if (itemstack.func_77973_b().func_77623_v())
              {
--                for (i = 0; i <= 1; ++i)
-+                for (i = 0; i < itemstack.func_77973_b().getRenderPasses(itemstack.func_77960_j()); ++i)
+-                for (j = 0; j <= 1; ++j)
++                for (j = 0; j < itemstack.func_77973_b().getRenderPasses(itemstack.func_77960_j()); ++j)
                  {
-                     int j = itemstack.func_77973_b().func_82790_a(itemstack, i);
-                     f5 = (float)(j >> 16 & 255) / 255.0F;
+                     int i = itemstack.func_77973_b().func_82790_a(itemstack, j);
+                     f4 = (float)(i >> 16 & 255) / 255.0F;
 @@ -350,2 +360,31 @@
      }
 +

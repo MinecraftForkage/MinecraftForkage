@@ -34,8 +34,8 @@
 +
              GL11.glTranslatef((float)p_76986_2_, (float)p_76986_4_ + f2, (float)p_76986_6_);
              GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-             float f7;
              float f6;
+             float f7;
              int k;
  
 +            if (ForgeHooksClient.renderEntityItem(p_76986_1_, itemstack, f2, f3, field_77025_h, field_76990_c.field_78724_e, field_147909_c, b0))
@@ -129,7 +129,7 @@
                  {
                      GL11.glDepthFunc(GL11.GL_EQUAL);
                      GL11.glDisable(GL11.GL_LIGHTING);
-@@ -366,6 +394,11 @@
+@@ -366,3 +394,8 @@
  
      public void func_77015_a(FontRenderer p_77015_1_, TextureManager p_77015_2_, ItemStack p_77015_3_, int p_77015_4_, int p_77015_5_)
      {
@@ -138,9 +138,6 @@
 +
 +    public void renderItemIntoGUI(FontRenderer p_77015_1_, TextureManager p_77015_2_, ItemStack p_77015_3_, int p_77015_4_, int p_77015_5_, boolean renderEffect)
 +    {
-         int k = p_77015_3_.func_77960_j();
-         Object object = p_77015_3_.func_77954_c();
-         float f3;
 @@ -442,11 +475,13 @@
              GL11.glColorMask(true, true, true, true);
              GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -178,7 +175,7 @@
  
              GL11.glEnable(GL11.GL_LIGHTING);
 @@ -485,14 +531,27 @@
-                 GL11.glColor4f(f4, f3, f, 1.0F);
+                 GL11.glColor4f(f3, f4, f, 1.0F);
              }
  
 +            GL11.glDisable(GL11.GL_LIGHTING); //Forge: Make sure that render states are reset, a renderEffect can derp them up.

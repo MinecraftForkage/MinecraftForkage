@@ -70,10 +70,10 @@
  
                  try
                  {
--                    this.field_78531_r.field_71462_r.func_73863_a(k, i1, p_78480_1_);
-+                    if (!MinecraftForge.EVENT_BUS.post(new DrawScreenEvent.Pre(this.field_78531_r.field_71462_r, k, i1, p_78480_1_)))
-+                        this.field_78531_r.field_71462_r.func_73863_a(k, i1, p_78480_1_);
-+                    MinecraftForge.EVENT_BUS.post(new DrawScreenEvent.Post(this.field_78531_r.field_71462_r, k, i1, p_78480_1_));
+-                    this.field_78531_r.field_71462_r.func_73863_a(k, l, p_78480_1_);
++                    if (!MinecraftForge.EVENT_BUS.post(new DrawScreenEvent.Pre(this.field_78531_r.field_71462_r, k, l, p_78480_1_)))
++                        this.field_78531_r.field_71462_r.func_73863_a(k, l, p_78480_1_);
++                    MinecraftForge.EVENT_BUS.post(new DrawScreenEvent.Post(this.field_78531_r.field_71462_r, k, l, p_78480_1_));
                  }
                  catch (Throwable throwable)
                  {

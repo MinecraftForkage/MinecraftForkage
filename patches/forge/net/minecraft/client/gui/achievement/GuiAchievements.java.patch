@@ -73,8 +73,8 @@
          GL11.glDisable(GL11.GL_LIGHTING);
          GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 @@ -339,11 +367,12 @@
-         int i4;
-         int j5;
+         int j4;
+         int i5;
  
 -        for (i3 = 0; i3 < AchievementList.field_76007_e.size(); ++i3)
 +        List<Achievement> achievementList = (currentPage == -1 ? minecraftAchievements : AchievementPage.getAchievementPage(currentPage).getAchievements());
@@ -89,16 +89,16 @@
                  j3 = achievement1.field_75993_a * 24 - k + 11;
                  k3 = achievement1.field_75991_b * 24 - l + 11;
 @@ -400,9 +429,9 @@
-         int i5;
          int l4;
+         int j5;
  
--        for (j5 = 0; j5 < AchievementList.field_76007_e.size(); ++j5)
-+        for (j5 = 0; j5 < achievementList.size(); ++j5)
+-        for (i5 = 0; i5 < AchievementList.field_76007_e.size(); ++i5)
++        for (i5 = 0; i5 < achievementList.size(); ++i5)
          {
--            Achievement achievement2 = (Achievement)AchievementList.field_76007_e.get(j5);
-+            Achievement achievement2 = (Achievement)achievementList.get(j5);
+-            Achievement achievement2 = (Achievement)AchievementList.field_76007_e.get(i5);
++            Achievement achievement2 = (Achievement)achievementList.get(i5);
              l4 = achievement2.field_75993_a * 24 - k;
-             i5 = achievement2.field_75991_b * 24 - l;
+             j5 = achievement2.field_75991_b * 24 - l;
  
 @@ -444,6 +473,7 @@
  
@@ -107,10 +107,10 @@
 +                GL11.glEnable(GL11.GL_BLEND);// Forge: Specifically enable blend because it is needed here. And we fix Generic RenderItem's leakage of it.
                  if (achievement2.func_75984_f())
                  {
-                     this.func_73729_b(l4 - 2, i5 - 2, 26, 202, 26, 26);
+                     this.func_73729_b(l4 - 2, j5 - 2, 26, 202, 26, 26);
 @@ -452,6 +482,7 @@
                  {
-                     this.func_73729_b(l4 - 2, i5 - 2, 0, 202, 26, 26);
+                     this.func_73729_b(l4 - 2, j5 - 2, 0, 202, 26, 26);
                  }
 +                GL11.glDisable(GL11.GL_BLEND); //Forge: Cleanup states we set.
  
@@ -123,5 +123,5 @@
 -                GL11.glEnable(GL11.GL_LIGHTING);
 +                GL11.glDisable(GL11.GL_LIGHTING); //Forge: Make sure Lighting is disabled. Fixes MC-33065
                  GL11.glEnable(GL11.GL_CULL_FACE);
-                 renderitem.func_82406_b(this.field_146297_k.field_71466_p, this.field_146297_k.func_110434_K(), achievement2.field_75990_d, l4 + 3, i5 + 3);
+                 renderitem.func_82406_b(this.field_146297_k.field_71466_p, this.field_146297_k.func_110434_K(), achievement2.field_75990_d, l4 + 3, j5 + 3);
                  GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

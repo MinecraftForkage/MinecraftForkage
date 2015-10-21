@@ -56,28 +56,10 @@
          if (p_147108_1_ instanceof GuiMainMenu)
          {
              this.field_71474_y.field_74330_P = false;
-@@ -877,8 +877,9 @@
-         while (true)
-         {
-             try
-             {
-+                while(true) {
-                 if (!this.field_71425_J)
-                 {
-                     break;
-                 }
-@@ -895,10 +895,11 @@
-                         this.func_147108_a(new GuiMemoryErrorScreen());
-                         System.gc();
-                     }
- 
-                     continue;
-                 }
- 
-                 this.func_71377_b(this.field_71433_S);
-+                }
-             }
-             catch (MinecraftError minecrafterror)
+@@ -894,2 +894,2 @@
+                     this.func_71377_b(this.field_71433_S);
+-                    return;
++                    continue;
 @@ -1341,7 +1346,7 @@
  
                      if (this.field_71439_g.func_82246_f(i, j, k))
