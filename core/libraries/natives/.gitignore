@@ -1,0 +1,4 @@
+*.dll
+*.so
+*.jnilib
+*.dylib

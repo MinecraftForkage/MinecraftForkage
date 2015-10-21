@@ -15,7 +15,7 @@
      {
          String s1 = String.format("textures/models/armor/%s_layer_%d%s.png", new Object[] {field_82424_k[p_110858_0_.field_77880_c], Integer.valueOf(p_110858_1_ == 2 ? 2 : 1), p_110858_2_ == null ? "" : String.format("_%s", new Object[]{p_110858_2_})});
 @@ -84,7 +86,7 @@
-             if (item instanceof ItemArmor)
+             if (item instanceof ItemArmor)
              {
                  ItemArmor itemarmor = (ItemArmor)item;
 -                this.func_110776_a(func_110857_a(itemarmor, p_77032_2_));
