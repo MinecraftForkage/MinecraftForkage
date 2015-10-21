@@ -1,3 +1,0 @@
-[submodule "BuildTools"]
-	path = BuildTools
-	url = git@github.com:MinecraftForkage/BuildTools.git

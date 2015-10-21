@@ -1,0 +1,6 @@
+[submodule "BON"]
+	path = BON
+	url = git@github.com:immibis/Bearded-Octo-Nemesis.git
+[submodule "fernflower"]
+	path = fernflower
+	url = git@github.com:MinecraftForkage/fernflower.git
