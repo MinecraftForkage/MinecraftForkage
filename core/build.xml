@@ -9,7 +9,16 @@
     
     <property name="launcher-version-name" value="MCForkage-1.7.10-1.4"/>
     
-    <target name="compile-buildtools">
+    <!-- Check if BuildTools source has been modified since it was last built -->
+    <uptodate targetfile="build/BuildTools.jar" property="buildtools-uptodate" value="true">
+        <srcfiles dir=".">
+            <include name="BuildTools/src/**/*.java"/>
+            <include name="BuildTools/BON/**/*.java"/>
+            <include name="BuildTools/fernflower/src/**/*.java"/>
+        </srcfiles>
+    </uptodate>
+    
+    <target name="compile-buildtools" unless="buildtools-uptodate">
         
         <mkdir dir="build/BuildTools"/>
         <delete><fileset dir="build/BuildTools" includes="**/*"/></delete>
@@ -32,6 +41,9 @@
         <move file="build/BuildTools/LICENSE.TXT" tofile="build/BuildTools/BON-LICENSE.TXT"/>
         
         <jar destfile="build/BuildTools.jar" basedir="build/BuildTools" />
+    </target>
+    
+    <target name="load-buildtools" depends="compile-buildtools">
         
         <path id="buildtools.path">
             <pathelement path="build/BuildTools.jar"/>
@@ -58,18 +70,18 @@
     </target>
     
     
-    <target name="get-libraries" depends="compile-buildtools">
+    <target name="get-libraries" depends="load-buildtools">
         <mkdir dir="libraries"/>
         <mkdir dir="libraries/natives"/>
         <x-getlibs jsonfile="build-data/launcher.json" libsdir="libraries" nativesdir="libraries/natives"/>
     </target>
     
-    <target name="download-minecraft" depends="compile-buildtools">
+    <target name="download-minecraft" depends="load-buildtools">
         <x-download file="${downloaded-client-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/1.7.10.jar"/>
         <x-download file="${downloaded-server-jar}" url="http://s3.amazonaws.com/Minecraft.Download/versions/1.7.10/minecraft_server.1.7.10.jar"/>
     </target>
     
-    <target name="process-bytecode" depends="compile-buildtools, download-minecraft">
+    <target name="process-bytecode" depends="load-buildtools, download-minecraft">
         
         <x-merge-jars
             client="${downloaded-client-jar}" server="${downloaded-server-jar}"
@@ -88,7 +100,7 @@
 
     </target>
     
-    <target name="decompile" depends="compile-buildtools, process-bytecode">
+    <target name="decompile" depends="load-buildtools, process-bytecode">
         
         <mkdir dir="build/fftemp"/>
         <delete><fileset dir="build/fftemp" includes="**/*"/></delete>
@@ -106,7 +118,7 @@
 		<delete dir="build/fftemp" includeEmptyDirs="true"/>
     </target>
     
-    <target name="process-source" depends="compile-buildtools, decompile">
+    <target name="process-source" depends="load-buildtools, decompile">
         <concat destfile="build/fml.patch">
             <fileset dir="patches/fml" includes="**/*.patch"/>
         </concat>
@@ -119,14 +131,14 @@
         <x-remap-sources input="build/patched_source_forge.zip" output="build/processed_source.zip" methods="build-data/methods.csv" fields="build-data/fields.csv" params="build-data/params.csv" nojavadocs="true"/>
     </target>
     
-    <target name="extractsrc" depends="process-source" description="Decompile, and extract source code. This is the only target you need to run to get a dev environment.">
+    <target name="extractsrc" depends="get-libraries, process-source" description="Decompile, and extract source code. This is the only target you need to run to get a dev environment.">
         <delete dir="vanilla-src" failonerror="false"/>
         <mkdir dir="vanilla-src"/>
         
         <unzip src="build/processed_source.zip" dest="vanilla-src"/>
     </target>
     
-    <target name="recompile" depends="compile-buildtools">
+    <target name="recompile" depends="load-buildtools, get-libraries">
         
         <delete dir="build/edited-classes" failonerror="false"/>
         <mkdir dir="build/edited-classes"/>
@@ -161,7 +173,7 @@
     </target>
     
     
-    <target name="make-bytecode-text" depends="compile-buildtools, recompile, process-bytecode">
+    <target name="make-bytecode-text" depends="load-buildtools, recompile, process-bytecode">
         <x-process-jar input="build/reobf.jar" output="build/reobf_trimmed.jar" class="bytecode.TrimBytecode"/>
         <x-sort-and-filter-zip input="build/reobf_trimmed.jar" output="build/reobf_trimmed_sorted_filtered.jar" filter="build/processed_binary.jar"/>
 		<x-bytecode2text input="build/reobf_trimmed_sorted_filtered.jar" output="build/bytecode-new.txt"/>
@@ -171,17 +183,17 @@
 		<x-bytecode2text input="build/processed_binary_trimmed_sorted.jar" output="build/bytecode-old.txt"/>
 	</target>
 	
-	<target name="make-bytecode-patch" depends="compile-buildtools, make-bytecode-text">
+	<target name="make-bytecode-patch" depends="load-buildtools, make-bytecode-text">
 		<x-diff2 from="build/bytecode-old.txt" to="build/bytecode-new.txt" output="build/bytecode.patch2"/>
 		<x-compress-diff2 input="build/bytecode.patch2" output="build/bytecode.patch2z"/>
 	</target>
 	
-	<target name="make-new-classes-pack" depends="compile-buildtools, recompile">
+	<target name="make-new-classes-pack" depends="load-buildtools, recompile">
 	    <x-sort-and-filter-zip input="build/reobf.jar" filter="build/processed_binary.jar" output="build/new_classes.zip" invertfilter="true"/>
 	    <x-pack200 input="build/new_classes.zip" output="build/new-classes.pack"/>
 	</target>
     
-    <target name="make-installer" depends="compile-buildtools, make-bytecode-patch, make-new-classes-pack" description="Make build/installer.jar. Requires that you have done extractsrc first.">
+    <target name="make-installer" depends="load-buildtools, make-bytecode-patch, make-new-classes-pack" description="Make build/installer.jar. Requires that you have done extractsrc first.">
         <copy file="build-data/launcher.json" tofile="build/install.json" overwrite="true">
             <filterset begintoken="@@" endtoken="@@">
                 <filter token="LAUNCHER-VERSION-NAME" value="${launcher-version-name}"/>
