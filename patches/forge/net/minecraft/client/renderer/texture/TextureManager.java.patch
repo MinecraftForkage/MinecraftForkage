@@ -1,0 +1,14 @@
+--- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureManager.java
++++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureManager.java
+@@ -82,1 +82,1 @@
+-    public boolean func_110579_a(ResourceLocation p_110579_1_, final ITextureObject p_110579_2_)
++    public boolean func_110579_a(ResourceLocation p_110579_1_, ITextureObject p_110579_2_)
+@@ -102,6 +102,7 @@
++            final ITextureObject tex = p_110579_2_;
+             crashreportcategory.func_71500_a("Texture object class", new Callable()
+             {
+                 private static final String __OBFID = "CL_00001065";
+                 public String call()
+                 {
+-                    return p_110579_2_.getClass().getName();
++                    return tex.getClass().getName();

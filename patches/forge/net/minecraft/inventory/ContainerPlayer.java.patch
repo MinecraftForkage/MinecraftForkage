@@ -1,0 +1,25 @@
+--- ../src-base/minecraft/net/minecraft/inventory/ContainerPlayer.java
++++ ../src-work/minecraft/net/minecraft/inventory/ContainerPlayer.java
+@@ -28,1 +28,1 @@
+-        final int i;
++        int i;
+@@ -39,4 +39,5 @@
+         for (i = 0; i < 4; ++i)
+         {
++            final int k = i;
+             this.func_75146_a(new Slot(p_i1819_1_, p_i1819_1_.func_70302_i_() - 1 - i, 8, 8 + i * 18)
+             {
+@@ -48,10 +48,11 @@
+                 }
+                 public boolean func_75214_a(ItemStack p_75214_1_)
+                 {
+-                    return p_75214_1_ == null ? false : (p_75214_1_.func_77973_b() instanceof ItemArmor ? ((ItemArmor)p_75214_1_.func_77973_b()).field_77881_a == i : (p_75214_1_.func_77973_b() != Item.func_150898_a(Blocks.field_150423_aK) && p_75214_1_.func_77973_b() != Items.field_151144_bL ? false : i == 0));
++                    if (p_75214_1_ == null) return false;
++                    return p_75214_1_.func_77973_b().isValidArmor(p_75214_1_, k, field_82862_h);
+                 }
+                 @SideOnly(Side.CLIENT)
+                 public IIcon func_75212_b()
+                 {
+-                    return ItemArmor.func_94602_b(i);
++                    return ItemArmor.func_94602_b(k);
+                 }

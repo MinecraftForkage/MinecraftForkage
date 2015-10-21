@@ -1,0 +1,24 @@
+--- ../src-base/minecraft/net/minecraft/item/EnumRarity.java
++++ ../src-work/minecraft/net/minecraft/item/EnumRarity.java
+@@ -9,6 +9,6 @@
+ public enum EnumRarity
+ {
+-    common,
+-    uncommon,
+-    rare,
+-    epic;
++    common(EnumChatFormatting.WHITE, "Common"),
++    uncommon(EnumChatFormatting.YELLOW, "Uncommon"),
++    rare(EnumChatFormatting.AQUA, "Rare"),
++    epic(EnumChatFormatting.LIGHT_PURPLE, "Epic");
+@@ -22,10 +22,2 @@
+     }
+-
+-    static
+-    {
+-        common = new EnumRarity("common", 0, EnumChatFormatting.WHITE, "Common");
+-        uncommon = new EnumRarity("uncommon", 1, EnumChatFormatting.YELLOW, "Uncommon");
+-        rare = new EnumRarity("rare", 2, EnumChatFormatting.AQUA, "Rare");
+-        epic = new EnumRarity("epic", 3, EnumChatFormatting.LIGHT_PURPLE, "Epic");
+-    }
+ }

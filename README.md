@@ -17,21 +17,18 @@ To set up a workspace for developing Minecraft Forkage:
   then update Git (or Git For Windows), delete everything, and
   start again from step 1.
 
-3. Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
+3. Run `ant extractsrc` and wait. You can set up the Eclipse workspace while this completes.
+  You need an Internet connection for this step.
+
+4. Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
    If you unzipped to a subdirectory by mistake, then move the `eclipse` directory to the
    repository root.
 
-4. Open the Eclipse workspace you just unzipped (in `eclipse/`). Open the "BuildTools"
-   and "fernflower" projects, if necessary, so that they build. (TODO: make them buildable
-   by makefile)
+5. Open the Eclipse workspace you just unzipped (in `eclipse/`).
+  Note: If `ant` is still running, and you open the MinecraftForkage project, you might need
+  to close and reopen the project in Eclipse after it finishes in order for Eclipse to detect the source files.
 
-5. Run `make extractsrc` and wait. You need an Internet connection for this step.
-   If you are on Windows, you should run this in Cygwin.
-   MSYS may also work, but has not been tested by the Minecraft Forkage team.
-
-6. Open the MinecraftForkage project in Eclipse.
-
-7. Once Eclipse finishes building the workspace, you are now set up.
+6. You are now set up to develop in Eclipse.
    There are predefined "MCF Client" and "MCF Server" run configurations. Note that they
    will not be in the drop-down menu - you will need to select them in the run configurations
    dialog the first time you use them.

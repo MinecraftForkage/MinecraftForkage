@@ -1,0 +1,15 @@
+--- ../src-base/minecraft/net/minecraft/network/play/server/S01PacketJoinGame.java
++++ ../src-work/minecraft/net/minecraft/network/play/server/S01PacketJoinGame.java
+@@ -47,2 +47,3 @@
+         this.field_149202_d = p_148837_1_.readByte();
++        if(field_149202_d == -128) field_149202_d = p_148837_1_.readInt();
+         this.field_149203_e = EnumDifficulty.func_151523_a(p_148837_1_.readUnsignedByte());
+@@ -69,3 +70,8 @@
+         p_148840_1_.writeByte(i);
++        if(field_149202_d >= -127 && field_149202_d <= 127)
+         p_148840_1_.writeByte(this.field_149202_d);
++        else {
++            p_148840_1_.writeByte(-128);
++            p_148840_1_.writeInt(field_149202_d);
++        }
+         p_148840_1_.writeByte(this.field_149203_e.func_151525_a());

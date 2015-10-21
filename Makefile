@@ -3,14 +3,14 @@ MCFVERSION=1.1
 
 VERSION_NAME_IN_LAUNCHER=MCForkage-$(MCVERSION)-$(MCFVERSION)
 
-FML_PATCHES=$(shell find FML/patches -type f)
-FORGE_PATCHES=$(shell find MinecraftForge/patches -type f)
+FML_PATCHES=$(shell find patches/fml -type f)
+FORGE_PATCHES=$(shell find patches/forge -type f)
 
 FERNFLOWER_JAR=build/download/fernflower.jar
 FFTEMP=build/fftemp
 
-FMLAT=FML/src/main/resources/fml_at.cfg
-FORGEAT=MinecraftForge/src/main/resources/forge_at.cfg
+FMLAT=new-src/fml_at.cfg
+FORGEAT=new-src/forge_at.cfg
 EXCEPTOR_JSON=FML/conf/exceptor.json
 EXC=FML/conf/joined.exc
 SRG=FML/conf/joined.srg
@@ -26,13 +26,15 @@ TEMPDIR=build/temp
 noop=
 space=$(noop) $(noop)
 
-SOURCE_DIRS=FML/src/main/java FML/src/main/resources MinecraftForge/src/main/java MinecraftForge/src/main/resources FML/vanilla-src
-DEOBF_DATA=FML/src/main/resources/deobfuscation_data-missing.lzma
+SOURCE_DIRS=new-src vanilla-src
+DEOBF_DATA=new-src/deobfuscation_data-missing.lzma
 
-BUILDTOOLS_BIN_DIR=eclipse/BuildTools/bin
+BUILDTOOLS_SRC_DIRS=BuildTools/src BuildTools/BON
+BUILDTOOLS_BIN_DIR=build/BuildTools
 BUILDTOOLS=java -cp $(BUILDTOOLS_BIN_DIR)
+BUILDTOOLS_DEP=build/BuildTools.jar
 
-LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)")
+LIBRARIES := $(shell $(BUILDTOOLS) decompsource.GetLibsFromJson "$(LIBRARY_JSON)" "$(LIBRARIES_DIR)" "$(NATIVES_DIR)" | tr '\r\n' '  ')
 
 ifeq ($(OSTYPE),cygwin)
 	CLASSPATH_SEPARATOR := \;
@@ -46,8 +48,8 @@ all: build/deobf_source.zip $(DEOBF_DATA)
 .PHONY: all
 
 extractsrc: build/deobf_source.zip $(DEOBF_DATA)
-	[ -d FML/vanilla-src ] && rm -r FML/vanilla-src; exit 0
-	unzip "build/deobf_source.zip" -d FML/vanilla-src
+	[ -d vanilla-src ] && rm -r vanilla-src; exit 0
+	unzip "build/deobf_source.zip" -d vanilla-src
 .PHONY: extractsrc
 
 .DELETE_ON_ERROR:
@@ -66,6 +68,7 @@ clean:
 	rm -f build/install.json
 	rm -f build/install.properties
 	rm -f build/install-data.zip.lzma
+	rm -rf build/BuildTools
 	rm -rf $(TEMPDIR)
 .PHONY: clean
 cleanlibs:
@@ -89,13 +92,13 @@ build/download/vanilla.json:
 
 ####################### DECOMP BYTECODE PROCESSING ##########################
 
-build/minecraft_merged.jar: build/download/minecraft.jar build/download/minecraft_server.jar
+build/minecraft_merged.jar: build/download/minecraft.jar build/download/minecraft_server.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.JarMerger "build/download/minecraft.jar" "build/download/minecraft_server.jar" "$@" $(MCP_MERGE_CFG)
 
-build/minecraft_merged_remapped.jar: build/minecraft_merged.jar FML/conf/joined.srg
+build/minecraft_merged_remapped.jar: build/minecraft_merged.jar FML/conf/joined.srg $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.ApplySRG FML/conf/joined.srg "$<" "$@"
 
-build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGEAT) $(EXCEPTOR_JSON) $(EXC)
+build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGEAT) $(EXCEPTOR_JSON) $(EXC) $(BUILDTOOLS_DEP)
 	cat "$<" | \
 		$(BUILDTOOLS) bytecode.ApplyExceptorJson "$(EXCEPTOR_JSON)" | \
 		$(BUILDTOOLS) bytecode.ApplyAT "$(FMLAT)" | \
@@ -106,13 +109,13 @@ build/processed_binary.jar: build/minecraft_merged_remapped.jar $(FMLAT) $(FORGE
 		$(BUILDTOOLS) bytecode.RemoveGenericMethods | \
 	cat > "$@"
 
-build/processed_binary_trimmed.jar: build/processed_binary.jar
+build/processed_binary_trimmed.jar: build/processed_binary.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.TrimBytecode < "$<" > "$@"
 
-build/processed_binary_trimmed_sorted.jar: build/processed_binary_trimmed.jar
+build/processed_binary_trimmed_sorted.jar: build/processed_binary_trimmed.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.SortZipEntries "$<" > "$@"
 
-build/bytecode-orig.txt: build/processed_binary_trimmed_sorted.jar
+build/bytecode-orig.txt: build/processed_binary_trimmed_sorted.jar $(BUILDTOOLS_DEP)
 	$(BUILDTOOLS) bytecode.Bytecode2Text < "$<" > "$@"
 
 build/raw_source.zip: build/processed_binary.jar
@@ -205,31 +208,17 @@ build/install-data.zip.lzma: build/install-data.zip
 
 
 
-########################## INSTANCE SETUP STUB ##########################
-# (Goes with a particular MCF version, but not in the main JAR)
-
-build/instance-setup-src.zip: $(shell find InstanceSetup/src -type f)
-	rm -f "$@"
-	cd InstanceSetup/src; zip -r "$$OLDPWD/$@" *
-
-build/instance-setup.jar: build/instance-setup-src.zip
-	$(BUILDTOOLS) decompsource.CompileZip "$<" "$(LIBRARIES_DIR)" > "$@"
-
-build/test-setup-plugin-src.zip: $(shell find InstanceSetup/src-plugin -type f)
-	rm -f "$@"
-	cd InstanceSetup/src-plugin; zip -r "$$OLDPWD/$@" *
-
-build/test-setup-plugin.jar: build/test-setup-plugin-src.zip build/instance-setup.jar
-	$(BUILDTOOLS) decompsource.CompileZip "$<" "$(LIBRARIES_DIR)" -cp build/instance-setup.jar > "$@"
-
 
 ################### INSTALLER CREATION ##########################
 
-
-
-build/BuildTools.jar: $(shell find $(BUILDTOOLS_BIN_DIR) -type f)
+build/BuildTools.jar: $(shell find $(BUILDTOOLS_SRC_DIRS) -type f)
 	rm -f "$@"
-	cd $(BUILDTOOLS_BIN_DIR); zip -r "$$OLDPWD/$@" .
+	rm -rf $(BUILDTOOLS_BIN_DIR)
+	mkdir $(BUILDTOOLS_BIN_DIR)
+	cp -rf $(foreach dir, $(BUILDTOOLS_SRC_DIRS), $(dir)/*) $(BUILDTOOLS_BIN_DIR)
+	javac -d $(BUILDTOOLS_BIN_DIR) `find $(BUILDTOOLS_SRC_DIRS) -type f -name '*.java'`
+	find $(BUILDTOOLS_BIN_DIR) -name '*.java' -exec rm '{}' \;
+	jar -cvf "$@" -C $(BUILDTOOLS_BIN_DIR) .
 
 build/installer-code.jar: build/BuildTools.jar
 	rm -rf $(TEMPDIR)

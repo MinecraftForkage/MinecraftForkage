@@ -1,0 +1,14 @@
+* text eol=lf
+*.bat text
+*.patch text eol=lf
+*.java text
+*.gradle text
+*.png binary
+*.exe binary
+*.dll binary
+*.jar binary
+*.lzma binary
+*.zip binary
+*.pyd binary
+*.cfg text
+*.py text

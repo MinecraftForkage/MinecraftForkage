@@ -1,0 +1,10 @@
+--- ../src-base/minecraft/net/minecraft/network/PacketBuffer.java
++++ ../src-work/minecraft/net/minecraft/network/PacketBuffer.java
+@@ -901,7 +901,3 @@
+     }
+ 
+-    public int compareTo(Object p_compareTo_1_)
+-    {
+-        return this.compareTo((ByteBuf)((ByteBuf)p_compareTo_1_));
+-    }
+ }
