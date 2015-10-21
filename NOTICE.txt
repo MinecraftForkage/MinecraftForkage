@@ -39,5 +39,24 @@ The ibxm package is made available to us, via Forge, under the BSD 3-Clause
 license. See the file "Paulscode IBXM Library License.txt" in that package for
 details.
 
+The file core/BuildTools/ant.jar is part of a binary distribution of Apache Ant 1.9.4.
+See the file core/BuildTools/ant-LICENSE for details.
+
 
 If you notice any violations of these, please create an issue.
+
+
+
+
+
+==========
+
+Apache Ant
+Copyright 1999-2014 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+The <sync> task is based on code Copyright (c) 2002, Landmark
+Graphics Corp that has been kindly donated to the Apache Software
+Foundation.

@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>decomp</name>
-			<type>2</type>
-			<location>C:/Users/Alex/Documents/minecraft/mcp/MinecraftForkage/build/cleaned_source</location>
-		</link>
-	</linkedResources>
 </projectDescription>
