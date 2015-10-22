@@ -53,8 +53,8 @@ public class SetupEntryPoint {
 		InstanceEnvironmentData.configDir = new File(args.instanceBaseDir, "config");
 		InstanceEnvironmentData.setupTempDir = new File(args.instanceBaseDir, "setup-temp");
 		
-		if(args.bakedJarLocation == null)
-			args.bakedJarLocation = new File(args.instanceBaseDir, "mcforkage-baked.jar");
+		if(args.outputLocation == null)
+			args.outputLocation = new File(args.instanceBaseDir, "mcforkage-baked.jar");
 		
 		deleteRecursive(InstanceEnvironmentData.setupTempDir);
 		if(!InstanceEnvironmentData.setupTempDir.mkdir()) {
@@ -85,9 +85,9 @@ public class SetupEntryPoint {
 		
 		long wholeProcessStartTime = System.nanoTime();
 		
-		createInitialBakedJar(mods, args.patchedVanillaJarLocation, args.bakedJarLocation, coremodClassList);
+		createInitialBakedJar(mods, args.coreLocation, args.outputLocation, coremodClassList);
 		
-		System.out.println("Baked JAR: " + args.bakedJarLocation.getAbsolutePath());
+		System.out.println("Baked JAR: " + args.outputLocation.getAbsolutePath());
 		
 		
 		
@@ -99,7 +99,7 @@ public class SetupEntryPoint {
 			for(URL url : setupMods)
 				System.out.println("  " + url);
 		
-		FileSystem fs = FileSystems.newFileSystem(Paths.get(args.bakedJarLocation.toURI()), null);
+		FileSystem fs = FileSystems.newFileSystem(Paths.get(args.outputLocation.toURI()), null);
 		try (ZipFileSystemAdapter bakedJarIZF = new ZipFileSystemAdapter(fs)) {
 			
 			

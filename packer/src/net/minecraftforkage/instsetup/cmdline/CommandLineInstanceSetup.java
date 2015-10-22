@@ -17,14 +17,14 @@ public class CommandLineInstanceSetup {
 				instArgs.instanceBaseDir = new File(args[k++]);
 				break;
 			
-			case "--bakedJarLocation":
-				if(k == args.length) throw new Exception("--bakedJarLocation requires argument");
-				instArgs.bakedJarLocation = new File(args[k++]);
+			case "--outputLocation":
+				if(k == args.length) throw new Exception("--outputLocation requires argument");
+				instArgs.outputLocation = new File(args[k++]);
 				break;
 			
-			case "--patchedVanillaJarLocation":
-				if(k == args.length) throw new Exception("--patchedVanillaJarLocation requires argument");
-				instArgs.patchedVanillaJarLocation = new File(args[k++]).toURI().toURL();
+			case "--coreLocation":
+				if(k == args.length) throw new Exception("--coreLocation requires argument");
+				instArgs.coreLocation = new File(args[k++]).toURI().toURL();
 				break;
 				
 			default:

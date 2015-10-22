@@ -24,10 +24,10 @@ public final class InstallationArguments {
 	/**
 	 * If null, a default location is used.
 	 */
-	public File bakedJarLocation;
+	public File outputLocation;
 	
 	/**
 	 * Must be set.
 	 */
-	public URL patchedVanillaJarLocation;
+	public URL coreLocation;
 }

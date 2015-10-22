@@ -27,7 +27,7 @@ class EntryPointFromLauncher {
 			InstallationArguments instArgs = new InstallationArguments();
 			instArgs.instanceBaseDir = gameDir;
 			instArgs.isInstallerRunningFromLauncher = true;
-			instArgs.patchedVanillaJarLocation = findPatchedVanillaJarLocation();
+			instArgs.coreLocation = findPatchedVanillaJarLocation();
 			SetupEntryPoint.setupInstance(instArgs);
 		}
 		SetupEntryPoint.runInstance(gameDir, args, SetupEntryPoint.findLibrariesFromClasspath());
