@@ -89,7 +89,9 @@
 	
 	<target name="recompile" depends="get-libraries">
 		
-		<delete dir="build/edited-classes" failonerror="false"/>
+		<delete quiet="true">
+			<fileset dir="build/edited-classes" includes="**/*"/>
+		</delete>
 		<mkdir dir="build/edited-classes"/>
 		
 		<javac destdir="build/edited-classes" debug="on" includeAntRuntime="false" source="1.6" target="1.6">
