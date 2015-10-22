@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<antlib>
+	<taskdef name="getlibs" classname="net.mcforkage.ant.DownloadLibrariesTask" />
+	<taskdef name="download" classname="net.mcforkage.ant.DownloadIfNotExistsTask" />
+	<taskdef name="merge-jars" classname="net.mcforkage.ant.MergeJarsTask" />
+	<taskdef name="apply-srg" classname="net.mcforkage.ant.ApplySRGTask" />
+	<taskdef name="process-jar" classname="net.mcforkage.ant.RunJarProcessorTask" />
+	<taskdef name="process-zip" classname="net.mcforkage.ant.RunZipProcessorTask" />
+	<taskdef name="process-multi" classname="net.mcforkage.ant.RunMultipleProcessorsTask" />
+	<taskdef name="csv2srg" classname="net.mcforkage.ant.CSV2SRGTask" />
+	<taskdef name="invert-srg" classname="net.mcforkage.ant.InvertSRGTask" />
+	<taskdef name="remap-sources" classname="net.mcforkage.ant.RemapSourcesTask" />
+	<taskdef name="sort-and-filter-zip" classname="net.mcforkage.ant.SortZipEntriesTask" />
+	<taskdef name="bytecode2text" classname="net.mcforkage.ant.Bytecode2TextTask" />
+	<taskdef name="diff" classname="net.mcforkage.ant.CreateDiffTask" />
+	<taskdef name="pack200" classname="net.mcforkage.ant.Pack200Task" />
+	<taskdef name="lzma" classname="net.mcforkage.ant.LzmaTask" />
+	<taskdef name="diff2" classname="net.mcforkage.ant.CreateDiff2Task" />
+	<taskdef name="compress-diff2" classname="net.mcforkage.ant.CompressDiff2Task" />
+</antlib>

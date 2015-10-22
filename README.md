@@ -15,6 +15,23 @@ Minecraft Forkage consists of several components:
 * Modpack JARs are modified versions of the game, which *should* (barring bugs) be completely standalone.
     * They cannot be distributed either. Instead, modpack creators are recommended to distribute packer configuration files.
 
+Core build tools
+================
+
+This component can be canonically built by running "ant compile-buildtools" in the core/ directory, which will yield the file
+core/build/BuildTools.jar.
+
+As a convenience for editing, the directory core-BuildTools/ may be imported as a project into Eclipse. It should require no
+further setup.
+
+Note: the Eclipse project references a bundled copy of Ant 1.9.4, but the build script will use your installed version of Ant.
+
+
+
+Core
+====
+
+
 
 Workspace setup
 ===============
@@ -25,15 +42,7 @@ To set up a workspace for developing Minecraft Forkage:
 
 1. Clone this repository.
 
-2. Run `git submodule update --init --recursive`.
 
-  If the above command fails with an error similar to:
-
-	fatal: Not a git repository: ../../../..//c/mcf-test/.git/modules/BuildTools/modules/BON
-	Failed to recurse into submodule path 'BuildTools'
-
-  then update Git (or Git For Windows), delete everything, and
-  start again from step 1.
 
 3. Run `ant extractsrc` and wait. You can set up the Eclipse workspace while this completes.
   You need an Internet connection for this step.
