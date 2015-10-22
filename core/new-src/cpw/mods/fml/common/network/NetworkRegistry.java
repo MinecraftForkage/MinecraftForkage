@@ -281,9 +281,9 @@ public enum NetworkRegistry
      * @param remoteVersionRange the acceptable remote range
      * @param asmHarvestedData internal data
      */
-    public void register(ModContainer fmlModContainer, Class<?> clazz, String remoteVersionRange, ASMDataTable asmHarvestedData)
+    public void register(ModContainer fmlModContainer, Class<?> clazz, String remoteVersionRange)
     {
-        NetworkModHolder networkModHolder = new NetworkModHolder(fmlModContainer, clazz, remoteVersionRange, asmHarvestedData);
+        NetworkModHolder networkModHolder = new NetworkModHolder(fmlModContainer, clazz, remoteVersionRange);
         registry.put(fmlModContainer, networkModHolder);
         networkModHolder.testVanillaAcceptance();
     }

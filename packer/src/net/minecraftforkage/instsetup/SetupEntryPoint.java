@@ -18,6 +18,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,8 +134,8 @@ public class SetupEntryPoint {
 				}
 			}
 					
-
-			writeListFile(bakedJarIZF, InstanceEnvironmentData.coremodsToIgnore, "mcforkage-ignored-coremods.txt");
+			coremodClassList.removeAll(InstanceEnvironmentData.coremodsToIgnore);
+			writeListFile(bakedJarIZF, coremodClassList, "mcforkage-coremods.txt");
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.extraModContainers, "mcforkage-mod-container-classes.txt");
 		}
 		
@@ -142,7 +143,7 @@ public class SetupEntryPoint {
 		System.out.println("Instance setup completed in "+((wholeProcessEndTime - wholeProcessStartTime) / 1000000)+" milliseconds");
 	}
 	
-	private static void writeListFile(AbstractZipFile bakedJarIZF, Set<String> list, String path) throws IOException {
+	private static void writeListFile(AbstractZipFile bakedJarIZF, Collection<String> list, String path) throws IOException {
 		try (OutputStream out = bakedJarIZF.write(path)) {
 			for(String item : list) {
 				out.write(item.getBytes(StandardCharsets.UTF_8));

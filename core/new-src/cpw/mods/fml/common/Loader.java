@@ -12,11 +12,14 @@
 
 package cpw.mods.fml.common;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import net.minecraftforkage.internal.FieldInjection;
 
 import org.apache.logging.log4j.Level;
 
@@ -333,6 +338,23 @@ public class Loader
             }
             mods.add(new InjectedModContainer(mc,mc.getSource()));
         }
+        
+        // TODO remove this mechanism somehow
+        try {
+        	BufferedReader in = new BufferedReader(new InputStreamReader(Loader.class.getResourceAsStream("/mcforkage-mod-container-classes.txt"), Charset.forName("UTF-8")));
+        	try {
+	        	String line;
+	        	while((line = in.readLine()) != null)
+	        		if(!line.equals(""))
+	        			mods.add(new InjectedModContainer(Class.forName(line).asSubclass(ModContainer.class).getConstructor().newInstance(), null));
+        	} finally {
+        		in.close();
+        	}
+        } catch(Exception e) {
+        	e.printStackTrace();
+        	throw new RuntimeException(e);
+        }
+        
         ModDiscoverer discoverer = new ModDiscoverer();
         FMLLog.fine("Attempting to load mods contained in the minecraft jar file and associated classes");
         discoverer.findClasspathMods(modClassLoader);
@@ -506,8 +528,10 @@ public class Loader
                 }
             }
         }
+        FieldInjection.injectSidedProxies();
         modController.transition(LoaderState.CONSTRUCTING, false);
-        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, discoverer.getASMTable(), reverseDependencies);
+        modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, reverseDependencies);
+        FieldInjection.injectModInstancesAndMetadata();
         FMLLog.fine("Mod signature data");
         for (ModContainer mod : getActiveModList())
         {

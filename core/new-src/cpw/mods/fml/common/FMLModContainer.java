@@ -351,28 +351,6 @@ public class FMLModContainer implements ModContainer
         return factoryMethod;
     }
 
-    private void processFieldAnnotations(ASMDataTable asmDataTable) throws Exception
-    {
-        SetMultimap<String, ASMData> annotations = asmDataTable.getAnnotationsFor(this);
-
-        parseSimpleFieldAnnotation(annotations, Instance.class.getName(), new Function<ModContainer, Object>()
-        {
-            @Override
-            public Object apply(ModContainer mc)
-            {
-                return mc.getMod();
-            }
-        });
-        parseSimpleFieldAnnotation(annotations, Metadata.class.getName(), new Function<ModContainer, Object>()
-        {
-            @Override
-            public Object apply(ModContainer mc)
-            {
-                return mc.getMetadata();
-            }
-        });
-    }
-
     private void parseSimpleFieldAnnotation(SetMultimap<String, ASMData> annotations, String annotationClassName, Function<ModContainer, Object> retreiver) throws IllegalAccessException
     {
         String[] annName = annotationClassName.split("\\.");
@@ -504,13 +482,12 @@ public class FMLModContainer implements ModContainer
             }
             Method factoryMethod = gatherAnnotations(clazz);
             modInstance = getLanguageAdapter().getNewInstance(this,clazz, modClassLoader, factoryMethod);
-            NetworkRegistry.INSTANCE.register(this, clazz, (String)(descriptor.containsKey("acceptableRemoteVersions") ? descriptor.get("acceptableRemoteVersions") : null), event.getASMHarvestedData());
+            NetworkRegistry.INSTANCE.register(this, clazz, (String)(descriptor.containsKey("acceptableRemoteVersions") ? descriptor.get("acceptableRemoteVersions") : null));
             if (fingerprintNotPresent)
             {
                 eventBus.post(new FMLFingerprintViolationEvent(source.isDirectory(), source, ImmutableSet.copyOf(this.sourceFingerprints), expectedFingerprint));
             }
-            ProxyInjector.inject(this, event.getASMHarvestedData(), FMLCommonHandler.instance().getSide(), getLanguageAdapter());
-            processFieldAnnotations(event.getASMHarvestedData());
+            getLanguageAdapter().setInternalProxies(this, FMLCommonHandler.instance().getSide(), Loader.instance().getModClassLoader());
         }
         catch (Throwable e)
         {

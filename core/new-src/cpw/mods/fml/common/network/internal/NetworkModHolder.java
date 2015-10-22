@@ -110,62 +110,26 @@ public class NetworkModHolder
         this.checker = Preconditions.checkNotNull(checker);
         FMLLog.fine("The mod %s is using a custom checker %s", container.getModId(), checker.getClass().getName());
     }
-    public NetworkModHolder(ModContainer container, Class<?> modClass, String acceptableVersionRange, ASMDataTable table)
+    public NetworkModHolder(ModContainer container, Class<?> modClass, String acceptableVersionRange)
     {
         this(container);
-        SetMultimap<String, ASMData> annotationTable = table.getAnnotationsFor(container);
-        Set<ASMData> versionCheckHandlers;
-        if (annotationTable != null)
+        for(Method m : modClass.getMethods())
         {
-            versionCheckHandlers = annotationTable.get(NetworkCheckHandler.class.getName());
-        }
-        else
-        {
-            versionCheckHandlers = ImmutableSet.of();
-        }
-        String networkCheckHandlerMethod = null;
-        for (ASMData vch : versionCheckHandlers)
-        {
-            if (vch.getClassName().equals(modClass.getName()))
+        	if (m.isAnnotationPresent(NetworkCheckHandler.class))
             {
-                networkCheckHandlerMethod = vch.getObjectName();
-                networkCheckHandlerMethod = networkCheckHandlerMethod.substring(0,networkCheckHandlerMethod.indexOf('('));
-                break;
-            }
-        }
-        if (versionCheckHandlers.isEmpty())
-        {
-            for (Method m : modClass.getMethods())
-            {
-                if (m.isAnnotationPresent(NetworkCheckHandler.class))
+        		if (m.getParameterTypes().length == 2 && m.getParameterTypes()[0].equals(Map.class) && m.getParameterTypes()[1].equals(Side.class))
                 {
-                    if (m.getParameterTypes().length == 2 && m.getParameterTypes()[0].equals(Map.class) && m.getParameterTypes()[1].equals(Side.class))
-                    {
-                        this.checkHandler = m;
-                        break;
-                    }
-                    else
-                    {
-                        FMLLog.severe("Found unexpected method signature for annotation NetworkCheckHandler");
-                    }
+                    this.checkHandler = m;
+                    break;
+                }
+                else
+                {
+                    FMLLog.severe("Found unexpected method signature for annotation NetworkCheckHandler");
                 }
             }
         }
-        if (networkCheckHandlerMethod != null)
-        {
-            try
-            {
-                Method checkHandlerMethod = modClass.getDeclaredMethod(networkCheckHandlerMethod, Map.class, Side.class);
-                if (checkHandlerMethod.isAnnotationPresent(NetworkCheckHandler.class))
-                {
-                    this.checkHandler = checkHandlerMethod;
-                }
-            }
-            catch (Exception e)
-            {
-                FMLLog.log(Level.WARN, e, "The declared version check handler method %s on network mod id %s is not accessible", networkCheckHandlerMethod, container.getModId());
-            }
-        }
+        // TODO: leftover debugging? remove
+        System.err.println("networkcheckhandler on "+container+": "+checkHandler);
         if (this.checkHandler != null)
         {
             this.checker = new MethodNetworkChecker();

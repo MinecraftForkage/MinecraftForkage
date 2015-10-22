@@ -12,25 +12,33 @@
 
 package cpw.mods.fml.relauncher;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+
 import org.apache.logging.log4j.Level;
+
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -38,6 +46,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.primitives.Ints;
+
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.asm.transformers.ModAccessTransformer;
 import cpw.mods.fml.common.launcher.FMLInjectionAndSortingTweaker;
@@ -161,6 +170,23 @@ public class CoreModManager {
             return new String[0];
         }
 
+    }
+    
+    private static final Set<String> packedCoremodsList = new HashSet<String>();
+    static {
+    	try {
+    		BufferedReader in = new BufferedReader(new InputStreamReader(CoreModManager.class.getResourceAsStream("/mcforkage-coremods.txt"), Charset.forName("UTF-8")));
+   			try {
+	    		String line;
+				while((line = in.readLine()) != null)
+					if(!line.equals(""))
+						packedCoremodsList.add(line);
+   			} finally {
+   				in.close();
+   			}
+		} catch(IOException e) {
+			throw new RuntimeException(e);
+		}
     }
 
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
@@ -323,9 +349,15 @@ public class CoreModManager {
                 FMLRelaunchLog.fine("Not found coremod data in %s", coreMod.getName());
                 continue;
             }
-            // Support things that are mod jars, but not FML mod jars
+            if(coremodsToIgnore.contains(fmlCorePlugin)) {
+            	FMLRelaunchLog.warning("Ignoring coremod "+fmlCorePlugin+" in favour of setup plugin");
+            	continue;
+            }
+            FMLRelaunchLog.finer("Not adding %s to the classpath as it should already be in the baked JAR", coreMod.getName());
+        	/* // Support things that are mod jars, but not FML mod jars
             try
             {
+            	// TODO: packer support for COREMODCONTAINSFMLMOD
                 classLoader.addURL(coreMod.toURI().toURL());
                 if (!mfAttributes.containsKey(COREMODCONTAINSFMLMOD))
                 {
@@ -343,7 +375,7 @@ public class CoreModManager {
             {
                 FMLRelaunchLog.log(Level.ERROR, e, "Unable to convert file into a URL. weird");
                 continue;
-            }
+            }*/
             loadCoreMod(classLoader, fmlCorePlugin, coreMod);
         }
     }

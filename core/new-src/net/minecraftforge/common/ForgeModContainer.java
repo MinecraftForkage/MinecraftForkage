@@ -266,7 +266,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Subscribe
     public void modConstruction(FMLConstructionEvent evt)
     {
-        NetworkRegistry.INSTANCE.register(this, this.getClass(), "*", evt.getASMHarvestedData());
+        NetworkRegistry.INSTANCE.register(this, this.getClass(), "*");
         ForgeNetworkHandler.registerChannel(this, evt.getSide());
     }
 

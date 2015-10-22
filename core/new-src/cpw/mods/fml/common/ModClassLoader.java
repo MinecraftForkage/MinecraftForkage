@@ -26,9 +26,6 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import com.google.common.collect.ImmutableList;
 
-import cpw.mods.fml.common.asm.transformers.ModAPITransformer;
-import cpw.mods.fml.common.discovery.ASMDataTable;
-
 /**
  * A simple delegating class loader used to load mods into the system
  *
@@ -84,14 +81,5 @@ public class ModClassLoader extends URLClassLoader
     public void clearNegativeCacheFor(Set<String> classList)
     {
         mainClassLoader.clearNegativeEntries(classList);
-    }
-
-    public ModAPITransformer addModAPITransformer(ASMDataTable dataTable)
-    {
-        mainClassLoader.registerTransformer("cpw.mods.fml.common.asm.transformers.ModAPITransformer");
-        List<IClassTransformer> transformers = mainClassLoader.getTransformers();
-        ModAPITransformer modAPI = (ModAPITransformer) transformers.get(transformers.size()-1);
-        modAPI.initTable(dataTable);
-        return modAPI;
     }
 }
