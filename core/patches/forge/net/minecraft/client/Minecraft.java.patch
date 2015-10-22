@@ -56,10 +56,9 @@
          if (p_147108_1_ instanceof GuiMainMenu)
          {
              this.field_71474_y.field_74330_P = false;
-@@ -894,2 +894,2 @@
-                     this.func_71377_b(this.field_71433_S);
--                    return;
-+                    continue;
+@@ -876,1 +876,1 @@
+-                if (this.field_71425_J)
++                while (this.field_71425_J)
 @@ -1341,7 +1346,7 @@
  
                      if (this.field_71439_g.func_82246_f(i, j, k))

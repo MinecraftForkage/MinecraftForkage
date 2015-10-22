@@ -18,61 +18,50 @@ Minecraft Forkage consists of several components:
 Core build tools
 ================
 
-This component can be canonically built by running "ant compile-buildtools" in the core/ directory, which will yield the file
-core/build/BuildTools.jar.
+This component resides in the `core-BuildTools/` directory.
 
-As a convenience for editing, the directory core-BuildTools/ may be imported as a project into Eclipse. It should require no
+It can be built by running `ant` in that directory, which will yield the file `core-BuildTools/build/BuildTools.jar`.
+
+As a convenience for editing, the directory `core-BuildTools/` may be imported as a project into Eclipse. It should require no
 further setup.
 
-Note: the Eclipse project references a bundled copy of Ant 1.9.4, but the build script will use your installed version of Ant.
+Note: the Eclipse project references a bundled copy of Ant 1.9.4, but the Ant build script will use your installed version of Ant.
 
 
 
 Core
 ====
 
+This component resides in the `core/` directory. This directory may be imported into Eclipse as a project.
+
+The build process is complex by necessity, since we are not allowed to distribute the original or modified Minecraft code --
+only patches to it. This means we may not distribute the full source code for the core (although it can be generated) nor the
+full binary.
+
+To generate the source code, run `ant extractsrc` in the `core/` directory.
+You need an Internet connection to run this step for the first time, as it downloads Minecraft and several libraries.
+
+To generate the binary, run `ant recompile` in the `core/` directory.
+
+To generate the installer, run `ant make-installer` in the `core/` directory. The installer contains only bytecode patches to
+Minecraft, as well as new code, and can be distributed. End-users can run the installer to re-generate the binary.
+
+Note: the binary produced by the installer is not expected to be byte-wise identical to the binary produced by "ant recompile".
+
+Note: the core is compiled as Java 1.6.
+
+Note: any modifications you make to files in the vanilla-src *will be lost* next time they are regenerated from patches (with
+`ant extractsrc`)
 
 
-Workspace setup
-===============
 
-To set up a workspace for developing Minecraft Forkage:
-
-0. If you're on Windows, install Cygwin.
-
-1. Clone this repository.
-
-
-
-3. Run `ant extractsrc` and wait. You can set up the Eclipse workspace while this completes.
-  You need an Internet connection for this step.
-
-4. Unzip `eclipse-workspace.zip`. This should create `eclipse/` in the  repository root.
-   If you unzipped to a subdirectory by mistake, then move the `eclipse` directory to the
-   repository root.
-
-5. Open the Eclipse workspace you just unzipped (in `eclipse/`).
-  Note: If `ant` is still running, and you open the MinecraftForkage project, you might need
-  to close and reopen the project in Eclipse after it finishes in order for Eclipse to detect the source files.
-
-6. You are now set up to develop in Eclipse.
-   There are predefined "MCF Client" and "MCF Server" run configurations. Note that they
-   will not be in the drop-down menu - you will need to select them in the run configurations
-   dialog the first time you use them.
 
 
 
 Libraries
 =========
 
-External libraries for both Minecraft and Forge will be downloaded to `libraries/` when you run
-any makefile target (TODO: make it an actual target, instead of running automatically). The folder
-structure is not preserved - all the library JARs are simply dumped into that directory.
-Natives will be extracted to `libraries/natives/`.
+External libraries for both Minecraft and Forge will be downloaded to `core/libraries/` when you run `ant extractsrc`.
+The folder structure is not preserved - all the library JARs are simply dumped into that directory.
+Natives will be extracted to `core/libraries/natives/`.
 
-
-Installer
-=========
-
-To generate the installer, run `make build/installer.jar` after letting Eclipse compile the main
-Minecraft Forkage project.

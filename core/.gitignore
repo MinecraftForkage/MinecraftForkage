@@ -1,2 +1,4 @@
 build
 vanilla-src
+workdir/*
+!workdir/dummy.txt
