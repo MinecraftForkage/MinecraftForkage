@@ -56,6 +56,16 @@ Note: any modifications you make to files in the vanilla-src *will be lost* next
 
 
 
+Packer
+======
+
+This component resides in the `packer/` directory. This directory may be imported into Eclipse as a project.
+
+The packer relies on some of the libraries downloaded by running `ant extractsrc` in `core/`. This may be fixed in the future.
+For now, you need to do that if you want to be able to compile the packer.
+
+The packer does not presently have a build script. Use your favourite IDE.
+
 
 
 Libraries

@@ -1,0 +1,3 @@
+net.minecraftforkage.setup_plugin.FMLModSearchTransformer
+net.minecraftforkage.setup_plugin.OptionalTransformer
+net.minecraftforkage.setup_plugin.ObjectHolderTransformer
