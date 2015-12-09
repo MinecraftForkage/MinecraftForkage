@@ -12,6 +12,7 @@
 
 package cpw.mods.fml.common;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -47,8 +48,12 @@ import cpw.mods.fml.common.event.FMLModDisabledEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLStateEvent;
 import cpw.mods.fml.common.functions.ArtifactVersionNameFunction;
+import cpw.mods.fml.common.launcher.FMLTweaker;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
+import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.relauncher.Side;
 
 public class LoadController
 {
@@ -110,7 +115,9 @@ public class LoadController
     public void buildModList(FMLLoadEvent event)
     {
         Builder<String, EventBus> eventBus = ImmutableMap.builder();
-
+        
+        LanguageRegistry.instance().loadLanguagesFor(new File(FMLTweaker.getJarLocation()), FMLLaunchHandler.side());
+        
         for (ModContainer mod : loader.getModList())
         {
             //Create mod logger, and make the EventBus logger a child of it.
@@ -121,7 +128,8 @@ public class LoadController
                 activeModList.add(mod);
                 modStates.put(mod.getModId(), ModState.UNLOADED);
                 eventBus.put(mod.getModId(), bus);
-                FMLCommonHandler.instance().addModToResourcePack(mod);
+                if(mod.getModId().equals("FML"))
+                	FMLCommonHandler.instance().addModToResourcePack(mod);
             }
             else
             {

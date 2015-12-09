@@ -250,9 +250,8 @@ public class LanguageRegistry
         p.putAll(parsedLangFile);
     }
 
-    public void loadLanguagesFor(ModContainer container, Side side)
+    public void loadLanguagesFor(File source, Side side)
     {
-        File source = container.getSource();
         try
         {
             if (source.isDirectory())
@@ -266,7 +265,7 @@ public class LanguageRegistry
         }
         catch (IOException ioe)
         {
-
+        	throw new RuntimeException(ioe);
         }
     }
 
@@ -293,7 +292,12 @@ public class LanguageRegistry
 
     private void searchDirForLanguages(File source, String path, Side side) throws IOException
     {
-        for (File file : source.listFiles())
+    	File[] files = source.listFiles();
+    	if(files == null) {
+    		System.err.println("Failed to list files in "+source);
+    		return;
+    	}
+        for (File file : files)
         {
             String currPath = path+file.getName();
             if (file.isDirectory())

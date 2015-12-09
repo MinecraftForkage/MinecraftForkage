@@ -20,13 +20,9 @@ public abstract class JarTransformer implements DependencySortedObject {
 	public abstract String getID();
 	
 	/**
-	 * Returns the stage to execute this transformer in.
-	 */
-	
-	/**
 	 * Main entry point for a JAR transformer.
 	 */
-	public abstract void transform(AbstractZipFile zipFile) throws Exception;
+	public abstract void transform(AbstractZipFile zipFile, PackerContext context) throws Exception;
 	
 	
 	/**

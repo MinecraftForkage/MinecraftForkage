@@ -20,6 +20,8 @@ import java.util.Set;
 
 import com.google.common.eventbus.EventBus;
 
+import cpw.mods.fml.common.asm.FMLSanityChecker;
+import cpw.mods.fml.common.launcher.FMLTweaker;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.VersionRange;
 
@@ -31,8 +33,10 @@ public class InjectedModContainer implements ModContainer
 
     public InjectedModContainer(ModContainer mc, File source)
     {
-        this.source = source != null ? source : new File("minecraft.jar");
+        this.source = source != null ? source : new File(FMLTweaker.getJarLocation());
         this.wrappedContainer = mc;
+        if(!this.source.exists())
+        	throw new IllegalArgumentException("Nonexistent source: "+source);
     }
 
     @Override

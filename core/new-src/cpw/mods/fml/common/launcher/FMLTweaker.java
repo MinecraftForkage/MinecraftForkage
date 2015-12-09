@@ -27,6 +27,19 @@ public class FMLTweaker implements ITweaker {
     private Map<String, String> launchArgs;
     private List<String> standaloneArgs;
     private static URI jarLocation;
+    
+    static
+    {
+    	try
+        {
+            jarLocation = FMLTweaker.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        }
+        catch (URISyntaxException e)
+        {
+            LogManager.getLogger("FMLTWEAK").log(Level.ERROR, "Missing URI information for FML tweak");
+            throw Throwables.propagate(e);
+        }
+    }
 
     public FMLTweaker()
     {
@@ -105,16 +118,6 @@ public class FMLTweaker implements ITweaker {
         }
 
         Yggdrasil.login(launchArgs);
-
-        try
-        {
-            jarLocation = getClass().getProtectionDomain().getCodeSource().getLocation().toURI();
-        }
-        catch (URISyntaxException e)
-        {
-            LogManager.getLogger("FMLTWEAK").log(Level.ERROR, "Missing URI information for FML tweak");
-            throw Throwables.propagate(e);
-        }
     }
 
     @Override

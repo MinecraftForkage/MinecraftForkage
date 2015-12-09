@@ -580,7 +580,6 @@ public class FMLClientHandler implements IFMLSidedHandler
     @Override
     public void addModAsResource(ModContainer container)
     {
-        LanguageRegistry.instance().loadLanguagesFor(container, Side.CLIENT);
         Class<?> resourcePackType = container.getCustomResourcePackClass();
         if (resourcePackType != null)
         {

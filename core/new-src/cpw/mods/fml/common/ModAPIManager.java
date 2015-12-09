@@ -72,10 +72,8 @@ public class ModAPIManager {
         public List<ArtifactVersion> getDependants()
         {
         	// TODO this possibly breaks something; review and find a better solution. FML assumes that all mods in a JAR depend on all APIs in the JAR; when everything's in the same JAR, that obviously leads to cycles
-        	if(Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR"))
-        		return Collections.emptyList();
-        	else
-        		return referredMods;
+        	return Collections.emptyList();
+        	//return referredMods;
         }
 
         @Override

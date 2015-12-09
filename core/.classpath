@@ -3,53 +3,53 @@
 	<classpathentry kind="src" path="compat-src"/>
 	<classpathentry kind="src" path="new-src"/>
 	<classpathentry kind="src" path="vanilla-src"/>
-	<classpathentry kind="lib" path="libraries/akka-actor_2.11-2.3.3.jar"/>
-	<classpathentry kind="lib" path="libraries/asm-debug-all-5.0.3.jar"/>
-	<classpathentry kind="lib" path="libraries/authlib-1.5.21.jar"/>
-	<classpathentry kind="lib" path="libraries/codecjorbis-20101023.jar"/>
-	<classpathentry kind="lib" path="libraries/codecwav-20101023.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-compress-1.8.1.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-lang3-3.2.1.jar"/>
-	<classpathentry kind="lib" path="libraries/commons-logging-1.1.3.jar"/>
-	<classpathentry kind="lib" path="libraries/config-1.2.1-sources.jar"/>
-	<classpathentry kind="lib" path="libraries/config-1.2.1.jar"/>
-	<classpathentry kind="lib" path="libraries/gson-2.2.4.jar"/>
-	<classpathentry kind="lib" path="libraries/guava-16.0.jar"/>
-	<classpathentry kind="lib" path="libraries/httpclient-4.3.3.jar"/>
-	<classpathentry kind="lib" path="libraries/httpcore-4.3.2.jar"/>
-	<classpathentry kind="lib" path="libraries/icu4j-core-mojang-51.2.jar"/>
-	<classpathentry kind="lib" path="libraries/jinput-2.0.5.jar"/>
-	<classpathentry kind="lib" path="libraries/jinput-platform-2.0.5-natives-windows.jar"/>
-	<classpathentry kind="lib" path="libraries/jopt-simple-4.5.jar"/>
-	<classpathentry kind="lib" path="libraries/jsr305-1.3.9.jar"/>
-	<classpathentry kind="lib" path="libraries/jutils-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/akka-actor_2.11-2.3.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/asm-debug-all-5.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/authlib-1.5.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/codecjorbis-20101023.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/codecwav-20101023.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-codec-1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-compress-1.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-lang3-3.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/commons-logging-1.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/config-1.2.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/config-1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/gson-2.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/guava-16.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/httpclient-4.3.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/httpcore-4.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/icu4j-core-mojang-51.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jinput-2.0.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jinput-platform-2.0.5-natives-windows.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jopt-simple-4.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jsr305-1.3.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/jutils-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/libraryjavasound-20101123.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/librarylwjglopenal-20100824.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/log4j-api-2.0-beta9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/log4j-core-2.0-beta9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/lwjgl_util-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/lwjgl-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/lzma-0.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/netty-all-4.0.10.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/realms-1.3.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-actors-migration_2.11-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-compiler-2.11.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-compiler-2.11.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-continuations-library_2.11-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-continuations-plugin_2.11.1-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-library-2.11.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-library-2.11.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-parser-combinators-2.11.0-M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-reflect-2.11.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-swing-2.11.0-M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/scala-xml-2.11.0-M4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/soundsystem-20120107.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/trove4j-3.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/twitch-5.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="libraries/vecmath-1.3.1.jar"/>
 	<classpathentry kind="lib" path="libraries/launchwrapper-1.11.jar"/>
-	<classpathentry kind="lib" path="libraries/libraryjavasound-20101123.jar"/>
-	<classpathentry kind="lib" path="libraries/librarylwjglopenal-20100824.jar"/>
-	<classpathentry kind="lib" path="libraries/log4j-api-2.0-beta9.jar"/>
-	<classpathentry kind="lib" path="libraries/log4j-core-2.0-beta9.jar"/>
-	<classpathentry kind="lib" path="libraries/lwjgl_util-2.9.1.jar"/>
-	<classpathentry kind="lib" path="libraries/lwjgl-2.9.1.jar"/>
-	<classpathentry kind="lib" path="libraries/lzma-0.0.1.jar"/>
-	<classpathentry kind="lib" path="libraries/netty-all-4.0.10.Final.jar"/>
-	<classpathentry kind="lib" path="libraries/realms-1.3.5.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-actors-migration_2.11-1.1.0.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-compiler-2.11.1-sources.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-compiler-2.11.1.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-continuations-library_2.11-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-continuations-plugin_2.11.1-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-library-2.11.1-sources.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-library-2.11.1.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-parser-combinators-2.11.0-M4.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-reflect-2.11.1.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-swing-2.11.0-M4.jar"/>
-	<classpathentry kind="lib" path="libraries/scala-xml-2.11.0-M4.jar"/>
-	<classpathentry kind="lib" path="libraries/soundsystem-20120107.jar"/>
-	<classpathentry kind="lib" path="libraries/trove4j-3.0.3.jar"/>
-	<classpathentry kind="lib" path="libraries/twitch-5.16.jar"/>
-	<classpathentry kind="lib" path="libraries/vecmath-1.3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/edited-classes"/>
 </classpath>

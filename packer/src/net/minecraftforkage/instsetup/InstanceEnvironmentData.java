@@ -50,11 +50,6 @@ public final class InstanceEnvironmentData {
 	static File setupTempDir;
 	
 	
-	/**
-	 * Coremod classes to ignore when loading Minecraft.
-	 */
-	public static Set<String> coremodsToIgnore = new HashSet<>();
-	
 	public static Set<String> extraModContainers = new HashSet<>();
 	
 	

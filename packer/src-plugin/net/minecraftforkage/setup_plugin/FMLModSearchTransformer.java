@@ -30,6 +30,7 @@ import com.google.gson.JsonElement;
 
 import net.minecraftforkage.instsetup.AbstractZipFile;
 import net.minecraftforkage.instsetup.JarTransformer;
+import net.minecraftforkage.instsetup.PackerContext;
 
 public class FMLModSearchTransformer extends JarTransformer {
 
@@ -261,7 +262,7 @@ public class FMLModSearchTransformer extends JarTransformer {
 	}
 
 	@Override
-	public void transform(AbstractZipFile zipFile) throws Exception {
+	public void transform(AbstractZipFile zipFile, PackerContext context) throws Exception {
 		for(String filename : zipFile.getFileNames()) {
 			if(filename.endsWith(".class")) {
 				try (InputStream in = zipFile.read(filename)) {

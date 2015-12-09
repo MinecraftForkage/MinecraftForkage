@@ -22,6 +22,7 @@ import com.google.gson.JsonElement;
 
 import net.minecraftforkage.instsetup.AbstractZipFile;
 import net.minecraftforkage.instsetup.JarTransformer;
+import net.minecraftforkage.instsetup.PackerContext;
 
 public class OptionalTransformer extends JarTransformer {
 	
@@ -142,7 +143,7 @@ public class OptionalTransformer extends JarTransformer {
 	}
 	
 	@Override
-	public void transform(AbstractZipFile zipFile) throws Exception {
+	public void transform(AbstractZipFile zipFile, PackerContext context) throws Exception {
 		
 		Set<String> installedModIDs = new HashSet<>();
 		

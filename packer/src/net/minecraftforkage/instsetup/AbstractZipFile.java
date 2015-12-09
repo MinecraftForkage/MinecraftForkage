@@ -172,4 +172,8 @@ public abstract class AbstractZipFile {
 		return (Map<String, String>)(Map)p;
 	}
 	
+	
+	
+	
+	AbstractZipFile() {}
 }

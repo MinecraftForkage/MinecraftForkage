@@ -218,7 +218,6 @@ public class FMLServerHandler implements IFMLSidedHandler
     @Override
     public void addModAsResource(ModContainer container)
     {
-        LanguageRegistry.instance().loadLanguagesFor(container, Side.SERVER);
     }
 
     @Override

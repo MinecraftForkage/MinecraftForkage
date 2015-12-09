@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +75,11 @@ public class SetupEntryPoint {
 			if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
 				mods.add(modFile);
 		
+		PackerContext context = new PackerContext();
+		context.modURLs = new ArrayList<URL>(mods.size());
+		for(File f : mods)
+			context.modURLs.add(f.toURI().toURL());
+		context.modURLs = Collections.unmodifiableList(context.modURLs);
 		
 		System.out.println("Mods:");
 		if(mods.size() == 0)
@@ -82,11 +88,9 @@ public class SetupEntryPoint {
 			for(File f : mods)
 				System.out.println("  " + f.getAbsolutePath());
 		
-		List<String> coremodClassList = new ArrayList<>();
-		
 		long wholeProcessStartTime = System.nanoTime();
 		
-		createInitialBakedJar(mods, args.coreLocation, args.outputLocation, coremodClassList);
+		createInitialBakedJar(mods, args.coreLocation, args.outputLocation);
 		
 		System.out.println("Baked JAR: " + args.outputLocation.getAbsolutePath());
 		
@@ -127,15 +131,13 @@ public class SetupEntryPoint {
 						final String idString = jt.getID() + " (" + jt.getClass().getName() + ")";
 						
 						long startTime = System.nanoTime();
-						jt.transform(bakedJarIZF);
+						jt.transform(bakedJarIZF, context);
 						long endTime = System.nanoTime();
 						System.out.println(((endTime - startTime) / 1000000)+" milliseconds: " + idString);
 					}
 				}
 			}
 					
-			coremodClassList.removeAll(InstanceEnvironmentData.coremodsToIgnore);
-			writeListFile(bakedJarIZF, coremodClassList, "mcforkage-coremods.txt");
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.extraModContainers, "mcforkage-mod-container-classes.txt");
 		}
 		
@@ -202,7 +204,7 @@ public class SetupEntryPoint {
 	}
 
 
-	private static void createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL, File bakedJarFile, List<String> coremodClassList) throws IOException {
+	private static void createInitialBakedJar(List<File> mods, URL patchedVanillaJarURL, File bakedJarFile) throws IOException {
 		List<URL> inputURLs = new ArrayList<>();
 		inputURLs.add(patchedVanillaJarURL);
 		for(File modFile : mods)
@@ -245,10 +247,6 @@ public class SetupEntryPoint {
 						}
 						
 						if(ze_in.getName().equals("META-INF/MANIFEST.MF")) {
-							Manifest mf_in = new Manifest(z_in);
-							String coreModClass = mf_in.getMainAttributes().getValue("FMLCorePlugin");
-							if(coreModClass != null)
-								coremodClassList.add(coreModClass);
 							z_in.closeEntry();
 							continue;
 						}

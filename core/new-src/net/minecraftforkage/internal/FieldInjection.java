@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraftforkage.PackerDataUtils;
+
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -38,29 +40,30 @@ public class FieldInjection {
 			// TODO: according to FML code, Scala mods can't have static fields,
 			// so we need to get an instance from somewhere?
 			
-			if(!Modifier.isStatic(f.getModifiers()))
-				throw new RuntimeException(className+"."+fieldName+" is not static (for "+type+" injection)");
+			Object instance = null;
+			
+			if(!Modifier.isStatic(f.getModifiers())) {
+				
+				// Could be a Scala mod
+				try {
+					Class<?> instanceSource = (className.endsWith("$") ? f.getDeclaringClass() : Class.forName(className+"$"));
+					instance = instanceSource.getField("MODULE$").get(null);
+				} catch(Exception e) {
+					throw new RuntimeException(className+"."+fieldName+" is not static (for "+type+" injection)", e);
+				}
+			}
 			if(value == null)
 				throw new IllegalArgumentException("injecting null?");
 			if(!f.getType().isAssignableFrom(value.getClass()))
 				throw new RuntimeException(className+"."+fieldName+" has type "+f.getType()+", not compatible with actual value type "+value.getClass().getName());
-			f.set(null, value);
+			f.set(instance, value);
 		}
 	}
 	
 	private static final List<Entry> entries;
 
 	static {
-		try {
-			InputStreamReader in = new InputStreamReader(FieldInjection.class.getResourceAsStream("/mcforkage-fields-to-inject.json"), Charset.forName("UTF-8"));
-			try {
-				entries = Collections.unmodifiableList(new Gson().<List<Entry>>fromJson(in, new TypeToken<List<Entry>>(){}.getType()));
-			} finally {
-				in.close();
-			}
-		} catch(IOException e) {
-			throw new RuntimeException("Error reading mcforkage-fields-to-inject.json", e);
-		}
+		entries = PackerDataUtils.read("mcforkage-fields-to-inject.json", new TypeToken<List<Entry>>(){});
 		
 		for(Entry e : entries) {
 			if(!e.type.equals("sided-proxy") && !e.type.equals("mod-instance"))

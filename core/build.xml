@@ -87,7 +87,7 @@
 		<unzip src="build/processed_source.zip" dest="vanilla-src"/>
 	</target>
 	
-	<target name="recompile" depends="get-libraries">
+	<target name="recompile" depends="get-libraries" description="Recompile and reobfuscate the core, but do not generate the installer. Useful for testing.">
 		
 		<delete quiet="true">
 			<fileset dir="build/edited-classes" includes="**/*"/>
