@@ -66,3 +66,9 @@
 @@ -400,1 +411,1 @@
 -        Iterator iterator = this.field_148629_h.keySet().iterator();
 +        Iterator iterator = this.pausedChannels.iterator(); // MCFORKAGE
+@@ -407,4 +418,5 @@
+         }
++        this.pausedChannels.clear();
+     }
+ 
+     public void func_148599_a(ISound p_148599_1_, int p_148599_2_)
