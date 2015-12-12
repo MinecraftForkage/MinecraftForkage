@@ -360,28 +360,14 @@ public class Loader
         discoverer.findClasspathMods(modClassLoader);
         FMLLog.fine("Minecraft jar mods loaded successfully");
 
-    	if(!Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR")) {
-        	FMLLog.getLogger().log(Level.INFO, "Found {} mods from the command line. Injecting into mod discoverer",ModListHelper.additionalMods.size());
-
-	        FMLLog.info("Searching %s for mods", canonicalModsDir.getAbsolutePath());
-	        discoverer.findModDirMods(canonicalModsDir, ModListHelper.additionalMods.values());
-	        File versionSpecificModsDir = new File(canonicalModsDir,mccversion);
-	        if (versionSpecificModsDir.isDirectory())
-	        {
-	            FMLLog.info("Also searching %s for mods", versionSpecificModsDir);
-	            discoverer.findModDirMods(versionSpecificModsDir);
-	        }
-        
-        } else {
-        	Properties p = new Properties();
-        	try {
-        		p.load(Loader.class.getResourceAsStream("/mcforkage-class-to-source-map.properties"));
-        	} catch(IOException e) {
-        		throw new RuntimeException("Failed to load mcforkage-class-to-source-map.properties", e);
-        	}
-        	discoverer.getASMTable().MCForkage_applyModSourceMap((Map<String, String>)(Map)p);
+    	Properties p = new Properties();
+        try {
+        	p.load(Loader.class.getResourceAsStream("/mcforkage-class-to-source-map.properties"));
+        } catch(IOException e) {
+        	throw new RuntimeException("Failed to load mcforkage-class-to-source-map.properties", e);
         }
-
+        discoverer.getASMTable().MCForkage_applyModSourceMap((Map<String, String>)(Map)p);
+        
         mods.addAll(discoverer.identifyMods());
         identifyDuplicates(mods);
         namedMods = Maps.uniqueIndex(mods, new ModIdFunction());

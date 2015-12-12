@@ -93,12 +93,10 @@ public class ASMDataTable
         @Override
         public boolean apply(ASMData data)
         {
-        	if(Boolean.getBoolean("minecraftforkage.loadingFromBakedJAR")) {
-        		if(container.MCForkage_getMainClassName() == null)
-        			return false;
-        		if(!Objects.equals(classToSourceFile.get(data.className), classToSourceFile.get(container.MCForkage_getMainClassName())))
-        			return false;
-        	}
+        	if(container.MCForkage_getMainClassName() == null)
+        		return false;
+        	if(!Objects.equals(classToSourceFile.get(data.className), classToSourceFile.get(container.MCForkage_getMainClassName())))
+        		return false;
         	
             return container.getSource().equals(data.candidate.getModContainer());
         }

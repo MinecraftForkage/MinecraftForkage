@@ -161,8 +161,6 @@ public class SetupEntryPoint {
 		classpath.add(bakedJar.toURI().toURL());
 		URLClassLoader minecraftClassLoader = new URLClassLoader(classpath.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader().getParent());
 		
-		System.setProperty("minecraftforkage.loadingFromBakedJAR", "true");
-		
 		List<String> newArgs = new ArrayList<>(Arrays.asList(args));
 		newArgs.add("--tweakClass");
 		newArgs.add("cpw.mods.fml.common.launcher.FMLTweaker");
