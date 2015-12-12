@@ -50,6 +50,18 @@ public class PatchHunk {
 				return newStart-k;
 		}
 		
+		List<String> actual = lines.subList(newStart, newStart+oldCount);
+		List<String> expected = oldLines;
+		System.err.println();
+		System.err.println("== EXPECTED LINES ==");
+		for(String s : expected)
+			System.err.println(s);
+		System.err.println();
+		System.err.println("== ACTUAL LINES ==");
+		for(String s : actual)
+			System.err.println(s);
+		System.err.println();
+		
 		throw new RuntimeException("can't find place to apply patch");
 	}
 	
