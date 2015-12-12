@@ -37,9 +37,6 @@ public class FieldInjection {
 		void inject(Object value) throws ReflectiveOperationException {
 			Field f = locateField();
 			
-			// TODO: according to FML code, Scala mods can't have static fields,
-			// so we need to get an instance from somewhere?
-			
 			Object instance = null;
 			
 			if(!Modifier.isStatic(f.getModifiers())) {
@@ -66,7 +63,7 @@ public class FieldInjection {
 		entries = PackerDataUtils.read("mcforkage-fields-to-inject.json", new TypeToken<List<Entry>>(){});
 		
 		for(Entry e : entries) {
-			if(!e.type.equals("sided-proxy") && !e.type.equals("mod-instance"))
+			if(!e.type.equals("sided-proxy") && !e.type.equals("mod-instance") && !e.type.equals("mod-metadata"))
 				throw new RuntimeException("Unknown field injection type: " + e.type+" on "+e.className+"."+e.fieldName+". Extra data: " + e.data);
 		}
 	}
@@ -87,7 +84,7 @@ public class FieldInjection {
 				try {
 					Object value = Class.forName(className).getConstructor().newInstance();
 					e.inject(value);
-				} catch(ReflectiveOperationException ex) {
+				} catch(Throwable ex) {
 					throw new RuntimeException("Failed to inject sided proxy, to "+e.className+"."+e.fieldName+", of type "+className, ex);
 				}
 			}
@@ -104,7 +101,7 @@ public class FieldInjection {
 				if(Loader.isModLoaded(mod))
 					try {
 						e.inject(Loader.instance().getIndexedModList().get(mod).getMod());
-					} catch(ReflectiveOperationException ex) {
+					} catch(Throwable ex) {
 						throw new RuntimeException("Failed to inject mod instance, to "+e.className+"."+e.fieldName+", of mod "+mod, ex);
 					}
 			}
@@ -114,7 +111,7 @@ public class FieldInjection {
 				if(Loader.isModLoaded(mod))
 					try {
 						e.inject(Loader.instance().getIndexedModList().get(mod).getMetadata());
-					} catch(ReflectiveOperationException ex) {
+					} catch(Throwable ex) {
 						throw new RuntimeException("Failed to inject mod metadata, to "+e.className+"."+e.fieldName+", of mod "+mod, ex);
 					}
 			}
