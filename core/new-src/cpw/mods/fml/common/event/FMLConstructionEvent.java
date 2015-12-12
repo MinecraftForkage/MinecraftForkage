@@ -45,4 +45,10 @@ public class FMLConstructionEvent extends FMLStateEvent
     {
         return reverseDependencies;
     }
+    
+    /** XXX remove. Aroma1997Core and CoFHCore both call this method */
+    @Deprecated
+    public ASMDataTable getASMHarvestedData() {
+    	return null;
+    }
 }
