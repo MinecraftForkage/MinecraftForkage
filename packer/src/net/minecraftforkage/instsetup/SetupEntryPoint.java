@@ -75,6 +75,10 @@ public class SetupEntryPoint {
 			if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
 				mods.add(modFile);
 		
+		for(File modFile : new File(InstanceEnvironmentData.getModsDir(), "1.7.10").listFiles())
+			if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
+				mods.add(modFile);
+		
 		PackerContext context = new PackerContext();
 		context.modURLs = new ArrayList<URL>(mods.size());
 		for(File f : mods)
@@ -266,16 +270,15 @@ public class SetupEntryPoint {
 							continue;
 						}
 						
-						if(ze_in.getName().endsWith(".class")) {
-							String className = ze_in.getName();
-							className = className.substring(0, className.length() - 6).replace('/', '.');
-							classToSourceMap.put(className, inputURL.toString());
-						}
-						
-						
 						if(!seenEntries.add(ze_in.getName()))
 							System.err.println("Duplicate entry: "+ze_in.getName());
 						else {
+							if(ze_in.getName().endsWith(".class")) {
+								String className = ze_in.getName();
+								className = className.substring(0, className.length() - 6).replace('/', '.');
+								classToSourceMap.put(className, inputURL.toString());
+							}
+							
 							z_out.putNextEntry(new ZipEntry(ze_in.getName()));
 							copyStream(z_in, z_out);
 							z_in.closeEntry();
