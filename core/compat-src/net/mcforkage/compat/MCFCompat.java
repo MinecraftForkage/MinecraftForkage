@@ -62,11 +62,15 @@ public class MCFCompat {
 			}
 			@Override
 			public byte[] getClassBytes(String arg0) throws IOException {
+				// prevent some mods from deciding they're running in MCP
 				if(arg0.equals("net.minecraft.world.World")) {
-					// prevent CodeChickenLib from deciding it's running in MCP
 					StackTraceElement[] stackTrace = new Exception().getStackTrace();
 					
 					if(stackTrace[1].getClassName().equals("codechicken.lib.asm.ObfMapping") && stackTrace[1].getMethodName().equals("<clinit>"))
+						return null;
+					if(stackTrace[1].getClassName().equals("micdoodle8.mods.miccore.MicdoodlePlugin") && stackTrace[1].getMethodName().equals("getAccessTransformerClass"))
+						return null;
+					if(stackTrace[1].getClassName().equals("logisticspipes.asm.LogisticsPipesCoreLoader") && stackTrace[1].getMethodName().equals("<init>"))
 						return null;
 				}
 					

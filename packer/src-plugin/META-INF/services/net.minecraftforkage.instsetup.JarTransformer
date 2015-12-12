@@ -2,3 +2,4 @@ net.minecraftforkage.setup_plugin.FMLModSearchTransformer
 net.minecraftforkage.setup_plugin.OptionalTransformer
 net.minecraftforkage.setup_plugin.ObjectHolderTransformer
 net.minecraftforkage.setup_plugin.CoremodSearchTransformer
+net.minecraftforkage.setup_plugin_compat.PlayerAPITransformerTransformer

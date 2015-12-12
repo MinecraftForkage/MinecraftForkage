@@ -684,9 +684,13 @@ public class Loader
             if ("required-before".equals(instruction) || "required-after".equals(instruction))
             {
                 // You can't require everything
-                if (!targetIsAll)
+            	if (!targetIsAll)
                 {
-                    requirements.add(VersionParser.parseVersionReference(target));
+            		ArtifactVersion modAndVersion = VersionParser.parseVersionReference(target);
+            		
+            		// MCF provides AppleCore interface; mods that depend on AppleCore don't actually need it installed
+                	if(!modAndVersion.getLabel().equals("AppleCore"))
+            			requirements.add(modAndVersion);
                 }
                 else
                 {
@@ -709,7 +713,7 @@ public class Loader
             // after elements are things that load before we do (so they are out dependencies)
             else if ("required-after".equals(instruction) || "after".equals(instruction))
             {
-                dependencies.add(VersionParser.parseVersionReference(target));
+            	dependencies.add(VersionParser.parseVersionReference(target));
             }
             else
             {

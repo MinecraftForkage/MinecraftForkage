@@ -1,0 +1,17 @@
+--- ../src-base/minecraft/net/minecraft/util/FoodStats.java
++++ ../src-work/minecraft/net/minecraft/util/FoodStats.java
+@@ -126,12 +126,12 @@
+-    @SideOnly(Side.CLIENT)
+     public void func_75114_a(int p_75114_1_)
+     {
+         this.field_75127_a = p_75114_1_;
+     }
+ 
+-    @SideOnly(Side.CLIENT)
+     public void func_75119_b(float p_75119_1_)
+     {
+         this.field_75125_b = p_75119_1_;
+     }
++    public float getExhaustion() {return this.field_75126_c;}
++    public void setExhaustion(float v) {this.field_75126_c = v;}
+ }

@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -466,5 +467,11 @@ public class CoreModManager {
     public static List<String> getAccessTransformers()
     {
         return accessTransformers;
+    }
+    
+    @Deprecated
+    public static List<String> getLoadedCoremods() {
+    	// MCF: Called by codechicken.core.ClassDiscoverer
+    	return Collections.emptyList();
     }
 }

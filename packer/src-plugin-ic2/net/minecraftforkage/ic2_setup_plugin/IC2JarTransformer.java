@@ -7,6 +7,7 @@ import java.util.zip.ZipInputStream;
 import net.minecraftforkage.instsetup.AbstractZipFile;
 import net.minecraftforkage.instsetup.InstanceEnvironmentData;
 import net.minecraftforkage.instsetup.JarTransformer;
+import net.minecraftforkage.instsetup.PackerContext;
 
 public class IC2JarTransformer extends JarTransformer {
 
@@ -16,7 +17,7 @@ public class IC2JarTransformer extends JarTransformer {
 	}
 	
 	@Override
-	public void transform(AbstractZipFile zipFile) throws Exception {
+	public void transform(AbstractZipFile zipFile, PackerContext context) throws Exception {
 		
 		if(!zipFile.doesPathExist("lib/ejml-0.23.jar"))
 			return;
@@ -48,7 +49,7 @@ public class IC2JarTransformer extends JarTransformer {
 		
 		zipFile.delete("lib/ejml-0.23.jar");
 		
-		InstanceEnvironmentData.coremodsToIgnore.add("ic2.core.coremod.IC2core");
+		//InstanceEnvironmentData.coremodsToIgnore.add("ic2.core.coremod.IC2core");
 	}
 
 }
