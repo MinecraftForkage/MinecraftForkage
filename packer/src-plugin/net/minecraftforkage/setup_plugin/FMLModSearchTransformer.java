@@ -106,6 +106,10 @@ public class FMLModSearchTransformer extends JarTransformer {
 						if(dependencyString != null) {
 							for(String part : dependencyString.split(";")) {
 								part = part.trim();
+								
+								// XXX: FML compat, remove eventually
+								if(part.equals("")) continue;
+								
 								int i = part.indexOf(":");
 								if(i < 0)
 									throw new RuntimeException("Mod "+fields.get("modid")+" has invalid dependency string "+dependencyString);

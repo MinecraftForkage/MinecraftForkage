@@ -53,13 +53,14 @@ public class SplashProgress
     private static final IResourcePack fmlPack = createFmlResourcePack();
 
     private static int fontTexture;
-    private static ResourceLocation fontLocation = new ResourceLocation("textures/font/ascii.png");
+    private static final String fontLocation = "/assets/minecraft/textures/font/ascii.png";
+    private static final ResourceLocation fontLocationResLoc = new ResourceLocation("textures/font/ascii.png");
     private static int logoTexture;
-    private static ResourceLocation logoLocation = new ResourceLocation("textures/gui/title/mojang.png");
+    private static final String logoLocation = "/assets/minecraft/textures/gui/title/mojang.png";
     private static int forgeTexture;
-    private static ResourceLocation forgeLocation = new ResourceLocation("fml", "textures/gui/forge.png");
+    private static final String forgeLocation = "/assets/fml/textures/gui/forge.png";
 
-    private static ResourceLocation configLocation = new ResourceLocation("fml", "splash.properties");
+    private static final String configLocation = "/assets/fml/splash.properties";
     private static final Properties config = loadConfig();
 
     private static final boolean enabled = Boolean.parseBoolean(config.getProperty("enabled"));
@@ -410,7 +411,7 @@ public class SplashProgress
         InputStream s = null;
         try
         {
-            s = fmlPack.getInputStream(configLocation);
+            s = SplashProgress.class.getResourceAsStream(configLocation);
             Properties config = new Properties();
             config.load(s);
             return config;
@@ -431,13 +432,13 @@ public class SplashProgress
         return Integer.decode(config.getProperty(name));
     }
 
-    private static void loadTexture(IResourcePack pack, int name, ResourceLocation location)
+    private static void loadTexture(IResourcePack pack, int name, String location)
     {
         InputStream s = null;
         try
         {
-            s = pack.getInputStream(location);
-            TextureUtil.uploadTextureImageAllocate(name, ImageIO.read(pack.getInputStream(location)), false, false);
+            s = SplashProgress.class.getResourceAsStream(location);
+            TextureUtil.uploadTextureImageAllocate(name, ImageIO.read(s), false, false);
         }
         catch(IOException e)
         {
@@ -454,7 +455,7 @@ public class SplashProgress
     {
         public SplashFontRenderer()
         {
-            super(Minecraft.getMinecraft().gameSettings, fontLocation, null, false);
+            super(Minecraft.getMinecraft().gameSettings, fontLocationResLoc, null, false);
             super.onResourceManagerReload(null);
         }
 

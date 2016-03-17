@@ -21,6 +21,7 @@ public abstract class JarTransformer implements DependencySortedObject {
 	
 	/**
 	 * Main entry point for a JAR transformer.
+	 * This will only be called once for any given instance of the JarTransformer.
 	 */
 	public abstract void transform(AbstractZipFile zipFile, PackerContext context) throws Exception;
 	

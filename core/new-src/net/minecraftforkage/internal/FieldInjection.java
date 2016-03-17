@@ -11,11 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Level;
+
 import net.minecraftforkage.PackerDataUtils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.relauncher.FMLLaunchHandler;
@@ -41,16 +44,16 @@ public class FieldInjection {
 			
 			if(!Modifier.isStatic(f.getModifiers())) {
 				
-				// Could be a Scala mod
 				try {
-					Class<?> instanceSource = (className.endsWith("$") ? f.getDeclaringClass() : Class.forName(className+"$"));
-					instance = instanceSource.getField("MODULE$").get(null);
+					instance = findInstance(f.getDeclaringClass());
 				} catch(Exception e) {
-					throw new RuntimeException(className+"."+fieldName+" is not static (for "+type+" injection)", e);
+					throw new RuntimeException(className+"."+fieldName+" is not static, and couldn't find an appropriate instance (for "+type+" injection)", e);
 				}
 			}
-			if(value == null)
-				throw new IllegalArgumentException("injecting null?");
+			if(value == null) {
+				FMLLog.log(Level.ERROR, new IllegalArgumentException("injecting null?"), "Injecting null into field %s of type %s?", f.toString(), f.getType().toString());
+				return;
+			}
 			if(!f.getType().isAssignableFrom(value.getClass()))
 				throw new RuntimeException(className+"."+fieldName+" has type "+f.getType()+", not compatible with actual value type "+value.getClass().getName());
 			f.set(instance, value);
@@ -89,6 +92,21 @@ public class FieldInjection {
 				}
 			}
 		}
+	}
+
+	private static Object findInstance(Class<?> ofClass) throws Exception {
+		
+		// Mod?
+		for(ModContainer container : Loader.instance().getActiveModList()) {
+			Object instance = container.getMod();
+			if(ofClass.isInstance(instance))
+				return instance;
+		}
+		
+		
+		// Scala singleton?
+		Class<?> instanceSource = (ofClass.getName().endsWith("$") ? ofClass : Class.forName(ofClass.getName()+"$"));
+		return instanceSource.getField("MODULE$").get(null);
 	}
 
 	/**

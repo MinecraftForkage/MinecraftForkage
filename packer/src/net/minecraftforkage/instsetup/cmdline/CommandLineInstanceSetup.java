@@ -96,8 +96,11 @@ public class CommandLineInstanceSetup {
 			@SuppressWarnings("resource")
 			URLClassLoader mcLoader = new URLClassLoader(urls.toArray(new URL[0]));
 
-			// Must be a LaunchClassLoader; many things in Minecraft rely on this.
-			// The LaunchClassLoader's parent is implicitly the one used to load it (here libLoader).
+			// Required for Log4J. Otherwise Log4J uses a SimpleLoggerContextFactory
+			// instead of the usual Log4jContextFactory, which leads to creating
+			// SimpleLoggers instead of core.Loggers, which leads to INpureCore
+			// crashing when it can't cast the loggers to core.Loggers.
+			Thread.currentThread().setContextClassLoader(mcLoader);
 			
 			List<String> allRunArgs = new ArrayList<>();
 			allRunArgs.addAll(Arrays.asList(runArgs));
@@ -106,6 +109,7 @@ public class CommandLineInstanceSetup {
 			
 			Class<?> mcMain = mcLoader.loadClass("net.minecraft.launchwrapper.Launch");
 			Method mainMethod = mcMain.getMethod("main", String[].class);
+			//System.in.read();
 			mainMethod.invoke(null, (Object)allRunArgs.toArray(new String[0]));
 		}
 	}

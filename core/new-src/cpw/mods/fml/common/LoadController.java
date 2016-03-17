@@ -227,35 +227,39 @@ public class LoadController
 
     private void sendEventToModContainer(FMLEvent stateEvent, ModContainer mc)
     {
-        String modId = mc.getModId();
-        Collection<String> requirements =  Collections2.transform(mc.getRequirements(),new ArtifactVersionNameFunction());
-        for (ArtifactVersion av : mc.getDependencies())
-        {
-            if (av.getLabel()!= null && requirements.contains(av.getLabel()) && modStates.containsEntry(av.getLabel(),ModState.ERRORED))
-            {
-                FMLLog.log(modId, Level.ERROR, "Skipping event %s and marking errored mod %s since required dependency %s has errored", stateEvent.getEventType(), modId, av.getLabel());
-                modStates.put(modId, ModState.ERRORED);
-                return;
-            }
-        }
-        activeContainer = mc;
-        stateEvent.applyModContainer(activeContainer());
-        ThreadContext.put("mod", modId);
-        FMLLog.log(modId, Level.TRACE, "Sending event %s to mod %s", stateEvent.getEventType(), modId);
-        eventChannels.get(modId).post(stateEvent);
-        FMLLog.log(modId, Level.TRACE, "Sent event %s to mod %s", stateEvent.getEventType(), modId);
-        ThreadContext.remove("mod");
-        activeContainer = null;
-        if (stateEvent instanceof FMLStateEvent)
-        {
-            if (!errors.containsKey(modId))
-            {
-                modStates.put(modId, ((FMLStateEvent)stateEvent).getModState());
-            }
-            else
-            {
-                modStates.put(modId, ModState.ERRORED);
-            }
+    	try {
+	        String modId = mc.getModId();
+	        Collection<String> requirements =  Collections2.transform(mc.getRequirements(),new ArtifactVersionNameFunction());
+	        /*for (ArtifactVersion av : mc.getDependencies())
+	        {
+	            if (av.getLabel()!= null && requirements.contains(av.getLabel()) && modStates.containsEntry(av.getLabel(),ModState.ERRORED))
+	            {
+	                FMLLog.log(modId, Level.ERROR, "Skipping event %s and marking errored mod %s since required dependency %s has errored", stateEvent.getEventType(), modId, av.getLabel());
+	                modStates.put(modId, ModState.ERRORED);
+	                return;
+	            }
+	        }*/
+	        activeContainer = mc;
+	        stateEvent.applyModContainer(activeContainer());
+	        ThreadContext.put("mod", modId);
+	        FMLLog.log(modId, Level.TRACE, "Sending event %s to mod %s", stateEvent.getEventType(), modId);
+	        eventChannels.get(modId).post(stateEvent);
+	        FMLLog.log(modId, Level.TRACE, "Sent event %s to mod %s", stateEvent.getEventType(), modId);
+	        ThreadContext.remove("mod");
+	        activeContainer = null;
+	        if (stateEvent instanceof FMLStateEvent)
+	        {
+	            if (!errors.containsKey(modId))
+	            {
+	                modStates.put(modId, ((FMLStateEvent)stateEvent).getModState());
+	            }
+	            else
+	            {
+	                modStates.put(modId, ModState.ERRORED);
+	            }
+	        }
+        } catch(Throwable e) {
+        	e.printStackTrace();
         }
     }
 
@@ -287,14 +291,8 @@ public class LoadController
 
     public void errorOccurred(ModContainer modContainer, Throwable exception)
     {
-        if (exception instanceof InvocationTargetException)
-        {
-            errors.put(modContainer.getModId(), ((InvocationTargetException)exception).getCause());
-        }
-        else
-        {
-            errors.put(modContainer.getModId(), exception);
-        }
+    	exception.printStackTrace();
+    	System.exit(1);
     }
 
     public void printModStates(StringBuilder ret)

@@ -307,7 +307,7 @@ public class FMLContainer extends DummyModContainer implements WorldAccessContai
     public Certificate getSigningCertificate()
     {
         Certificate[] certificates = getClass().getProtectionDomain().getCodeSource().getCertificates();
-        return certificates != null ? certificates[0] : null;
+        return certificates != null && certificates.length > 0 ? certificates[0] : null;
     }
 
     @Override

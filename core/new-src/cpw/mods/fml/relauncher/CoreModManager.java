@@ -12,27 +12,15 @@
 
 package cpw.mods.fml.relauncher;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
@@ -43,15 +31,13 @@ import org.apache.logging.log4j.Level;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ObjectArrays;
 import com.google.common.primitives.Ints;
 import com.google.common.reflect.TypeToken;
 
 import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.asm.transformers.ModAccessTransformer;
+import cpw.mods.fml.common.launcher.FMLDeobfTweaker;
 import cpw.mods.fml.common.launcher.FMLInjectionAndSortingTweaker;
 import cpw.mods.fml.common.launcher.FMLTweaker;
 import cpw.mods.fml.common.toposort.TopologicalSort;
@@ -62,13 +48,9 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 public class CoreModManager {
-    private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
-    private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static final Attributes.Name MODSIDE = new Attributes.Name("ModSide");
     private static String[] rootPlugins = { "cpw.mods.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin" };
     private static List<FMLPluginWrapper> loadPlugins;
-    private static boolean deobfuscatedEnvironment;
-    private static FMLTweaker tweaker;
+    private final static boolean deobfuscatedEnvironment = true;
     private static File mcDir;
     private static List<String> accessTransformers = Lists.newArrayList();
 
@@ -178,28 +160,9 @@ public class CoreModManager {
     public static void handleLaunch(File mcDir, LaunchClassLoader classLoader, FMLTweaker tweaker)
     {
         CoreModManager.mcDir = mcDir;
-        CoreModManager.tweaker = tweaker;
-        try
-        {
-            // Are we in a 'decompiled' environment?
-            byte[] bs = classLoader.getClassBytes("net.minecraft.world.World");
-            if (bs != null)
-            {
-                FMLRelaunchLog.info("Managed to load a deobfuscated Minecraft name- we are in a deobfuscated environment. Skipping runtime deobfuscation");
-                deobfuscatedEnvironment = true;
-            }
-        }
-        catch (IOException e1)
-        {
-        }
-
-        if (!deobfuscatedEnvironment)
-        {
-            FMLRelaunchLog.fine("Enabling runtime deobfuscation");
-        }
-
-        tweaker.injectCascadingTweak("cpw.mods.fml.common.launcher.FMLInjectionAndSortingTweaker");
-
+        
+        Launch.injectCascadingTweak(new FMLInjectionAndSortingTweaker());
+        
         loadPlugins = new ArrayList<FMLPluginWrapper>();
         for (String rootPluginName : rootPlugins)
         {
@@ -225,10 +188,15 @@ public class CoreModManager {
             loadCoreMod(classLoader, coreModClassName);
         }
         discoverCoreMods(mcDir, classLoader);
-
+        
+        for (FMLPluginWrapper wrapper : loadPlugins)
+        {
+            Launch.injectCascadingTweak(wrapper);
+        }
     }
 
-    private static void discoverCoreMods(File mcDir, LaunchClassLoader classLoader)
+    @SuppressWarnings("serial")
+	private static void discoverCoreMods(File mcDir, LaunchClassLoader classLoader)
     {
         ModListHelper.parseModList(mcDir);
         FMLRelaunchLog.fine("Discovering coremods");
@@ -236,35 +204,11 @@ public class CoreModManager {
         // TODO: handle cascading tweakers
         if(PackerDataUtils.read("mcforkage-cascading-tweakers.json", new TypeToken<List<Map<String,String>>>() {}).size() > 0)
         	throw new RuntimeException("Can't handle cascading tweakers");
-        //handleCascadingTweak(coreMod, jar, cascadedTweaker, classLoader, sortOrder);
         
         List<String> coremodClasses = PackerDataUtils.read("mcforkage-coremods.json", new TypeToken<List<String>>(){});
         
         for(String coremodClass : coremodClasses) {
         	loadCoreMod(classLoader, coremodClass);
-        }
-    }
-
-    private static Method ADDURL;
-
-    private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder)
-    {
-        try
-        {
-            // Have to manually stuff the tweaker into the parent classloader
-            if (ADDURL == null)
-            {
-                ADDURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-                ADDURL.setAccessible(true);
-            }
-            ADDURL.invoke(classLoader.getClass().getClassLoader(), coreMod.toURI().toURL());
-            classLoader.addURL(coreMod.toURI().toURL());
-            CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
-            tweakSorting.put(cascadedTweaker,sortingOrder);
-        }
-        catch (Exception e)
-        {
-            FMLRelaunchLog.log(Level.INFO, e, "There was a problem trying to load the mod dir tweaker %s", coreMod.getAbsolutePath());
         }
     }
 
@@ -389,20 +333,8 @@ public class CoreModManager {
     {
 
         Launch.blackboard.put("fml.deobfuscatedEnvironment", deobfuscatedEnvironment);
-        tweaker.injectCascadingTweak("cpw.mods.fml.common.launcher.FMLDeobfTweaker");
+        Launch.injectCascadingTweak(new FMLDeobfTweaker());
         tweakSorting.put("cpw.mods.fml.common.launcher.FMLDeobfTweaker", Integer.valueOf(1000));
-    }
-
-    public static void injectCoreModTweaks(FMLInjectionAndSortingTweaker fmlInjectionAndSortingTweaker)
-    {
-        @SuppressWarnings("unchecked")
-        List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
-        // Add the sorting tweaker first- it'll appear twice in the list
-        tweakers.add(0, fmlInjectionAndSortingTweaker);
-        for (FMLPluginWrapper wrapper : loadPlugins)
-        {
-            tweakers.add(wrapper);
-        }
     }
 
     private static Map<String,Integer> tweakSorting = Maps.newHashMap();

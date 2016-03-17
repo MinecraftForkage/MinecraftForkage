@@ -20,7 +20,6 @@ public class FMLInjectionAndSortingTweaker implements ITweaker {
     private boolean run;
     public FMLInjectionAndSortingTweaker()
     {
-        CoreModManager.injectCoreModTweaks(this);
         run = false;
     }
 

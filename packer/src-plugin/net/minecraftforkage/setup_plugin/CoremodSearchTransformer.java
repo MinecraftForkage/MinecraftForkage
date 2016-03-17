@@ -68,8 +68,12 @@ public class CoremodSearchTransformer extends JarTransformer {
 					accessTransformers.add(value);
 				
 				value = attr.getValue("TweakClass");
-				if(value != null)
-					cascadingTweakers.add(new CascadingTweaker(value, attr.getValue("TweakOrder")));
+				if(value != null) {
+					// XXX: compatibility - remove check later!
+					if(!value.equals("forestry.shade.javacheck.Java7Checker")) {
+						cascadingTweakers.add(new CascadingTweaker(value, attr.getValue("TweakOrder")));
+					}
+				}
 				
 				value = attr.getValue("ModType");
 				if(value != null)

@@ -19,7 +19,7 @@ public class MCFCompat {
 		cl.registerTransformer("net.mcforkage.compat.HardcoreEnderExpansionTransformer");
 		cl.registerTransformer("net.mcforkage.compat.GregtechFluidStackTransformer");
 		
-		
+		cl.addTransformerExclusion("openmods.stencil.FramebufferHooks");
 		
 		
 		final LaunchClassLoader old = Launch.classLoader;
@@ -67,6 +67,8 @@ public class MCFCompat {
 					StackTraceElement[] stackTrace = new Exception().getStackTrace();
 					
 					if(stackTrace[1].getClassName().equals("codechicken.lib.asm.ObfMapping") && stackTrace[1].getMethodName().equals("<clinit>"))
+						return null;
+					if(stackTrace[1].getClassName().equals("cofh.asm.LoadingPlugin") && stackTrace[1].getMethodName().equals("<clinit>"))
 						return null;
 					if(stackTrace[1].getClassName().equals("micdoodle8.mods.miccore.MicdoodlePlugin") && stackTrace[1].getMethodName().equals("getAccessTransformerClass"))
 						return null;

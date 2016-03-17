@@ -1,22 +1,15 @@
 package cpw.mods.fml.common.asm.transformers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import net.minecraftforkage.PackerDataUtils;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteSource;
-import com.google.common.io.CharSource;
 import com.google.common.reflect.TypeToken;
 
 import cpw.mods.fml.relauncher.FMLRelaunchLog;
@@ -24,7 +17,6 @@ import cpw.mods.fml.relauncher.FMLRelaunchLog;
 public class ModAccessTransformer extends AccessTransformer {
     private static List<String> configPathList = new ArrayList<String>();
     
-    @SuppressWarnings("unchecked")
 	public ModAccessTransformer() throws Exception
     {
         super(ModAccessTransformer.class);
@@ -38,7 +30,12 @@ public class ModAccessTransformer extends AccessTransformer {
 	            processATFile(new ByteSource() {
 					@Override
 					public InputStream openStream() throws IOException {
-						return ModAccessTransformer.class.getResourceAsStream("/META-INF/"+configPath);
+						InputStream stream = ModAccessTransformer.class.getResourceAsStream("/META-INF/"+configPath);
+						if(stream == null) {
+							new IOException("Resource not found: /META-INF/"+configPath).printStackTrace();
+							return new ByteArrayInputStream(new byte[0]);
+						}
+						return stream;
 					}
 				}.asCharSource(Charset.forName("UTF-8")));
 	            int added = getModifiers().size() - old_count;

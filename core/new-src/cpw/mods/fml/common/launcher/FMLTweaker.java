@@ -177,11 +177,4 @@ public class FMLTweaker implements ITweaker {
     {
         return jarLocation;
     }
-
-    public void injectCascadingTweak(String tweakClassName)
-    {
-        @SuppressWarnings("unchecked")
-        List<String> tweakClasses = (List<String>) Launch.blackboard.get("TweakClasses");
-        tweakClasses.add(tweakClassName);
-    }
 }
