@@ -1,14 +1,26 @@
 package cpw.mods.fml.client;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.*;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,15 +30,18 @@ import net.minecraft.client.resources.FileResourcePack;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Level;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.SharedDrawable;
+import org.lwjgl.util.glu.GLU;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
@@ -45,42 +60,114 @@ public class SplashProgress
     private static volatile boolean pause = false;
     private static volatile boolean done = false;
     private static Thread thread;
+    private static volatile Throwable threadError;
     private static int angle = 0;
     private static final Lock lock = new ReentrantLock(true);
     private static SplashFontRenderer fontRenderer;
 
     private static final IResourcePack mcPack = Minecraft.getMinecraft().mcDefaultResourcePack;
-    private static final IResourcePack fmlPack = createFmlResourcePack();
+    private static final IResourcePack fmlPack = createResourcePack(FMLSanityChecker.fmlLocation);
+    private static IResourcePack miscPack;
 
-    private static int fontTexture;
-    private static final String fontLocation = "/assets/minecraft/textures/font/ascii.png";
-    private static final ResourceLocation fontLocationResLoc = new ResourceLocation("textures/font/ascii.png");
-    private static int logoTexture;
-    private static final String logoLocation = "/assets/minecraft/textures/gui/title/mojang.png";
-    private static int forgeTexture;
-    private static final String forgeLocation = "/assets/fml/textures/gui/forge.png";
+    private static Texture fontTexture;
+    private static Texture logoTexture;
+    private static Texture forgeTexture;
 
-    private static final String configLocation = "/assets/fml/splash.properties";
-    private static final Properties config = loadConfig();
+    private static Properties config;
 
-    private static final boolean enabled = Boolean.parseBoolean(config.getProperty("enabled"));
-    private static final int backgroundColor = getInt("background");
-    private static final int fontColor = getInt("font");
-    private static final int barBorderColor = getInt("barBorder");
-    private static final int barColor = getInt("bar");
-    private static final int barBackgroundColor = getInt("barBackground");
+    private static boolean enabled;
+    private static boolean rotate;
+    private static int logoOffset;
+    private static int backgroundColor;
+    private static int fontColor;
+    private static int barBorderColor;
+    private static int barColor;
+    private static int barBackgroundColor;
+
+    private static String getString(String name, String def)
+    {
+        String value = config.getProperty(name, def);
+        config.setProperty(name, value);
+        return value;
+    }
+
+    private static boolean getBool(String name, boolean def)
+    {
+        return Boolean.parseBoolean(getString(name, Boolean.toString(def)));
+    }
+
+    private static int getInt(String name, int def)
+    {
+        return Integer.decode(getString(name, Integer.toString(def)));
+    }
+     
+    private static int getHex(String name, int def)
+    {
+        return Integer.decode(getString(name, "0x" + Integer.toString(def, 16).toUpperCase()));
+    }
 
     public static void start()
     {
+        File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/splash.properties");
+        FileReader r = null;
+        config = new Properties();
+        try
+        {
+            r = new FileReader(configFile);
+            config.load(r);
+        }
+        catch(IOException e)
+        {
+            FMLLog.info("Could not load splash.properties, will create a default one");
+        }
+        finally
+        {
+            IOUtils.closeQuietly(r);
+        }
+
+        // Enable if we have the flag, and there's either no optifine, or optifine has added a key to the blackboard ("optifine.ForgeSplashCompatible")
+        // Optifine authors - add this key to the blackboard if you feel your modifications are now compatible with this code.
+        enabled =            getBool("enabled",      true) && ( (!FMLClientHandler.instance().hasOptifine()) || Launch.blackboard.containsKey("optifine.ForgeSplashCompatible"));
+        rotate =             getBool("rotate",       false);
+        logoOffset =         getInt("logoOffset",    0);
+        backgroundColor =    getHex("background",    0xFFFFFF);
+        fontColor =          getHex("font",          0x000000);
+        barBorderColor =     getHex("barBorder",     0xC0C0C0);
+        barColor =           getHex("bar",           0xCB3D35);
+        barBackgroundColor = getHex("barBackground", 0xFFFFFF);
+
+        final ResourceLocation fontLoc = new ResourceLocation(getString("fontTexture", "textures/font/ascii.png"));
+        final ResourceLocation logoLoc = new ResourceLocation(getString("logoTexture", "textures/gui/title/mojang.png"));
+        final ResourceLocation forgeLoc = new ResourceLocation(getString("forgeTexture", "fml:textures/gui/forge.gif"));
+
+        File miscPackFile = new File(Minecraft.getMinecraft().mcDataDir, getString("resourcePackPath", "resources"));
+
+        FileWriter w = null;
+        try
+        {
+            w = new FileWriter(configFile);
+            config.store(w, "Splash screen properties");
+        }
+        catch(IOException e)
+        {
+            FMLLog.log(Level.ERROR, e, "Could not save the splash.properties file");
+        }
+        finally
+        {
+            IOUtils.closeQuietly(w);
+        }
+
+        miscPack = createResourcePack(miscPackFile);
+
         if(!enabled) return;
         // getting debug info out of the way, while we still can
         FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
         {
             public String call() throws Exception
             {
-                return "' Vendor: '" + GL11.glGetString(GL11.GL_VENDOR) +
-                       "' Version: '" + GL11.glGetString(GL11.GL_VERSION) +
-                       "' Renderer: '" + GL11.glGetString(GL11.GL_RENDERER) +
+                return "' Vendor: '" + glGetString(GL_VENDOR) +
+                       "' Version: '" + glGetString(GL_VERSION) +
+                       "' Renderer: '" + glGetString(GL_RENDERER) +
                        "'";
             }
 
@@ -89,14 +176,13 @@ public class SplashProgress
                 return "GL info";
             }
         });
-        CrashReport report = CrashReport.makeCrashReport(new Throwable(), "Loading screen debug info");
+        CrashReport report = CrashReport.makeCrashReport(new Throwable()
+        {
+            @Override public String getMessage(){ return "This is just a prompt for computer specs to be printed."; }
+            @Override public void printStackTrace(final PrintWriter s){ s.println(getMessage()); }
+            @Override public void printStackTrace(final PrintStream s) { s.println(getMessage()); }
+        }, "Loading screen debug info");
         System.out.println(report.getCompleteReport());
-        fontTexture = GL11.glGenTextures();
-        loadTexture(mcPack, fontTexture, fontLocation);
-        logoTexture = GL11.glGenTextures();
-        loadTexture(mcPack, logoTexture, logoLocation);
-        forgeTexture = GL11.glGenTextures();
-        loadTexture(fmlPack, forgeTexture, forgeLocation);
 
         try
         {
@@ -120,6 +206,12 @@ public class SplashProgress
             public void run()
             {
                 setGL();
+                fontTexture = new Texture(fontLoc);
+                logoTexture = new Texture(logoLoc);
+                forgeTexture = new Texture(forgeLoc);
+                glEnable(GL_TEXTURE_2D);
+                fontRenderer = new SplashFontRenderer();
+                glDisable(GL_TEXTURE_2D);
                 while(!done)
                 {
                     ProgressBar first = null, penult = null, last = null;
@@ -134,72 +226,83 @@ public class SplashProgress
                         }
                     }
 
-                    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+                    glClear(GL11.GL_COLOR_BUFFER_BIT);
 
                     // matrix setup
                     int w = Display.getWidth();
                     int h = Display.getHeight();
-                    GL11.glViewport(0, 0, w, h);
-                    GL11.glMatrixMode(GL11.GL_PROJECTION);
-                    GL11.glLoadIdentity();
-                    GL11.glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
-                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                    GL11.glLoadIdentity();
+                    glViewport(0, 0, w, h);
+                    glMatrixMode(GL_PROJECTION);
+                    glLoadIdentity();
+                    glOrtho(320 - w/2, 320 + w/2, 240 + h/2, 240 - h/2, -1, 1);
+                    glMatrixMode(GL_MODELVIEW);
+                    glLoadIdentity();
 
                     // mojang logo
                     setColor(backgroundColor);
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, logoTexture);
-                    GL11.glBegin(GL11.GL_QUADS);
-                    GL11.glTexCoord2f(0, 0);
-                    GL11.glVertex2f(320 - 256, 240 - 256);
-                    GL11.glTexCoord2f(0, 1);
-                    GL11.glVertex2f(320 - 256, 240 + 256);
-                    GL11.glTexCoord2f(1, 1);
-                    GL11.glVertex2f(320 + 256, 240 + 256);
-                    GL11.glTexCoord2f(1, 0);
-                    GL11.glVertex2f(320 + 256, 240 - 256);
-                    GL11.glEnd();
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    glEnable(GL_TEXTURE_2D);
+                    logoTexture.bind();
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 0);
+                    glVertex2f(320 - 256, 240 - 256);
+                    glTexCoord2f(0, 1);
+                    glVertex2f(320 - 256, 240 + 256);
+                    glTexCoord2f(1, 1);
+                    glVertex2f(320 + 256, 240 + 256);
+                    glTexCoord2f(1, 0);
+                    glVertex2f(320 + 256, 240 - 256);
+                    glEnd();
+                    glDisable(GL_TEXTURE_2D);
 
                     // bars
                     if(first != null)
                     {
-                        GL11.glPushMatrix();
-                        GL11.glTranslatef(320 - (float)barWidth / 2, 310, 0);
+                        glPushMatrix();
+                        glTranslatef(320 - (float)barWidth / 2, 310, 0);
                         drawBar(first);
                         if(penult != null)
                         {
-                            GL11.glTranslatef(0, barOffset, 0);
+                            glTranslatef(0, barOffset, 0);
                             drawBar(penult);
                         }
                         if(last != null)
                         {
-                            GL11.glTranslatef(0, barOffset, 0);
+                            glTranslatef(0, barOffset, 0);
                             drawBar(last);
                         }
-                        GL11.glPopMatrix();
+                        glPopMatrix();
                     }
 
                     angle += 1;
 
                     // forge logo
                     setColor(backgroundColor);
-                    GL11.glTranslatef(680, 420, 0);
-                    GL11.glRotatef(angle, 0, 0, 1);
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, forgeTexture);
-                    GL11.glBegin(GL11.GL_QUADS);
-                    GL11.glTexCoord2f(0, 0);
-                    GL11.glVertex2f(-50, -50);
-                    GL11.glTexCoord2f(0, 1);
-                    GL11.glVertex2f(-50, 50);
-                    GL11.glTexCoord2f(1, 1);
-                    GL11.glVertex2f(50, 50);
-                    GL11.glTexCoord2f(1, 0);
-                    GL11.glVertex2f(50, -50);
-                    GL11.glEnd();
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    float fw = (float)forgeTexture.getWidth() / 2 / 2;
+                    float fh = (float)forgeTexture.getHeight() / 2 / 2;
+                    if(rotate)
+                    {
+                        float sh = Math.max(fw, fh);
+                        glTranslatef(320 + w/2 - sh - logoOffset, 240 + h/2 - sh - logoOffset, 0);
+                        glRotatef(angle, 0, 0, 1);
+                    }
+                    else
+                    {
+                        glTranslatef(320 + w/2 - fw - logoOffset, 240 + h/2 - fh - logoOffset, 0);
+                    }
+                    int f = (angle / 10) % forgeTexture.getFrames();
+                    glEnable(GL_TEXTURE_2D);
+                    forgeTexture.bind();
+                    glBegin(GL_QUADS);
+                    forgeTexture.texCoord(f, 0, 0);
+                    glVertex2f(-fw, -fh);
+                    forgeTexture.texCoord(f, 0, 1);
+                    glVertex2f(-fw, fh);
+                    forgeTexture.texCoord(f, 1, 1);
+                    glVertex2f(fw, fh);
+                    forgeTexture.texCoord(f, 1, 0);
+                    glVertex2f(fw, -fh);
+                    glEnd();
+                    glDisable(GL_TEXTURE_2D);
 
                     Display.update();
                     if(pause)
@@ -222,49 +325,49 @@ public class SplashProgress
 
             private void setColor(int color)
             {
-                GL11.glColor3ub((byte)((color >> 16) & 0xFF), (byte)((color >> 8) & 0xFF), (byte)(color & 0xFF));
+                glColor3ub((byte)((color >> 16) & 0xFF), (byte)((color >> 8) & 0xFF), (byte)(color & 0xFF));
             }
 
             private void drawBox(int w, int h)
             {
-                GL11.glBegin(GL11.GL_QUADS);
-                GL11.glVertex2f(0, 0);
-                GL11.glVertex2f(0, h);
-                GL11.glVertex2f(w, h);
-                GL11.glVertex2f(w, 0);
-                GL11.glEnd();
+                glBegin(GL11.GL_QUADS);
+                glVertex2f(0, 0);
+                glVertex2f(0, h);
+                glVertex2f(w, h);
+                glVertex2f(w, 0);
+                glEnd();
             }
 
             private void drawBar(ProgressBar b)
             {
-                GL11.glPushMatrix();
+                glPushMatrix();
                 // title - message
                 setColor(fontColor);
-                GL11.glScalef(2, 2, 1);
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                glScalef(2, 2, 1);
+                glEnable(GL_TEXTURE_2D);
                 fontRenderer.drawString(b.getTitle() + " - " + b.getMessage(), 0, 0, 0x000000);
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                GL11.glPopMatrix();
+                glDisable(GL_TEXTURE_2D);
+                glPopMatrix();
                 // border
-                GL11.glPushMatrix();
-                GL11.glTranslatef(0, textHeight2, 0);
+                glPushMatrix();
+                glTranslatef(0, textHeight2, 0);
                 setColor(barBorderColor);
                 drawBox(barWidth, barHeight);
                 // interior
                 setColor(barBackgroundColor);
-                GL11.glTranslatef(1, 1, 0);
+                glTranslatef(1, 1, 0);
                 drawBox(barWidth - 2, barHeight - 2);
                 // slidy part
                 setColor(barColor);
                 drawBox((barWidth - 2) * b.getStep() / b.getSteps(), barHeight - 2);
                 // progress text
                 String progress = "" + b.getStep() + "/" + b.getSteps();
-                GL11.glTranslatef(((float)barWidth - 2 - fontRenderer.getStringWidth(progress))/ 2, 2, 0);
+                glTranslatef(((float)barWidth - 2 - fontRenderer.getStringWidth(progress))/ 2, 2, 0);
                 setColor(fontColor);
-                GL11.glScalef(2, 2, 1);
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                glScalef(2, 2, 1);
+                glEnable(GL_TEXTURE_2D);
                 fontRenderer.drawString(progress, 0, 0, 0x000000);
-                GL11.glPopMatrix();
+                glPopMatrix();
             }
 
             private void setGL()
@@ -279,17 +382,11 @@ public class SplashProgress
                     e.printStackTrace();
                     throw new RuntimeException(e);
                 }
-                GL11.glClearColor((float)((backgroundColor >> 16) & 0xFF) / 0xFF, (float)((backgroundColor >> 8) & 0xFF) / 0xFF, (float)(backgroundColor & 0xFF) / 0xFF, 1);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GL11.glEnable(GL11.GL_BLEND);
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                if(fontRenderer == null)
-                {
-                    fontRenderer = new SplashFontRenderer();
-                }
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                glClearColor((float)((backgroundColor >> 16) & 0xFF) / 0xFF, (float)((backgroundColor >> 8) & 0xFF) / 0xFF, (float)(backgroundColor & 0xFF) / 0xFF, 1);
+                glDisable(GL_LIGHTING);
+                glDisable(GL_DEPTH_TEST);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             }
 
             private void clearGL()
@@ -298,11 +395,11 @@ public class SplashProgress
                 mc.displayWidth = Display.getWidth();
                 mc.displayHeight = Display.getHeight();
                 mc.resize(mc.displayWidth, mc.displayHeight);
-                GL11.glClearColor(1, 1, 1, 1);
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glDepthFunc(GL11.GL_LEQUAL);
-                GL11.glEnable(GL11.GL_ALPHA_TEST);
-                GL11.glAlphaFunc(GL11.GL_GREATER, .1f);
+                glClearColor(1, 1, 1, 1);
+                glEnable(GL11.GL_DEPTH_TEST);
+                glDepthFunc(GL11.GL_LEQUAL);
+                glEnable(GL11.GL_ALPHA_TEST);
+                glAlphaFunc(GL11.GL_GREATER, .1f);
                 try
                 {
                     Display.getDrawable().releaseContext();
@@ -323,10 +420,19 @@ public class SplashProgress
             public void uncaughtException(Thread t, Throwable e)
             {
                 FMLLog.log(Level.ERROR, e, "Splash thread Exception");
-                Minecraft.getMinecraft().crashed(CrashReport.makeCrashReport(e, "Splash thread"));
+                threadError = e;
             }
         });
         thread.start();
+        checkThreadState();
+    }
+    
+    private static void checkThreadState()
+    {
+        if(thread.getState() == Thread.State.TERMINATED || threadError != null)
+        {
+            throw new IllegalStateException("Splash thread", threadError);
+        }
     }
 
     /**
@@ -339,6 +445,7 @@ public class SplashProgress
     public static void pause()
     {
         if(!enabled) return;
+        checkThreadState();
         pause = true;
         lock.lock();
         try
@@ -360,6 +467,7 @@ public class SplashProgress
     public static void resume()
     {
         if(!enabled) return;
+        checkThreadState();
         pause = false;
         try
         {
@@ -377,15 +485,16 @@ public class SplashProgress
     public static void finish()
     {
         if(!enabled) return;
+        checkThreadState();
         try
         {
             done = true;
             thread.join();
             d.releaseContext();
             Display.getDrawable().makeCurrent();
-            GL11.glDeleteTextures(fontTexture);
-            GL11.glDeleteTextures(logoTexture);
-            GL11.glDeleteTextures(forgeTexture);
+            fontTexture.delete();
+            logoTexture.delete();
+            forgeTexture.delete();
         }
         catch (Exception e)
         {
@@ -394,36 +503,148 @@ public class SplashProgress
         }
     }
 
-    private static IResourcePack createFmlResourcePack()
+    private static IResourcePack createResourcePack(File file)
     {
-        if(FMLSanityChecker.fmlLocation.isDirectory())
+        if(file.isDirectory())
         {
-            return new FolderResourcePack(FMLSanityChecker.fmlLocation);
+            return new FolderResourcePack(file);
         }
         else
         {
-            return new FileResourcePack(FMLSanityChecker.fmlLocation);
+            return new FileResourcePack(file);
         }
     }
 
-    private static Properties loadConfig()
+    private static final IntBuffer buf = BufferUtils.createIntBuffer(4 * 1024 * 1024);
+
+    private static class Texture
     {
-        InputStream s = null;
-        try
+        private final ResourceLocation location;
+        private final int name;
+        private final int width;
+        private final int height;
+        private final int frames;
+        private final int size;
+
+        public Texture(ResourceLocation location)
         {
-            s = SplashProgress.class.getResourceAsStream(configLocation);
-            Properties config = new Properties();
-            config.load(s);
-            return config;
+            InputStream s = null;
+            try
+            {
+                this.location = location;
+                s = open(location);
+                ImageInputStream stream = ImageIO.createImageInputStream(s);
+                Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
+                if(!readers.hasNext()) throw new IOException("No suitable reader found for image" + location);
+                ImageReader reader = readers.next();
+                reader.setInput(stream);
+                frames = reader.getNumImages(true);
+                BufferedImage[] images = new BufferedImage[frames];
+                for(int i = 0; i < frames; i++)
+                {
+                    images[i] = reader.read(i);
+                }
+                reader.dispose();
+                int size = 1;
+                width = images[0].getWidth();
+                height = images[0].getHeight();
+                while((size / width) * (size / height) < frames) size *= 2;
+                this.size = size;
+                glEnable(GL_TEXTURE_2D);
+                synchronized(SplashProgress.class)
+                {
+                    name = glGenTextures();
+                    glBindTexture(GL_TEXTURE_2D, name);
+                }
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)null);
+                checkGLError("Texture creation");
+                for(int i = 0; i * (size / width) < frames; i++)
+                {
+                    for(int j = 0; i * (size / width) + j < frames && j < size / width; j++)
+                    {
+                        buf.clear();
+                        BufferedImage image = images[i * (size / width) + j];
+                        for(int k = 0; k < height; k++)
+                        {
+                            for(int l = 0; l < width; l++)
+                            {
+                                buf.put(image.getRGB(l, k));
+                            }
+                        }
+                        buf.position(0).limit(width * height);
+                        glTexSubImage2D(GL_TEXTURE_2D, 0, j * width, i * height, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buf);
+                        checkGLError("Texture uploading");
+                    }
+                }
+                glBindTexture(GL_TEXTURE_2D, 0);
+                glDisable(GL_TEXTURE_2D);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(s);
+            }
         }
-        catch(IOException e)
+
+        public ResourceLocation getLocation()
         {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            return location;
         }
-        finally
+        
+        public int getName()
         {
-            IOUtils.closeQuietly(s);
+        	return name;
+        }
+        
+        public int getWidth()
+        {
+        	return width;
+        }
+        
+        public int getHeight()
+        {
+        	return height;
+        }
+        
+        public int getFrames()
+        {
+        	return frames;
+        }
+        
+        public int getSize()
+        {
+        	return size;
+        }
+
+        public void bind()
+        {
+            glBindTexture(GL_TEXTURE_2D, name);
+        }
+
+        public void delete()
+        {
+            glDeleteTextures(name);
+        }
+
+        public float getU(int frame, float u)
+        {
+            return width * (frame % (size / width) + u) / size;
+        }
+
+        public float getV(int frame, float v)
+        {
+            return height * (frame / (size / width) + v) / size;
+        }
+
+        public void texCoord(int frame, float u, float v)
+        {
+            glTexCoord2f(getU(frame, u), getV(frame, v));
         }
     }
 
@@ -455,7 +676,7 @@ public class SplashProgress
     {
         public SplashFontRenderer()
         {
-            super(Minecraft.getMinecraft().gameSettings, fontLocationResLoc, null, false);
+            super(Minecraft.getMinecraft().gameSettings, fontTexture.getLocation(), null, false);
             super.onResourceManagerReload(null);
         }
 
@@ -463,7 +684,7 @@ public class SplashProgress
         protected void bindTexture(ResourceLocation location)
         {
             if(location != locationFontTexture) throw new IllegalArgumentException();
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, fontTexture);
+            fontTexture.bind();
         }
 
         @Override
@@ -487,5 +708,27 @@ public class SplashProgress
         {
             renderEngine.deleteTexture(mojangLogo);
         }
+    }
+
+    public static void checkGLError(String where)
+    {
+        int err = GL11.glGetError();
+        if (err != 0)
+        {
+            throw new IllegalStateException(where + ": " + GLU.gluErrorString(err));
+        }
+    }
+
+    private static InputStream open(ResourceLocation loc) throws IOException
+    {
+        if(miscPack.resourceExists(loc))
+        {
+            return miscPack.getInputStream(loc);
+        }
+        else if(fmlPack.resourceExists(loc))
+        {
+            return fmlPack.getInputStream(loc);
+        }
+        return mcPack.getInputStream(loc);
     }
 }

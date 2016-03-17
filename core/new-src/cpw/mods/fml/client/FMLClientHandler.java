@@ -187,6 +187,7 @@ public class FMLClientHandler implements IFMLSidedHandler
     @SuppressWarnings("unchecked")
     public void beginMinecraftLoading(Minecraft minecraft, @SuppressWarnings("rawtypes") List resourcePackList, IReloadableResourceManager resourceManager)
     {
+    	detectOptifine();
     	SplashProgress.start();
         client = minecraft;
         this.resourcePackList = resourcePackList;
@@ -200,19 +201,6 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
 
         FMLCommonHandler.instance().beginLoading(this);
-        try
-        {
-            Class<?> optifineConfig = Class.forName("Config", false, Loader.instance().getModClassLoader());
-            String optifineVersion = (String) optifineConfig.getField("VERSION").get(null);
-            Map<String,Object> dummyOptifineMeta = ImmutableMap.<String,Object>builder().put("name", "Optifine").put("version", optifineVersion).build();
-            ModMetadata optifineMetadata = MetadataCollection.from(getClass().getResourceAsStream("optifinemod.info"),"optifine").getMetadataForId("optifine", dummyOptifineMeta);
-            optifineContainer = new DummyModContainer(optifineMetadata);
-            FMLLog.info("Forge Mod Loader has detected optifine %s, enabling compatibility features",optifineContainer.getVersion());
-        }
-        catch (Exception e)
-        {
-            optifineContainer = null;
-        }
         try
         {
             Loader.instance().loadMods();
@@ -279,6 +267,24 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
     }
 
+    private void detectOptifine()
+    {
+        try
+        {
+            Class<?> optifineConfig = Class.forName("Config", false, Loader.instance().getModClassLoader());
+            String optifineVersion = (String) optifineConfig.getField("VERSION").get(null);
+            Map<String,Object> dummyOptifineMeta = ImmutableMap.<String,Object>builder().put("name", "Optifine").put("version", optifineVersion).build();
+            ModMetadata optifineMetadata = MetadataCollection.from(getClass().getResourceAsStream("optifinemod.info"),"optifine").getMetadataForId("optifine", dummyOptifineMeta);
+            optifineContainer = new DummyModContainer(optifineMetadata);
+            FMLLog.info("Forge Mod Loader has detected optifine %s, enabling compatibility features",optifineContainer.getVersion());
+        }
+        catch (Exception e)
+        {
+            optifineContainer = null;
+        }
+    }
+
+
     @Override
     public void haltGame(String message, Throwable t)
     {
@@ -341,7 +347,6 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
         loading = false;
         client.gameSettings.loadOptions(); //Reload options to load any mod added keybindings.
-        SplashProgress.finish();
     }
 
     @SuppressWarnings("unused")
@@ -395,6 +400,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
         else
         {
+            Loader.instance().loadingComplete();
+            SplashProgress.finish();
         }
         logMissingTextureErrors();
     }
@@ -918,6 +925,10 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public void logMissingTextureErrors()
     {
+        if (missingTextures.isEmpty() && brokenTextures.isEmpty())
+        {
+            return;
+        }
         Logger logger = LogManager.getLogger("TEXTURE ERRORS");
         logger.error(Strings.repeat("+=", 25));
         logger.error("The following texture errors were found.");

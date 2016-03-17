@@ -55,6 +55,10 @@ import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.ModContainer.Disableable;
@@ -470,6 +474,8 @@ public class Loader
             FMLLog.severe("Attempting to load configuration from %s, which is not a directory", canonicalConfigPath);
             throw new LoaderException();
         }
+
+        readInjectedDependencies();
     }
 
     public List<ModContainer> getModList()
@@ -484,8 +490,8 @@ public class Loader
      */
     public void loadMods()
     {
-    	progressBar = ProgressManager.push("FML", 5);
-    	progressBar.step("Constructing");
+    	progressBar = ProgressManager.push("Loading", 7);
+    	progressBar.step("Constructing Mods");
         initializeLoader();
         mods = Lists.newArrayList();
         namedMods = Maps.newHashMap();
@@ -527,7 +533,7 @@ public class Loader
         {
             FMLLog.fine("No user mod signature data found");
         }
-        progressBar.step("Preinitialization");
+        progressBar.step("Initializing mods Phase 1");
         modController.transition(LoaderState.PREINITIALIZATION, false);
     }
 
@@ -541,8 +547,8 @@ public class Loader
         ObjectHolderRegistry.INSTANCE.findObjectHolders(discoverer.getASMTable());
         modController.distributeStateMessage(LoaderState.PREINITIALIZATION, discoverer.getASMTable(), canonicalConfigDir);
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
-        progressBar.step("Initialization");
         modController.transition(LoaderState.INITIALIZATION, false);
+        progressBar.step("Initializing Minecraft engine");
     }
 
     private void disableRequestedMods()
@@ -694,7 +700,7 @@ public class Loader
             // before elements are things we are loaded before (so they are our dependants)
             if ("required-before".equals(instruction) || "before".equals(instruction))
             {
-            	dependants.add(VersionParser.parseVersionReference(target));
+                dependants.add(VersionParser.parseVersionReference(target));
             }
             // after elements are things that load before we do (so they are out dependencies)
             else if ("required-after".equals(instruction) || "after".equals(instruction))
@@ -722,8 +728,9 @@ public class Loader
     public void initializeMods()
     {
         // Mod controller should be in the initialization state here
+    	progressBar.step("Initializing mods Phase 2");
         modController.distributeStateMessage(LoaderState.INITIALIZATION);
-        progressBar.step("Postinitialization");
+        progressBar.step("Initializing mods Phase 3");
         modController.transition(LoaderState.POSTINITIALIZATION, false);
         modController.distributeStateMessage(FMLInterModComms.IMCEvent.class);
         modController.distributeStateMessage(LoaderState.POSTINITIALIZATION);
@@ -734,8 +741,7 @@ public class Loader
         // Dump the custom registry data map, if necessary
         GameData.dumpRegistry(minecraftDir);
         FMLLog.info("Forge Mod Loader has successfully loaded %d mod%s", mods.size(), mods.size() == 1 ? "" : "s");
-        ProgressManager.pop(progressBar);
-        progressBar = null;
+        progressBar.step("Completing Minecraft initialization");
     }
 
     public ICrashCallable getCallableCrashInformation()
@@ -1013,5 +1019,69 @@ public class Loader
         {
             FMLLog.log(Level.INFO, e, "An error occurred writing the fml mod states file, your disabled change won't persist");
         }
+    }
+
+    public void loadingComplete()
+    {
+        ProgressManager.pop(progressBar);
+        progressBar = null;
+    }
+
+    private ListMultimap<String,ArtifactVersion> injectedBefore = ArrayListMultimap.create();
+    private ListMultimap<String,ArtifactVersion> injectedAfter = ArrayListMultimap.create();
+
+    private void readInjectedDependencies()
+    {
+        File injectedDepFile = new File(getConfigDir(),"injectedDependencies.json");
+        if (!injectedDepFile.exists())
+        {
+            FMLLog.getLogger().log(Level.DEBUG, "File {} not found. No dependencies injected", injectedDepFile.getAbsolutePath());
+            return;
+        }
+        JsonParser parser = new JsonParser();
+        JsonElement injectedDeps;
+        try
+        {
+            injectedDeps = parser.parse(new FileReader(injectedDepFile));
+            for (JsonElement el : injectedDeps.getAsJsonArray())
+            {
+                JsonObject jo = el.getAsJsonObject();
+                String modId = jo.get("modId").getAsString();
+                JsonArray deps = jo.get("deps").getAsJsonArray();
+                for (JsonElement dep : deps)
+                {
+                    JsonObject depObj = dep.getAsJsonObject();
+                    String type = depObj.get("type").getAsString();
+                    if (type.equals("before")) {
+                        injectedBefore.put(modId, VersionParser.parseVersionReference(depObj.get("target").getAsString()));
+                    } else if (type.equals("after")) {
+                        injectedAfter.put(modId, VersionParser.parseVersionReference(depObj.get("target").getAsString()));
+                    } else {
+                        FMLLog.getLogger().log(Level.ERROR, "Invalid dependency type {}", type);
+                        throw new RuntimeException("Unable to parse type");
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            FMLLog.getLogger().log(Level.ERROR, "Unable to parse {} - skipping", injectedDepFile);
+            FMLLog.getLogger().throwing(Level.ERROR, e);
+            return;
+        }
+        FMLLog.getLogger().log(Level.DEBUG, "Loaded {} injected dependencies on modIds: {}", injectedBefore.size(), injectedBefore.keySet());
+    }
+
+    List<ArtifactVersion> getInjectedBefore(String modId)
+    {
+        return injectedBefore.get(modId);
+    }
+    List<ArtifactVersion> getInjectedAfter(String modId)
+    {
+        return injectedAfter.get(modId);
+    }
+
+    public final LoaderState getLoaderState()
+    {
+        return modController != null ? modController.getState() : LoaderState.NOINIT;
     }
 }
