@@ -68,84 +68,48 @@ public class FMLDeobfuscatingRemapper extends Remapper {
     {
         classNameBiMap=ImmutableBiMap.of();
     }
-
-    public void setupLoadOnly(String deobfFileName, boolean loadAll)
-    {
-        try
+    
+    private void load(InputStream in, boolean loadAll) throws IOException {
+        CharSource srgSource = new LZMAInputSupplier(in).asCharSource(Charsets.UTF_8);
+        List<String> srgList = srgSource.readLines();
+        in.close();
+        rawMethodMaps = Maps.newHashMap();
+        rawFieldMaps = Maps.newHashMap();
+        Builder<String, String> builder = ImmutableBiMap.<String,String>builder();
+        Splitter splitter = Splitter.on(CharMatcher.anyOf(": ")).omitEmptyStrings().trimResults();
+        for (String line : srgList)
         {
-            File mapData = new File(deobfFileName);
-            LZMAInputSupplier zis = new LZMAInputSupplier(new FileInputStream(mapData));
-            CharSource srgSource = zis.asCharSource(Charsets.UTF_8);
-            List<String> srgList = srgSource.readLines();
-            rawMethodMaps = Maps.newHashMap();
-            rawFieldMaps = Maps.newHashMap();
-            Builder<String, String> builder = ImmutableBiMap.<String,String>builder();
-            Splitter splitter = Splitter.on(CharMatcher.anyOf(": ")).omitEmptyStrings().trimResults();
-            for (String line : srgList)
+            String[] parts = Iterables.toArray(splitter.split(line),String.class);
+            String typ = parts[0];
+            if ("CL".equals(typ))
             {
-                String[] parts = Iterables.toArray(splitter.split(line),String.class);
-                String typ = parts[0];
-                if ("CL".equals(typ))
-                {
-                    parseClass(builder, parts);
-                }
-                else if ("MD".equals(typ) && loadAll)
-                {
-                    parseMethod(parts);
-                }
-                else if ("FD".equals(typ) && loadAll)
-                {
-                    parseField(parts);
-                }
+                parseClass(builder, parts);
             }
-            classNameBiMap = builder.build();
+            else if ("MD".equals(typ) && loadAll)
+            {
+                parseMethod(parts);
+            }
+            else if ("FD".equals(typ) && loadAll)
+            {
+                parseField(parts);
+            }
         }
-        catch (IOException ioe)
-        {
-            FMLRelaunchLog.log(Level.ERROR, "An error occurred loading the deobfuscation map data", ioe);
-        }
+        classNameBiMap = builder.build();
         methodNameMaps = Maps.newHashMapWithExpectedSize(rawMethodMaps.size());
         fieldNameMaps = Maps.newHashMapWithExpectedSize(rawFieldMaps.size());
-
     }
+
     public void setup(File mcDir, LaunchClassLoader classLoader, String deobfFileName)
     {
         this.classLoader = classLoader;
         try
         {
-            InputStream classData = getClass().getResourceAsStream(deobfFileName);
-            LZMAInputSupplier zis = new LZMAInputSupplier(classData);
-            CharSource srgSource = zis.asCharSource(Charsets.UTF_8);
-            List<String> srgList = srgSource.readLines();
-            rawMethodMaps = Maps.newHashMap();
-            rawFieldMaps = Maps.newHashMap();
-            Builder<String, String> builder = ImmutableBiMap.<String,String>builder();
-            Splitter splitter = Splitter.on(CharMatcher.anyOf(": ")).omitEmptyStrings().trimResults();
-            for (String line : srgList)
-            {
-                String[] parts = Iterables.toArray(splitter.split(line),String.class);
-                String typ = parts[0];
-                if ("CL".equals(typ))
-                {
-                    parseClass(builder, parts);
-                }
-                else if ("MD".equals(typ))
-                {
-                    parseMethod(parts);
-                }
-                else if ("FD".equals(typ))
-                {
-                    parseField(parts);
-                }
-            }
-            classNameBiMap = builder.build();
+            load(getClass().getResourceAsStream(deobfFileName), true);
         }
         catch (IOException ioe)
         {
-            FMLRelaunchLog.log(Level.ERROR, ioe, "An error occurred loading the deobfuscation map data");
+        	throw new RuntimeException(ioe);
         }
-        methodNameMaps = Maps.newHashMapWithExpectedSize(rawMethodMaps.size());
-        fieldNameMaps = Maps.newHashMapWithExpectedSize(rawFieldMaps.size());
     }
 
     public boolean isRemappedClass(String className)
@@ -166,7 +130,6 @@ public class FMLDeobfuscatingRemapper extends Remapper {
         {
             rawFieldMaps.put(cl, Maps.<String,String>newHashMap());
         }
-        rawFieldMaps.get(cl).put(oldName + ":" + getFieldType(cl, oldName), newName);
         rawFieldMaps.get(cl).put(oldName + ":null", newName);
     }
 
@@ -178,39 +141,6 @@ public class FMLDeobfuscatingRemapper extends Remapper {
     // Cache null values so we don't waste time trying to recompute classes with no field or method maps
     private Set<String> negativeCacheMethods = Sets.newHashSet();
     private Set<String> negativeCacheFields = Sets.newHashSet();
-
-    private String getFieldType(String owner, String name)
-    {
-        if (fieldDescriptions.containsKey(owner))
-        {
-            return fieldDescriptions.get(owner).get(name);
-        }
-        synchronized (fieldDescriptions)
-        {
-            try
-            {
-                byte[] classBytes = classLoader.getClassBytes(owner);
-                if (classBytes == null)
-                {
-                    return null;
-                }
-                ClassReader cr = new ClassReader(classBytes);
-                ClassNode classNode = new ClassNode();
-                cr.accept(classNode, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-                Map<String,String> resMap = Maps.newHashMap();
-                for (FieldNode fieldNode : (List<FieldNode>) classNode.fields) {
-                    resMap.put(fieldNode.name, fieldNode.desc);
-                }
-                fieldDescriptions.put(owner, resMap);
-                return resMap.get(name);
-            }
-            catch (IOException e)
-            {
-                FMLRelaunchLog.log(Level.ERROR,e, "A critical exception occured reading a class file %s", owner);
-            }
-            return null;
-        }
-    }
 
     private void parseClass(Builder<String, String> builder, String[] parts)
     {
@@ -389,22 +319,5 @@ public class FMLDeobfuscatingRemapper extends Remapper {
     public Set<String> getObfedClasses()
     {
         return ImmutableSet.copyOf(classNameBiMap.keySet());
-    }
-
-    public String getStaticFieldType(String oldType, String oldName, String newType, String newName)
-    {
-        String fType = getFieldType(oldType, oldName);
-        if (oldType.equals(newType))
-        {
-            return fType;
-        }
-        Map<String,String> newClassMap = fieldDescriptions.get(newType);
-        if (newClassMap == null)
-        {
-            newClassMap = Maps.newHashMap();
-            fieldDescriptions.put(newType, newClassMap);
-        }
-        newClassMap.put(newName, fType);
-        return fType;
     }
 }

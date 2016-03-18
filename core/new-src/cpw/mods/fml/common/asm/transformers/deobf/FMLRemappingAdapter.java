@@ -39,37 +39,6 @@ public class FMLRemappingAdapter extends RemappingClassAdapter {
     @Override
     protected MethodVisitor createRemappingMethodAdapter(int access, String newDesc, MethodVisitor mv)
     {
-        return new StaticFixingMethodVisitor(access, newDesc, mv, remapper);
-    }
-
-    private static class StaticFixingMethodVisitor extends RemappingMethodAdapter
-    {
-
-        public StaticFixingMethodVisitor(int access, String desc, MethodVisitor mv, Remapper remapper)
-        {
-            super(access, desc, mv, remapper);
-        }
-
-        @Override
-        public void visitFieldInsn(int opcode, String originalType, String originalName, String desc)
-        {
-            // This method solves the problem of a static field reference changing type. In all probability it is a
-            // compatible change, however we need to fix up the desc to point at the new type
-            String type = remapper.mapType(originalType);
-            String fieldName = remapper.mapFieldName(originalType, originalName, desc);
-            String newDesc = remapper.mapDesc(desc);
-            if (opcode == Opcodes.GETSTATIC && type.startsWith("net/minecraft/") && newDesc.startsWith("Lnet/minecraft/"))
-            {
-                String replDesc = FMLDeobfuscatingRemapper.INSTANCE.getStaticFieldType(originalType, originalName, type, fieldName);
-                if (replDesc != null)
-                {
-                    newDesc = remapper.mapDesc(replDesc);
-                }
-            }
-            // super.super
-            if (mv != null) {
-                mv.visitFieldInsn(opcode, type, fieldName, newDesc);
-            }
-        }
+        return new RemappingMethodAdapter(access, newDesc, mv, remapper);
     }
 }
