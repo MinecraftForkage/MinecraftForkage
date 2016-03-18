@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks.SeedEntry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class MinecraftForge
@@ -140,10 +141,10 @@ public class MinecraftForge
        else
            handlers = ObjectArrays.concat(handlers, server, String.class);
 
-       FMLLog.info("Preloading CrashReport classes", ForgeVersion.getVersion());
+       //FMLLog.info("Preloading CrashReport classes", ForgeVersion.getVersion());
        for (String s : handlers)
        {
-           FMLLog.info("\t" + s);
+           //FMLLog.info("\t" + s);
            try
            {
 	           Class<?> cls = Class.forName(s, false, MinecraftForge.class.getClassLoader());
@@ -159,6 +160,8 @@ public class MinecraftForge
 
        
        UsernameCache.load();
+       // Load before all the mods, so MC owns the MC fluids
+       FluidRegistry.validateFluidRegistry();
    }
 
    public static String getBrandingVersion()

@@ -3,6 +3,7 @@ package net.minecraftforge.fluids;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.logging.log4j.Level;
@@ -78,25 +79,20 @@ public abstract class FluidRegistry
     public static void initFluidIDs(BiMap<Fluid, Integer> newfluidIDs, Set<String> defaultNames)
     {
         maxID = newfluidIDs.size();
-        fluidIDs.clear();
-        fluidIDs.putAll(newfluidIDs);
-        fluidNames.clear();
-        for (Map.Entry<Fluid, Integer> e : fluidIDs.entrySet()) {
-            fluidNames.put(e.getValue(), e.getKey().getName());
-        }
-        loadFluidDefaults(defaultNames);
+        loadFluidDefaults(newfluidIDs, defaultNames);
     }
 
     /**
      * Called by forge to load default fluid IDs from the world or from server -> client for syncing
      * DO NOT call this and expect useful behaviour.
      */
-    private static void loadFluidDefaults(Set<String> defaultNames)
+    private static void loadFluidDefaults(BiMap<Fluid, Integer> localFluidIDs, Set<String> defaultNames)
     {
         // If there's an empty set of default names, use the defaults as defined locally
         if (defaultNames.isEmpty()) {
             defaultNames.addAll(defaultFluidName.values());
         }
+        BiMap<String, Fluid> localFluids = HashBiMap.create(fluids);
         for (String defaultName : defaultNames)
         {
             Fluid fluid = masterFluidReference.get(defaultName);
@@ -111,10 +107,17 @@ public abstract class FluidRegistry
                 FMLLog.getLogger().log(Level.ERROR, "The fluid {} specified as default is not present - it will be reverted to default {}", defaultName, localDefault);
             }
             FMLLog.getLogger().log(Level.DEBUG, "The fluid {} has been selected as the default fluid for {}", defaultName, fluid.getName());
-            Fluid oldFluid = fluids.put(fluid.getName(), fluid);
-            Integer id = fluidIDs.remove(oldFluid);
-            fluidIDs.put(fluid, id);
+            Fluid oldFluid = localFluids.put(fluid.getName(), fluid);
+            Integer id = localFluidIDs.remove(oldFluid);
+            localFluidIDs.put(fluid, id);
         }
+        BiMap<Integer, String> localFluidNames = HashBiMap.create();
+        for (Entry<Fluid, Integer> e : localFluidIDs.entrySet()) {
+            localFluidNames.put(e.getValue(), e.getKey().getName());
+        }
+        fluidIDs = localFluidIDs;
+        fluids = localFluids;
+        fluidNames = localFluidNames;
         fluidBlocks = null;
         for (FluidDelegate fd : delegates.values())
         {
@@ -313,7 +316,7 @@ public abstract class FluidRegistry
         {
             FMLLog.getLogger().log(Level.DEBUG, "World is missing persistent fluid defaults - using local defaults");
         }
-        loadFluidDefaults(defaults);
+        loadFluidDefaults(HashBiMap.create(fluidIDs), defaults);
     }
 
     public static void writeDefaultFluidList(NBTTagCompound forgeData)

@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -73,6 +74,7 @@ import cpw.mods.fml.common.functions.ArtifactVersionNameFunction;
 import cpw.mods.fml.common.functions.ModIdFunction;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry.Type;
+import cpw.mods.fml.common.registry.ItemStackHolderInjector;
 import cpw.mods.fml.common.registry.ObjectHolderRegistry;
 import cpw.mods.fml.common.toposort.ModSorter;
 import cpw.mods.fml.common.toposort.ModSortingException;
@@ -520,14 +522,36 @@ public class Loader
                 }
             }
         }
-        FieldInjection.injectSidedProxies();
         modController.transition(LoaderState.CONSTRUCTING, false);
         modController.distributeStateMessage(LoaderState.CONSTRUCTING, modClassLoader, reverseDependencies);
+
+        List<ModContainer> mods = Lists.newArrayList();
+        mods.addAll(getActiveModList());
+        Collections.sort(mods, new Comparator<ModContainer>()
+        {
+            @Override
+            public int compare(ModContainer o1, ModContainer o2)
+            {
+                return o1.getModId().compareTo(o2.getModId());
+            }
+        });
+
+        // Sided proxies must be injected after mod instances.
+        // Mod instances must be injected after the construction phase.
         FieldInjection.injectModInstancesAndMetadata();
+        FieldInjection.injectSidedProxies();
         FMLLog.fine("Mod signature data");
+        FMLLog.fine(" \tValid Signatures:");
         for (ModContainer mod : getActiveModList())
         {
-            FMLLog.fine("\t%s(%s:%s): %s (%s)", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName(), CertificateHelper.getFingerprint(mod.getSigningCertificate()));
+            if (mod.getSigningCertificate() != null)
+                FMLLog.fine("\t\t(%s) %s\t(%s\t%s)\t%s", CertificateHelper.getFingerprint(mod.getSigningCertificate()), mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
+        }
+        FMLLog.fine(" \tMissing Signatures:");
+        for (ModContainer mod : getActiveModList())
+        {
+            if (mod.getSigningCertificate() == null)
+                FMLLog.fine("\t\t%s\t(%s\t%s)\t%s", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
         }
         if (getActiveModList().isEmpty())
         {
@@ -545,8 +569,10 @@ public class Loader
             return;
         }
         ObjectHolderRegistry.INSTANCE.findObjectHolders(discoverer.getASMTable());
+        ItemStackHolderInjector.INSTANCE.findHolders(discoverer.getASMTable());
         modController.distributeStateMessage(LoaderState.PREINITIALIZATION, discoverer.getASMTable(), canonicalConfigDir);
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
+        ItemStackHolderInjector.INSTANCE.inject();
         modController.transition(LoaderState.INITIALIZATION, false);
         progressBar.step("Initializing Minecraft engine");
     }
@@ -635,7 +661,7 @@ public class Loader
 
     public String getFMLVersionString()
     {
-        return String.format("%s.%s.%s.%s", major, minor, rev, build);
+    	return "7.10.99.99";
     }
 
     public ClassLoader getModClassLoader()
@@ -733,6 +759,7 @@ public class Loader
         progressBar.step("Initializing mods Phase 3");
         modController.transition(LoaderState.POSTINITIALIZATION, false);
         modController.distributeStateMessage(FMLInterModComms.IMCEvent.class);
+        ItemStackHolderInjector.INSTANCE.inject();
         modController.distributeStateMessage(LoaderState.POSTINITIALIZATION);
         progressBar.step("Finishing up");
         modController.transition(LoaderState.AVAILABLE, false);
@@ -975,14 +1002,7 @@ public class Loader
 
     public void fireRemapEvent(Map<String, Integer[]> remaps)
     {
-        if (remaps.isEmpty())
-        {
-            FMLLog.finer("Skipping remap event - no remaps occured");
-        }
-        else
-        {
-            modController.propogateStateMessage(new FMLModIdMappingEvent(remaps));
-        }
+    	modController.propogateStateMessage(new FMLModIdMappingEvent(remaps));
     }
 
     public void runtimeDisableMod(String modId)

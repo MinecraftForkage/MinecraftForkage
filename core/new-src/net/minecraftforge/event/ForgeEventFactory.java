@@ -283,4 +283,12 @@ public class ForgeEventFactory
     {
         MinecraftForge.EVENT_BUS.post(new PotionBrewEvent.Post(brewingItemStacks));
     }
+
+    public static int getFuelBurnTime(ItemStack fuel)
+    {
+        FuelBurnTimeEvent event = new FuelBurnTimeEvent(fuel);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getResult() == Result.DEFAULT ? -1 : event.burnTime;
+    }
+
 }

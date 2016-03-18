@@ -39,6 +39,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -438,7 +439,8 @@ public class GameData {
         getMain().testConsistency();
         getMain().iBlockRegistry.dump();
         getMain().iItemRegistry.dump();
-
+        
+        getMain().iItemRegistry.resetSubstitutionDelegates();
         GameData newData = new GameData();
 
         for (int id : blockedIds)
@@ -583,6 +585,8 @@ public class GameData {
         getMain().iBlockRegistry.dump();
         getMain().iItemRegistry.dump();
         Loader.instance().fireRemapEvent(remaps);
+        // the id mapping has reverted, fire remap events for those that care about id changes
+        Loader.instance().fireRemapEvent(ImmutableMap.<String,Integer[]>of());
         // The id map changed, ensure we apply object holders
         ObjectHolderRegistry.INSTANCE.applyObjectHolders();
         return ImmutableList.of();
@@ -834,7 +838,8 @@ public class GameData {
             }
             else // ItemBlock after its Block
             {
-                FMLLog.fine("Found matching Block %s for ItemBlock %s at id %d, original id requested: %d", block, item, id, idHint);
+            	if (FMLControlledNamespacedRegistry.DEBUG)
+            		FMLLog.fine("Found matching Block %s for ItemBlock %s at id %d, original id requested: %d", block, item, id, idHint);
                 freeSlot(id, item); // temporarily free the slot occupied by the Block for the item registration
             }
 

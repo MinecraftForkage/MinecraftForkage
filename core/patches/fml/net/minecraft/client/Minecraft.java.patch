@@ -64,7 +64,7 @@
          this.field_110451_am.func_110542_a(this.field_71464_q);
          this.field_110451_am.func_110542_a(new GrassColorReloadListener());
          this.field_110451_am.func_110542_a(new FoliageColorReloadListener());
-+        cpw.mods.fml.common.ProgressManager.ProgressBar bar= cpw.mods.fml.common.ProgressManager.push("Rendering Setup", 9);
++        cpw.mods.fml.common.ProgressManager.ProgressBar bar = cpw.mods.fml.common.ProgressManager.push("Rendering Setup", 9, true);
 +        bar.step("Loading Render Manager");
          RenderManager.field_78727_a.field_78721_f = new ItemRenderer(this);
 +        bar.step("Loading Entity Renderer");
@@ -79,21 +79,23 @@
          this.field_71417_B = new MouseHelper();
          this.func_71361_d("Pre startup");
          GL11.glEnable(GL11.GL_TEXTURE_2D);
-@@ -524,27 +535,35 @@
+@@ -524,30 +535,39 @@
          GL11.glLoadIdentity();
          GL11.glMatrixMode(GL11.GL_MODELVIEW);
          this.func_71361_d("Startup");
 +        bar.step("Render Global instance");
          this.field_71438_f = new RenderGlobal(this);
 +        bar.step("Building Blocks Texture");
-         this.field_147128_au = new TextureMap(0, "textures/blocks");
+-        this.field_147128_au = new TextureMap(0, "textures/blocks");
++        this.field_147128_au = new TextureMap(0, "textures/blocks", true);
 +        bar.step("Anisotropy and Mipmaps");
          this.field_147128_au.func_147632_b(this.field_71474_y.field_151443_J);
          this.field_147128_au.func_147633_a(this.field_71474_y.field_151442_I);
 +        bar.step("Loading Blocks Texture");
          this.field_71446_o.func_130088_a(TextureMap.field_110575_b, this.field_147128_au);
 +        bar.step("Loading Items Texture");
-         this.field_71446_o.func_130088_a(TextureMap.field_110576_c, new TextureMap(1, "textures/items"));
+-        this.field_71446_o.func_130088_a(TextureMap.field_110576_c, new TextureMap(1, "textures/items"));
++        this.field_71446_o.func_130088_a(TextureMap.field_110576_c, new TextureMap(1, "textures/items", true));
 +        bar.step("Viewport");
          GL11.glViewport(0, 0, this.field_71443_c, this.field_71440_d);
          this.field_71452_i = new EffectRenderer(this.field_71441_e, this.field_71446_o);
@@ -117,14 +119,10 @@
          this.field_152354_ay = null;
          this.field_71461_s = new LoadingScreenRenderer(this);
  
-@@ -553,6 +572,7 @@
-             this.func_71352_k();
-         }
- 
 +        FMLClientHandler.instance().onInitializationComplete();
-         try
+         if (this.field_71474_y.field_74353_u && !this.field_71431_Q)
          {
-             Display.setVSyncEnabled(this.field_71474_y.field_74352_v);
+             this.func_71352_k();
 @@ -971,9 +990,11 @@
  
          if (!this.field_71454_w)

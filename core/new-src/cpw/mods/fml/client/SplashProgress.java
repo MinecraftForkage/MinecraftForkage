@@ -15,6 +15,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.IntBuffer;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,6 +44,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.SharedDrawable;
 import org.lwjgl.util.glu.GLU;
 
+import cpw.mods.fml.common.EnhancedRuntimeException;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ICrashCallable;
@@ -64,6 +66,7 @@ public class SplashProgress
     private static int angle = 0;
     private static final Lock lock = new ReentrantLock(true);
     private static SplashFontRenderer fontRenderer;
+    static Semaphore mutex = new Semaphore(1);
 
     private static final IResourcePack mcPack = Minecraft.getMinecraft().mcDefaultResourcePack;
     private static final IResourcePack fmlPack = createResourcePack(FMLSanityChecker.fmlLocation);
@@ -304,7 +307,16 @@ public class SplashProgress
                     glEnd();
                     glDisable(GL_TEXTURE_2D);
 
+                    // We use mutex to indicate safely to the main thread that we're taking the display global lock
+                    // So the main thread can skip processing messages while we're updating.
+                    // There are system setups where this call can pause for a while, because the GL implementation
+                    // is trying to impose a framerate or other thing is occurring. Without the mutex, the main
+                    // thread would delay waiting for the same global display lock
+                    mutex.acquireUninterruptibly();
                     Display.update();
+                    // As soon as we're done, we release the mutex. The other thread can now ping the processmessages
+                    // call as often as it wants until we get get back here again
+                    mutex.release();
                     if(pause)
                     {
                         clearGL();
@@ -359,7 +371,7 @@ public class SplashProgress
                 drawBox(barWidth - 2, barHeight - 2);
                 // slidy part
                 setColor(barColor);
-                drawBox((barWidth - 2) * b.getStep() / b.getSteps(), barHeight - 2);
+                drawBox((barWidth - 2) * (b.getStep() + 1) / (b.getSteps() + 1), barHeight - 2); // Step can sometimes be 0.
                 // progress text
                 String progress = "" + b.getStep() + "/" + b.getSteps();
                 glTranslatef(((float)barWidth - 2 - fontRenderer.getStringWidth(progress))/ 2, 2, 0);
@@ -485,9 +497,9 @@ public class SplashProgress
     public static void finish()
     {
         if(!enabled) return;
-        checkThreadState();
         try
         {
+        	checkThreadState();
             done = true;
             thread.join();
             d.releaseContext();
@@ -499,8 +511,64 @@ public class SplashProgress
         catch (Exception e)
         {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            if (disableSplash())
+            {
+                throw new EnhancedRuntimeException(e)
+                {
+                    @Override
+                    protected void printStackTrace(WrappedPrintStream stream)
+                    {
+                        stream.println("SplashProgress has detected a error loading Minecraft.");
+                        stream.println("This can sometimes be caused by bad video drivers.");
+                        stream.println("We have automatically disabeled the new Splash Screen in config/splash.properties.");
+                        stream.println("Try reloading minecraft before reporting any errors.");
+                    }
+                };
+            }
+            else
+            {
+                throw new EnhancedRuntimeException(e)
+                {
+                    @Override
+                    protected void printStackTrace(WrappedPrintStream stream)
+                    {
+                        stream.println("SplashProgress has detected a error loading Minecraft.");
+                        stream.println("This can sometimes be caused by bad video drivers.");
+                        stream.println("Please try disabeling the new Splash Screen in config/splash.properties.");
+                        stream.println("After doing so, try reloading minecraft before reporting any errors.");
+                    }
+                };
+            }
         }
+    }
+
+    private static boolean disableSplash()
+    {
+        File configFile = new File(Minecraft.getMinecraft().mcDataDir, "config/splash.properties");
+        File parent = configFile.getParentFile();
+        if (!parent.exists())
+            parent.mkdirs();
+
+        FileReader r = null;
+        enabled = false;
+        config.setProperty("enabled", "false");
+
+        FileWriter w = null;
+        try
+        {
+            w = new FileWriter(configFile);
+            config.store(w, "Splash screen properties");
+        }
+        catch(IOException e)
+        {
+            FMLLog.log(Level.ERROR, e, "Could not save the splash.properties file");
+            return false;
+        }
+        finally
+        {
+            IOUtils.closeQuietly(w);
+        }
+        return true;
     }
 
     private static IResourcePack createResourcePack(File file)

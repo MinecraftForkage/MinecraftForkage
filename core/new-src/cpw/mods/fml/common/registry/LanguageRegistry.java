@@ -293,7 +293,8 @@ public class LanguageRegistry
                 }
             }
         }
-        FMLLog.fine("Found translations in %s [%s]", source.getName(), Joiner.on(", ").join(added));
+        if(added.size() > 0)
+        	FMLLog.fine("Found translations in %s [%s]", source.getName(), Joiner.on(", ").join(added));
         zf.close();
     }
 

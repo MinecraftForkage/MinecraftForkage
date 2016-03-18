@@ -8,7 +8,7 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
-@@ -91,11 +92,14 @@
+@@ -91,12 +92,15 @@
  
      public void func_110571_b(IResourceManager p_110571_1_)
      {
@@ -19,13 +19,15 @@
          this.field_94252_e.clear();
          this.field_94258_i.clear();
          int j = Integer.MAX_VALUE;
+         cpw.mods.fml.common.ProgressManager.ProgressBar bar = cpw.mods.fml.common.ProgressManager.push("Texture Loading", skipFirst ? 0 : this.field_110574_e.size());
 +        ForgeHooksClient.onTextureStitchedPre(this);
          Iterator iterator = this.field_110574_e.entrySet().iterator();
          TextureAtlasSprite textureatlassprite;
  
-@@ -106,6 +110,16 @@
+@@ -106,7 +110,17 @@
              textureatlassprite = (TextureAtlasSprite)entry.getValue();
              ResourceLocation resourcelocation1 = this.func_147634_a(resourcelocation, 0);
+             bar.step(resourcelocation1.func_110623_a());
  
 +            if (textureatlassprite.hasCustomLoader(p_110571_1_, resourcelocation))
 +            {
@@ -40,11 +42,12 @@
              try
              {
                  IResource iresource = p_110571_1_.func_110536_a(resourcelocation1);
-@@ -274,6 +288,7 @@
+@@ -274,7 +288,8 @@
              textureatlassprite = (TextureAtlasSprite)iterator2.next();
              textureatlassprite.func_94217_a(this.field_94249_f);
          }
 +        ForgeHooksClient.onTextureStitchedPost(this);
+         cpw.mods.fml.common.ProgressManager.pop(bar);
      }
  
      private ResourceLocation func_147634_a(ResourceLocation p_147634_1_, int p_147634_2_)
