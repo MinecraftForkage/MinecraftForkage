@@ -19,8 +19,8 @@
          this.field_94252_e.clear();
          this.field_94258_i.clear();
          int j = Integer.MAX_VALUE;
-         cpw.mods.fml.common.ProgressManager.ProgressBar bar = cpw.mods.fml.common.ProgressManager.push("Texture Loading", skipFirst ? 0 : this.field_110574_e.size());
 +        ForgeHooksClient.onTextureStitchedPre(this);
+         cpw.mods.fml.common.ProgressManager.ProgressBar bar = cpw.mods.fml.common.ProgressManager.push("Texture Loading", skipFirst ? 0 : this.field_110574_e.size());
          Iterator iterator = this.field_110574_e.entrySet().iterator();
          TextureAtlasSprite textureatlassprite;
  

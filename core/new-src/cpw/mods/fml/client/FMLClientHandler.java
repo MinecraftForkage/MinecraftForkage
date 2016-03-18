@@ -613,7 +613,7 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     public IResourcePack getResourcePackFor(String modId)
     {
-        return resourcePackMap.get(modId);
+        return resourcePackMap.get("FML");
     }
 
     @Override

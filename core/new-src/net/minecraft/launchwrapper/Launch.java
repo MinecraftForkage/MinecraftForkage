@@ -27,6 +27,8 @@ public class Launch {
 	 */
 	public static Map<String, Object> blackboard = new HashMap<String, Object>();
 	
+	public static File minecraftHome;
+	
 	/**
 	 * This method is specified by Mojang's launchwrapper.
 	 */

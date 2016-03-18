@@ -10,10 +10,12 @@ import java.net.URLClassLoader;
 import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +80,7 @@ public class LaunchClassLoader extends URLClassLoader {
 		sources_unmod = Collections.unmodifiableList(sources);
 		
 		addClassLoaderExclusion("net.minecraft.launchwrapper.");
+		addClassLoaderExclusion("java.");
 		addTransformerExclusion("org.objectweb.asm.");
 	}
 	
@@ -230,7 +233,7 @@ public class LaunchClassLoader extends URLClassLoader {
 				throw new ClassNotFoundException(name, e);
 			}
 		} catch(ClassNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw e;
 		}
 	}
@@ -262,7 +265,39 @@ public class LaunchClassLoader extends URLClassLoader {
 		new ClassReader(bytes).accept(cw, 0);
 		return cw.toByteArray();
 	}
+	
+	// XXX BACKCOMPAT with codechicken.multipart.asm.ASMMixinCompiler$
+	@SuppressWarnings("unused")
+	private byte[] runTransformers(String a, String b, byte[] bytes) {
+		for(IClassTransformer ct : transformers)
+			bytes = ct.transform(a, b, bytes);
+		return bytes;
+	}
 
+	// XXX BACKCOMPAT with codechicken.multipart.asm.ASMMixinCompiler$
+	@SuppressWarnings("unused")
+	private Set<String> transformerExceptions = new AbstractSet<String>() {
+		@Override
+		public boolean add(String e) {
+			return !contains(e) && transformerExclusions.add(e);
+		}
+		@Override
+		public boolean remove(Object o) {
+			if(!contains(o))
+				return false;
+			while(transformerExclusions.remove(o));
+			return true;
+		}
+		@Override
+		public Iterator<String> iterator() {
+			return transformerExclusions.iterator();
+		}
+		@Override
+		public int size() {
+			return transformerExclusions.size();
+		}
+	};
+	
 	private void debugDumpClass(int stageIndex, String className, byte[] bytes, IClassTransformer lastTransformer) {
 		File dumpDir = new File(debugDir, className);
 		if(!dumpDir.exists())

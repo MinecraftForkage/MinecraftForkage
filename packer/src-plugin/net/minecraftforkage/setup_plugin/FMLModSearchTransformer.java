@@ -58,7 +58,7 @@ public class FMLModSearchTransformer extends JarTransformer {
 	}
 	
 	private List<Object> mods = new ArrayList<>();
-	private Map<String, String> modClasses = new HashMap<>(); // class name -> mod ID
+	private Map<String, String> modClassesForAutoInstanceSelection = new HashMap<>(); // class name -> mod ID
 	
 	// one of the few places in FML where the word "inject" is actually correct
 	private List<FieldInjectionEntry> fieldsToInject = new ArrayList<>();
@@ -77,6 +77,7 @@ public class FMLModSearchTransformer extends JarTransformer {
 		}
 		
 		boolean isMod = false;
+		boolean isModForAutoInstanceSelection = false;
 		
 		String className;
 		
@@ -155,6 +156,7 @@ public class FMLModSearchTransformer extends JarTransformer {
 						modObject.put("dependencies", dependencies);
 						modObject.put("sortingRules", sortingRules);
 						isMod = true;
+						isModForAutoInstanceSelection = true;
 					}
 				};
 			}
@@ -200,7 +202,8 @@ public class FMLModSearchTransformer extends JarTransformer {
 		public void visitEnd() {
 			if(isMod) {
 				mods.add(modObject);
-				modClasses.put(className, (String)modObject.get("modid"));
+				if(isModForAutoInstanceSelection)
+					modClassesForAutoInstanceSelection.put(className, (String)modObject.get("modid"));
 			}
 		}
 		
@@ -296,9 +299,9 @@ public class FMLModSearchTransformer extends JarTransformer {
 	}
 
 	private String findModBySource(Map<String, String> classToSourceMap, String source) {
-		for(String modClass : modClasses.keySet())
+		for(String modClass : modClassesForAutoInstanceSelection.keySet())
 			if(source.equals(classToSourceMap.get(modClass)))
-				return modClasses.get(modClass);
+				return modClassesForAutoInstanceSelection.get(modClass);
 		return null;
 	}
 
