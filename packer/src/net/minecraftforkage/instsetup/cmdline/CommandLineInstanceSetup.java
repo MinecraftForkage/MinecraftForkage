@@ -104,8 +104,8 @@ public class CommandLineInstanceSetup {
 			
 			List<String> allRunArgs = new ArrayList<>();
 			allRunArgs.addAll(Arrays.asList(runArgs));
-			allRunArgs.add("--tweakClass");
-			allRunArgs.add("cpw.mods.fml.common.launcher.FMLTweaker");
+			allRunArgs.add("--gameDir");
+			allRunArgs.add(instArgs.instanceBaseDir.getAbsolutePath());
 			
 			Class<?> mcMain = mcLoader.loadClass("net.minecraft.launchwrapper.Launch");
 			Method mainMethod = mcMain.getMethod("main", String[].class);
