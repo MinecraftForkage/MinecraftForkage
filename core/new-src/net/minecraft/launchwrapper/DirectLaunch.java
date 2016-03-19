@@ -45,6 +45,8 @@ public class DirectLaunch {
 		
 		System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
 		
+		File assetsDir = getMinecraftAssetsDir();
+		
 		Launch.main(new String[] {
 			"--login",
 			"--gameDir",
@@ -52,7 +54,40 @@ public class DirectLaunch {
 			"--userProperties",
 			"{}",
 			"--version",
-			"1.7.10"
+			"1.7.10",
+			"--assetIndex",
+			"1.7.10",
+			"--assetsDir",
+			assetsDir.getAbsolutePath()
 		});
+	}
+	
+	private static File getMinecraftAssetsDir() {
+		return new File(getDotMinecraftDir(), "assets");
+	}
+
+	private static File getDotMinecraftDir() {
+		// Same rules as Mojang launcher
+		
+		String osname = System.getProperty("os.name").toLowerCase();
+		String userhome = System.getProperty("user.home");
+		if(userhome == null)
+			userhome = ".";
+		if(osname.contains("win")) {
+			String appdata = System.getenv("APPDATA");
+			if(appdata == null)
+				appdata = userhome;
+			return new File(new File(appdata), ".minecraft");
+		}
+		
+		File homeFile = new File(userhome);
+		
+		if(osname.contains("mac"))
+			return new File(homeFile, "Library/Application Support/minecraft");
+		
+		if(osname.contains("linux") || osname.contains("unix"))
+			return new File(homeFile, ".minecraft");
+		
+		return new File(homeFile, "minecraft");
 	}
 }
