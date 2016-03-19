@@ -123,6 +123,36 @@
 		<x:apply-srg input="build/recomp.jar" output="build/reobf.jar" srg="build/mcp-to-srg.srg"/>
 	</target>
 	
+	<target name="incremental-recompile" depends="get-libraries" description="Recompile incrementally, then reobfuscate. Useful for rapid testing.">
+		
+		<javac destdir="build/edited-classes" debug="on" includeAntRuntime="false" source="1.6" target="1.6">
+			<src path="vanilla-src"/>
+			<src path="new-src"/>
+			<src path="compat-src"/>
+			<include name="**/*.java"/>
+			<classpath>
+				<fileset dir="libraries">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+		<copy todir="build/edited-classes">
+			<fileset dir="vanilla-src">
+				<exclude name="**/*.java"/>
+				<exclude name="META-INF/MANIFEST.MF"/>
+				<exclude name="META-INF/*.DSA"/>
+				<exclude name="META-INF/*.SF"/>
+			</fileset>
+			<fileset dir="new-src" excludes="**/*.java"/>
+			<fileset dir="compat-src" excludes="**/*.java"/>
+		</copy>
+		<jar destfile="build/recomp.jar" basedir="build/edited-classes"/>
+		
+		<x:csv2srg methods="build-data/methods.csv" fields="build-data/fields.csv" srg="build-data/joined.srg" output="build/srg-to-mcp.srg"/>
+		<x:invert-srg input="build/srg-to-mcp.srg" output="build/mcp-to-srg.srg"/>
+		
+		<x:apply-srg input="build/recomp.jar" output="build/reobf.jar" srg="build/mcp-to-srg.srg"/>
+	</target>
 	
 	<target name="make-bytecode-text" depends="recompile, process-bytecode">
 		<x:process-jar input="build/reobf.jar" output="build/reobf_trimmed.jar" class="bytecode.TrimBytecode"/>
