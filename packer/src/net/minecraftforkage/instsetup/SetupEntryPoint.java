@@ -3,13 +3,16 @@ package net.minecraftforkage.instsetup;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +31,9 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -36,6 +42,7 @@ import java.util.zip.ZipOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.minecraftforkage.instsetup.JarTransformer.Stage;
@@ -111,6 +118,9 @@ public class SetupEntryPoint {
 		FileSystem fs = FileSystems.newFileSystem(Paths.get(args.outputLocation.toURI()), null);
 		try (ZipFileSystemAdapter bakedJarIZF = new ZipFileSystemAdapter(fs)) {
 			
+			if(args.standalone) {
+				writeStandaloneManifest(bakedJarIZF);
+			}
 			
 			URLClassLoader setupModClassLoader = new URLClassLoader(setupMods.toArray(new URL[0]), SetupEntryPoint.class.getClassLoader());
 		
@@ -141,6 +151,14 @@ public class SetupEntryPoint {
 					}
 				}
 			}
+			
+			if(args.standalone) {
+				// For consistency between standalone and non-standalone modpack JARs,
+				// transformers may not interfere with the copying of libraries.
+				// (Because with a non-standalone modpack JAR the copying doesn't happen)
+				copyLibraries(bakedJarIZF, args.jsonLocation, args.libraryDir);
+				copyNatives(bakedJarIZF, args.nativesDir);
+			}
 					
 			writeListFile(bakedJarIZF, InstanceEnvironmentData.extraModContainers, "mcforkage-mod-container-classes.txt");
 		}
@@ -149,6 +167,166 @@ public class SetupEntryPoint {
 		System.out.println("Instance setup completed in "+((wholeProcessEndTime - wholeProcessStartTime) / 1000000)+" milliseconds");
 	}
 	
+	private static void copyNatives(ZipFileSystemAdapter bakedJar, File nativesDir) throws IOException {
+		try(ZipOutputStream out = new ZipOutputStream(bakedJar.write("mcforkage-standalone-natives.zip"))) {
+			out.setLevel(ZipOutputStream.STORED);
+			for(File nativeFile : nativesDir.listFiles()) {
+				out.putNextEntry(new ZipEntry(nativeFile.getName()));
+				try (FileInputStream in = new FileInputStream(nativeFile)) {
+					Utils.copyStream(in, out);
+				}
+				out.closeEntry();
+			}
+		}
+	}
+
+	private static void writeStandaloneManifest(ZipFileSystemAdapter bakedJar) throws IOException {
+		Manifest mf = new Manifest();
+		mf.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		mf.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "net.minecraft.launchwrapper.DirectLaunch");
+		try (OutputStream out = bakedJar.write("META-INF/MANIFEST.MF")) {
+			mf.write(out);
+		}
+	}
+
+	private static void copyLibraries(ZipFileSystemAdapter bakedJarIZF, URL jsonLocation, File libraryDir) throws IOException {
+
+		JsonObject json;
+		try (Reader in = new InputStreamReader(jsonLocation.openStream(), StandardCharsets.UTF_8)) {
+			json = new GsonBuilder().create().fromJson(in, JsonObject.class);
+		}
+		
+		for(JsonElement library : json.get("libraries").getAsJsonArray()) {
+			String name = library.getAsJsonObject().get("name").getAsString();
+			String[] parts = name.split(":");
+			
+			File libfile = new File(libraryDir, parts[1]+"-"+parts[2]+".jar");
+			if(libfile.exists()) {
+				copyLibrary(bakedJarIZF, libfile);
+				continue;
+			}
+			
+			libfile = new File(libraryDir, parts[0].replace(".",File.separator)+File.separator+parts[1]+File.separator+parts[2]+File.separator+parts[1]+"-"+parts[2]+".jar");
+			if(libfile.exists()) {
+				copyLibrary(bakedJarIZF, libfile);
+				continue;
+			}
+			
+			System.err.println("Couldn't find library "+name+" in "+libraryDir);
+		}
+	}
+	
+	private static void copyLibrary(ZipFileSystemAdapter bakedJar, File libfile) throws IOException {
+		
+		String libname = libfile.getName();
+		if(libname.contains("."))
+			libname = libname.substring(0, libname.indexOf('.'));
+		
+		System.out.println("Merging library "+libfile.getName());
+		try (JarInputStream jin = new JarInputStream(new FileInputStream(libfile))) {
+			JarEntry entry;
+			while((entry = jin.getNextJarEntry()) != null) {
+				if(entry.isDirectory()) {
+					bakedJar.createDirectory(entry.getName());
+					jin.closeEntry();
+					continue;
+				}
+				
+				// File included in multiple Scala jars; ignore it
+				if(entry.getName().equals("rootdoc.txt")) {
+					jin.closeEntry();
+					continue;
+				}
+				
+				// Preserve all LICENSE and NOTICE files, even if they have the same
+				// filename as another.
+				// Note that modpack JARs are not allowed to be distributed, as they contain
+				// Minecraft code - therefore we aren't currently concerned with whether users
+				// are allowed to distribute repackaged libraries.
+				if(entry.getName().contains("LICENSE") || entry.getName().contains("NOTICE")) {
+					String name = entry.getName();
+					String basename, ext;
+					if(name.contains(".")) {
+						basename = name.substring(0, name.indexOf('.'));
+						ext = name.substring(name.indexOf('.'));
+					} else {
+						basename = name;
+						ext = "";
+					}
+					name = basename + "-" + libname;
+					int counter = 0;
+					while(bakedJar.doesPathExist(name+ext)) {
+						counter++;
+						name = basename + "-" + libname + "-" + counter;
+					}
+					
+					try (OutputStream entryOut = bakedJar.write(name+ext)) {
+						Utils.copyStream(jin, entryOut);
+					}
+					jin.closeEntry();
+					continue;
+				}
+				
+				if(entry.getName().startsWith("META-INF/")) {
+					if(entry.getName().equals("META-INF/MANIFEST.MF")) {
+						jin.closeEntry();
+						// Ignore manifests in libraries
+						continue;
+					}
+					
+					if(entry.getName().startsWith("META-INF/maven/") || entry.getName().equals("META-INF/DEPENDENCIES") || entry.getName().equals("META-INF/web-fragment.xml")) {
+						jin.closeEntry();
+						// Ignore any files under META-INF/maven/ in libraries
+						continue;
+					}
+					
+					if(entry.getName().startsWith("META-INF/services/")) {
+						if(bakedJar.doesPathExist(entry.getName()))
+							throw new IOException("Unimplemented: merging two META-INF/services files");
+						
+						try (OutputStream entryOut = bakedJar.write(entry.getName())) {
+							Utils.copyStream(jin, entryOut);
+						}
+						jin.closeEntry();
+						continue;
+					}
+					
+					if(entry.getName().equals("META-INF/lof4j-provider.properties")) {
+						try (OutputStream entryOut = bakedJar.write(entry.getName())) {
+							Utils.copyStream(jin, entryOut);
+						}
+						jin.closeEntry();
+						continue;
+					}
+					
+					System.err.println("Ignoring unrecognized META-INF entry: "+entry.getName());
+					jin.closeEntry();
+					continue;
+				}
+				
+				if(bakedJar.doesPathExist(entry.getName())) {
+					byte[] existingBytes, newBytes;
+					try (InputStream in1 = bakedJar.read(entry.getName())) {
+						existingBytes = Utils.readStream(in1);
+					}
+					newBytes = Utils.readStream(jin);
+					jin.closeEntry();
+					
+					// If this library has an identical entry, ignore it.
+					// If it has an entry with the same name but different contents, print a warning.
+					if(!Arrays.equals(newBytes, existingBytes))
+						System.err.println("Ignoring entry with duplicate filename: "+entry.getName());
+					continue;
+				}
+				
+				try (OutputStream entryOut = bakedJar.write(entry.getName())) {
+					Utils.copyStream(jin, entryOut);
+				}
+				jin.closeEntry();
+			}
+		}
+	}
+
 	private static void writeListFile(AbstractZipFile bakedJarIZF, Collection<String> list, String path) throws IOException {
 		try (OutputStream out = bakedJarIZF.write(path)) {
 			for(String item : list) {

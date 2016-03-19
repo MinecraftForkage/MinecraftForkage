@@ -1,10 +1,8 @@
 package net.minecraftforkage.instsetup.cmdline;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -26,8 +24,6 @@ public class CommandLineInstanceSetup {
 		InstallationArguments instArgs = new InstallationArguments();
 		
 		String[] runArgs = null;
-		File runJsonLoc = null;
-		File runLibsDir = null;
 		
 		argloop: for(int k = 0; k < args.length;) {
 			switch(args[k++]) {
@@ -46,13 +42,28 @@ public class CommandLineInstanceSetup {
 				if(k == args.length) throw new Exception("--coreLocation requires argument");
 				instArgs.coreLocation = new File(args[k++]).toURI().toURL();
 				break;
+			
+			case "--standalone":
+				instArgs.standalone = true;
+				break;
+			
+			case "--libraryDir":
+				if(k == args.length) throw new Exception("--libraryDir requires argument");
+				instArgs.libraryDir = new File(args[k++]);
+				break;
+				
+			case "--nativesDir":
+				if(k == args.length) throw new Exception("--nativesDir requires argument");
+				instArgs.nativesDir = new File(args[k++]);
+				break;
+				
+			case "--jsonFile":
+				if(k == args.length) throw new Exception("--jsonFile requires argument");
+				instArgs.jsonLocation = new File(args[k++]).toURI().toURL();
+				break;
 				
 			case "--run":
-				// First argument after --run is the location of the JSON launcher file.
-				// Next argument is the library dir.
-				// All arguments after --that are passed to Minecraft
-				runJsonLoc = new File(args[k++]);
-				runLibsDir = new File(args[k++]);
+				// All arguments after --run are passed to Minecraft
 				runArgs = Arrays.copyOfRange(args, k, args.length);
 				break argloop;
 				
@@ -61,34 +72,44 @@ public class CommandLineInstanceSetup {
 			}
 		}
 		
+		if(runArgs != null && instArgs.libraryDir == null)
+			throw new Exception("--run requires --libraryDir");
+		
+		if(runArgs != null && instArgs.jsonLocation == null)
+			throw new Exception("--run requires --jsonFile");
+		
 		SetupEntryPoint.setupInstance(instArgs);
 		
 		if(runArgs != null) {
 			
-			JsonObject json;
-			try (Reader in = new InputStreamReader(new FileInputStream(runJsonLoc), StandardCharsets.UTF_8)) {
-				json = new GsonBuilder().create().fromJson(in, JsonObject.class);
-			}
-			
 			List<URL> urls = new ArrayList<URL>();
 			
-			for(JsonElement library : json.get("libraries").getAsJsonArray()) {
-				String name = library.getAsJsonObject().get("name").getAsString();
-				String[] parts = name.split(":");
-				
-				File libfile = new File(runLibsDir, parts[1]+"-"+parts[2]+".jar");
-				if(libfile.exists()) {
-					urls.add(libfile.toURI().toURL());
-					continue;
+			// If the modpack JAR is standalone, then the libraries
+			// are included in it and don't need to be added to the classpath.
+			if(!instArgs.standalone) {
+				JsonObject json;
+				try (Reader in = new InputStreamReader(instArgs.jsonLocation.openStream(), StandardCharsets.UTF_8)) {
+					json = new GsonBuilder().create().fromJson(in, JsonObject.class);
 				}
 				
-				libfile = new File(runLibsDir, parts[0].replace(".",File.separator)+File.separator+parts[1]+File.separator+parts[2]+File.separator+parts[1]+"-"+parts[2]+".jar");
-				if(libfile.exists()) {
-					urls.add(libfile.toURI().toURL());
-					continue;
+				for(JsonElement library : json.get("libraries").getAsJsonArray()) {
+					String name = library.getAsJsonObject().get("name").getAsString();
+					String[] parts = name.split(":");
+					
+					File libfile = new File(instArgs.libraryDir, parts[1]+"-"+parts[2]+".jar");
+					if(libfile.exists()) {
+						urls.add(libfile.toURI().toURL());
+						continue;
+					}
+					
+					libfile = new File(instArgs.libraryDir, parts[0].replace(".",File.separator)+File.separator+parts[1]+File.separator+parts[2]+File.separator+parts[1]+"-"+parts[2]+".jar");
+					if(libfile.exists()) {
+						urls.add(libfile.toURI().toURL());
+						continue;
+					}
+					
+					System.err.println("Couldn't find library "+name+" in "+instArgs.libraryDir);
 				}
-				
-				System.err.println("Couldn't find library "+name+" in "+runLibsDir);
 			}
 			
 			urls.add(instArgs.outputLocation.toURI().toURL());
@@ -96,12 +117,6 @@ public class CommandLineInstanceSetup {
 			@SuppressWarnings("resource")
 			URLClassLoader mcLoader = new URLClassLoader(urls.toArray(new URL[0]));
 
-			// Required for Log4J. Otherwise Log4J uses a SimpleLoggerContextFactory
-			// instead of the usual Log4jContextFactory, which leads to creating
-			// SimpleLoggers instead of core.Loggers, which leads to INpureCore
-			// crashing when it can't cast the loggers to core.Loggers.
-			Thread.currentThread().setContextClassLoader(mcLoader);
-			
 			List<String> allRunArgs = new ArrayList<>();
 			allRunArgs.addAll(Arrays.asList(runArgs));
 			allRunArgs.add("--gameDir");

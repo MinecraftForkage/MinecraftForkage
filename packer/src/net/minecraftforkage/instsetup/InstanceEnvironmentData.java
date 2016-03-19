@@ -50,6 +50,7 @@ public final class InstanceEnvironmentData {
 	static File setupTempDir;
 	
 	
+	// TODO: remove (replace with a JSON list file)
 	public static Set<String> extraModContainers = new HashSet<>();
 	
 	

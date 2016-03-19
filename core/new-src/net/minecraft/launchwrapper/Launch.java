@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Proxy;
 import java.net.URL;
@@ -65,9 +67,19 @@ public class Launch {
 	 * This method is specified by Mojang's launchwrapper.
 	 */
 	public static void main(final String[] args_) throws Exception {
+		
+		// Required for Log4J. Otherwise Log4J uses a SimpleLoggerContextFactory
+		// instead of the usual Log4jContextFactory, which leads to creating
+		// SimpleLoggers instead of core.Loggers, which leads to INpureCore
+		// crashing when it can't cast the loggers to core.Loggers.
+		Thread.currentThread().setContextClassLoader(Launch.class.getClassLoader());
+		
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				// See above comment.
+				Thread.currentThread().setContextClassLoader(Launch.class.getClassLoader());
+				
 				blackboard.put("Tweaks", Collections.emptyList());
 				blackboard.put("TweakClasses", Collections.emptyList());
 				
@@ -135,9 +147,18 @@ public class Launch {
 				injectCascadingTweak(new FMLTweaker());
 				try {
 					classLoader.loadClass("net.minecraft.client.main.Main").getMethod("main", String[].class).invoke(null, (Object)args.toArray(new String[0]));
+				
 				} catch (Exception e) {
+				
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, e.toString());
+					
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					pw.close();
+					
+					JOptionPane.showMessageDialog(null, sw.toString());
+					
 					return;
 				}
 			}
