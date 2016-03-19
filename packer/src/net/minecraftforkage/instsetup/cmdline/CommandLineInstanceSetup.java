@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -57,11 +58,6 @@ public class CommandLineInstanceSetup {
 				instArgs.nativesDir = new File(args[k++]);
 				break;
 				
-			case "--jsonFile":
-				if(k == args.length) throw new Exception("--jsonFile requires argument");
-				instArgs.jsonLocation = new File(args[k++]).toURI().toURL();
-				break;
-				
 			case "--run":
 				// All arguments after --run are passed to Minecraft
 				runArgs = Arrays.copyOfRange(args, k, args.length);
@@ -75,9 +71,6 @@ public class CommandLineInstanceSetup {
 		if(runArgs != null && instArgs.libraryDir == null)
 			throw new Exception("--run requires --libraryDir");
 		
-		if(runArgs != null && instArgs.jsonLocation == null)
-			throw new Exception("--run requires --jsonFile");
-		
 		SetupEntryPoint.setupInstance(instArgs);
 		
 		if(runArgs != null) {
@@ -88,7 +81,7 @@ public class CommandLineInstanceSetup {
 			// are included in it and don't need to be added to the classpath.
 			if(!instArgs.standalone) {
 				JsonObject json;
-				try (Reader in = new InputStreamReader(instArgs.jsonLocation.openStream(), StandardCharsets.UTF_8)) {
+				try (Reader in = new InputStreamReader(getLauncherJsonURL(instArgs.coreLocation).openStream(), StandardCharsets.UTF_8)) {
 					json = new GsonBuilder().create().fromJson(in, JsonObject.class);
 				}
 				
@@ -127,5 +120,9 @@ public class CommandLineInstanceSetup {
 			//System.in.read();
 			mainMethod.invoke(null, (Object)allRunArgs.toArray(new String[0]));
 		}
+	}
+	
+	private static URL getLauncherJsonURL(URL coreLoc) throws MalformedURLException {
+		return new URL("jar:" + coreLoc.toString() + "!/mcforkage-launcher-info.json");
 	}
 }

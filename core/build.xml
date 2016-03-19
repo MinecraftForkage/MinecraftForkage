@@ -115,11 +115,12 @@
 			<fileset dir="new-src" excludes="**/*.java"/>
 			<fileset dir="compat-src" excludes="**/*.java"/>
 		</copy>
+		<copy file="build-data/launcher.json" tofile="build/edited-classes/mcforkage-launcher-info.json"/>
 		<jar destfile="build/recomp.jar" basedir="build/edited-classes"/>
 		
 		<x:csv2srg methods="build-data/methods.csv" fields="build-data/fields.csv" srg="build-data/joined.srg" output="build/srg-to-mcp.srg"/>
 		<x:invert-srg input="build/srg-to-mcp.srg" output="build/mcp-to-srg.srg"/>
-		
+
 		<x:apply-srg input="build/recomp.jar" output="build/reobf.jar" srg="build/mcp-to-srg.srg"/>
 	</target>
 	
@@ -146,6 +147,7 @@
 			<fileset dir="new-src" excludes="**/*.java"/>
 			<fileset dir="compat-src" excludes="**/*.java"/>
 		</copy>
+		<copy file="build-data/launcher.json" tofile="build/edited-classes/mcforkage-launcher-info.json"/>
 		<jar destfile="build/recomp.jar" basedir="build/edited-classes"/>
 		
 		<x:csv2srg methods="build-data/methods.csv" fields="build-data/fields.csv" srg="build-data/joined.srg" output="build/srg-to-mcp.srg"/>

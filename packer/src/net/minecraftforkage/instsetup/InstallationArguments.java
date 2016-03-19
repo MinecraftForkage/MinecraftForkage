@@ -33,7 +33,7 @@ public final class InstallationArguments {
 
 	/**
 	 * If true, all required libraries will be packaged into the output JAR.
-	 * If true, {@link #libraryDir} and {@link #jsonLocation} and {@link #nativesDir} must be set.
+	 * If true, {@link #libraryDir} and {@link #nativesDir} must be set.
 	 */
 	public boolean standalone;
 	
@@ -42,12 +42,6 @@ public final class InstallationArguments {
 	 * Required if {@link #standalone} is true.
 	 */
 	public File libraryDir;
-	
-	/**
-	 * Location of the launcher JSON file.
-	 * Required if {@link #standalone} is true.
-	 */
-	public URL jsonLocation;
 	
 	/**
 	 * Directory containing native libraries.

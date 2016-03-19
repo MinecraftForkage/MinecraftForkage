@@ -156,7 +156,7 @@ public class SetupEntryPoint {
 				// For consistency between standalone and non-standalone modpack JARs,
 				// transformers may not interfere with the copying of libraries.
 				// (Because with a non-standalone modpack JAR the copying doesn't happen)
-				copyLibraries(bakedJarIZF, args.jsonLocation, args.libraryDir);
+				copyLibraries(bakedJarIZF, args.libraryDir);
 				copyNatives(bakedJarIZF, args.nativesDir);
 			}
 					
@@ -189,10 +189,10 @@ public class SetupEntryPoint {
 		}
 	}
 
-	private static void copyLibraries(ZipFileSystemAdapter bakedJarIZF, URL jsonLocation, File libraryDir) throws IOException {
+	private static void copyLibraries(ZipFileSystemAdapter bakedJarIZF, File libraryDir) throws IOException {
 
 		JsonObject json;
-		try (Reader in = new InputStreamReader(jsonLocation.openStream(), StandardCharsets.UTF_8)) {
+		try (Reader in = new InputStreamReader(bakedJarIZF.read("mcforkage-launcher-info.json"), StandardCharsets.UTF_8)) {
 			json = new GsonBuilder().create().fromJson(in, JsonObject.class);
 		}
 		
@@ -205,7 +205,7 @@ public class SetupEntryPoint {
 				copyLibrary(bakedJarIZF, libfile);
 				continue;
 			}
-			
+
 			libfile = new File(libraryDir, parts[0].replace(".",File.separator)+File.separator+parts[1]+File.separator+parts[2]+File.separator+parts[1]+"-"+parts[2]+".jar");
 			if(libfile.exists()) {
 				copyLibrary(bakedJarIZF, libfile);
