@@ -206,8 +206,8 @@ launcherVersionName=${launcher-version-name}
 		</zip>
 		<!-- <x:lzma input="build/install-data.zip" output="build/install-data.zip.lzma"/>-->
 		<gzip src="build/install-data.zip" destfile="build/install-data.zip.gz"/>
-		<jar destfile="build/installer.jar" manifest="build/BuildTools/installer/META-INF/MANIFEST.MF">
-			<fileset dir="build/BuildTools"/>
+		<jar destfile="build/installer.jar" manifest="../core-BuildTools/build/classes/installer/META-INF/MANIFEST.MF">
+			<fileset dir="../core-BuildTools/build/classes"/>
 			<fileset dir="build" includes="install-data.zip.gz"/>
 		</jar>
 	</target>
