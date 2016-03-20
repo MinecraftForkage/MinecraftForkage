@@ -238,6 +238,12 @@ public class SetupEntryPoint {
 					continue;
 				}
 				
+				// Files from Log4J that we want to override
+				if(entry.getName().equals("org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat") || entry.getName().equals("META-INF/log4j-provider.properties")) {
+					jin.closeEntry();
+					continue;
+				}
+				
 				// Preserve all LICENSE and NOTICE files, even if they have the same
 				// filename as another.
 				// Note that modpack JARs are not allowed to be distributed, as they contain
