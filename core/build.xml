@@ -112,6 +112,8 @@
 				<exclude name="META-INF/*.DSA"/>
 				<exclude name="META-INF/*.SF"/>
 			</fileset>
+		</copy>
+		<copy todir="build/edited-classes" overwrite="true">
 			<fileset dir="new-src" excludes="**/*.java"/>
 			<fileset dir="compat-src" excludes="**/*.java"/>
 		</copy>
@@ -144,6 +146,8 @@
 				<exclude name="META-INF/*.DSA"/>
 				<exclude name="META-INF/*.SF"/>
 			</fileset>
+		</copy>
+		<copy todir="build/edited-classes" overwrite="true">
 			<fileset dir="new-src" excludes="**/*.java"/>
 			<fileset dir="compat-src" excludes="**/*.java"/>
 		</copy>
