@@ -184,6 +184,7 @@
 		<copy file="build-data/launcher.json" tofile="build/install.json" overwrite="true">
 			<filterset begintoken="@@" endtoken="@@">
 				<filter token="LAUNCHER-VERSION-NAME" value="${launcher-version-name}"/>
+				<filter token="MAIN-CLASS" value="net.minecraftforkage.instsetup.launcher_stub.EntryPointFromLauncher"/>
 			</filterset>
 		</copy>
 <echo file="build/install.properties">#
@@ -206,6 +207,9 @@ launcherVersionName=${launcher-version-name}
 			<fileset dir="new-src">
 				<include name="fml_at.cfg"/>
 				<include name="forge_at.cfg"/>
+			</fileset>
+			<fileset dir="../packer/build">
+			    <include name="packer.jar"/>
 			</fileset>
 		</zip>
 		<!-- <x:lzma input="build/install-data.zip" output="build/install-data.zip.lzma"/>-->

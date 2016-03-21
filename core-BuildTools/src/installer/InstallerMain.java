@@ -159,13 +159,17 @@ public class InstallerMain {
 				versionJsonOut.write(installData.get("install.json"));
 			}
 			
-			// Install JAR file (by copying from temp dir)
-			try (FileOutputStream jarOut = new FileOutputStream(new File(versionDir, launcherVersionName+".jar"))) {
+			// Install core JAR file (by copying from temp dir)
+			try (FileOutputStream coreJarOut = new FileOutputStream(new File(versionDir, launcherVersionName+"-core.jar"))) {
 				try (FileInputStream jarIn = new FileInputStream(mainJarFile)) {
-					Utils.copyStream(jarIn, jarOut);
+					Utils.copyStream(jarIn, coreJarOut);
 				}
 			}
 			
+			// Install bootstrap JAR file (by copying from install data)
+			try (FileOutputStream bootstrapJarOut = new FileOutputStream(new File(versionDir, launcherVersionName+".jar"))) {
+				bootstrapJarOut.write(installData.get("packer.jar"));
+			}
 			
 			
 			

@@ -231,5 +231,5 @@
       }
     }
   ],
-  "mainClass": "net.minecraft.launchwrapper.Launch"
+  "mainClass": "@@MAIN-CLASS@@"
 }

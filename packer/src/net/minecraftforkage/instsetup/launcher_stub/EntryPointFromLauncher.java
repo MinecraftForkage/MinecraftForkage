@@ -27,13 +27,13 @@ class EntryPointFromLauncher {
 			InstallationArguments instArgs = new InstallationArguments();
 			instArgs.instanceBaseDir = gameDir;
 			instArgs.isInstallerRunningFromLauncher = true;
-			instArgs.coreLocation = findPatchedVanillaJarLocation();
+			instArgs.coreLocation = findCoreLocation();
 			SetupEntryPoint.setupInstance(instArgs);
 		}
 		SetupEntryPoint.runInstance(gameDir, args, SetupEntryPoint.findLibrariesFromClasspath());
 	}
 
-	private static URL findPatchedVanillaJarLocation() {
+	private static URL findCoreLocation() {
 		URL launcherStubURL = null;
 		for(URL url : ((URLClassLoader)EntryPointFromLauncher.class.getClassLoader()).getURLs()) {
 			if(!url.getProtocol().equals("file")) {
@@ -52,8 +52,10 @@ class EntryPointFromLauncher {
 		System.out.println("Launcher stub was loaded from: " + launcherStubURL);
 		
 		String s = launcherStubURL.toString();
-		s = s.substring(0, s.lastIndexOf('/'));
-		s += "/patched-vanilla.jar";
+		if(s.contains("."))
+			s = s.substring(0, s.lastIndexOf('.'))+"-core"+s.substring(s.lastIndexOf('.'));
+		else
+			s = s + "-core";
 		try {
 			return new URL(s);
 		} catch(MalformedURLException e) {
