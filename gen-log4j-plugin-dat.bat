@@ -1,0 +1,1 @@
+java -cp core\libraries\log4j-api-2.0-beta9.jar;core\libraries\log4j-core-2.0-beta9.jar;core\libraries\authlib org.apache.logging.log4j.core.config.plugins.PluginManager core\new-src org.apache.logging.log4j.core,com.mojang.util 
