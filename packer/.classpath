@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-plugin"/>
-	<classpathentry kind="src" path="src-plugin-ic2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/core/libraries/asm-debug-all-5.0.3.jar"/>
 	<classpathentry kind="lib" path="/core/libraries/gson-2.2.4.jar"/>

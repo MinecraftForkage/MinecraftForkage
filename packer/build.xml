@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="packer" default="compile">
+    
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="output.jar" value="${build.dir}/packer.jar"/>
+    <mkdir dir="${build.dir}"/>
+    
+    <!-- Check if the source has been modified since this was last built -->
+    <uptodate targetfile="build/BuildTools.jar" property="already-uptodate" value="true">
+        <srcfiles dir=".">
+            <include name="src/**/*"/>
+            <include name="src-plugin/**/*"/>
+        </srcfiles>
+    </uptodate>
+    
+    <target name="compile" unless="already-uptodate" description="Compile the source files, copy resources, and create a JAR file, outputting to ${classes.dir} and ${output.jar}">
+        
+        <mkdir dir="${classes.dir}"/>
+        <delete><fileset dir="${classes.dir}" includes="**/*"/></delete>
+        
+        <javac destdir="${classes.dir}" debug="on" includeAntRuntime="true">
+            <src path="src"/>
+            <src path="src-plugin"/>
+        	<include name="**/*.java"/>
+        	<classpath path="../core/libraries/asm-debug-all-5.0.3.jar"/>
+        	<classpath path="../core/libraries/gson-2.2.4.jar"/>
+        </javac>
+        
+        <copy todir="${classes.dir}">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+            <fileset dir="src-plugin">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        
+        <jar destfile="${output.jar}" basedir="${classes.dir}" />
+    </target>
+    
+    <target name="clean" description="Delete temporary files and output files">
+        <delete dir="${build-dir}" includeEmptyDirs="true" failonerror="false"/>
+    </target>
+</project>

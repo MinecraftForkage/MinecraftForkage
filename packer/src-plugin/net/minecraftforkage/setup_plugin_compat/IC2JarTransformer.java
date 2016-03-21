@@ -1,4 +1,4 @@
-package net.minecraftforkage.ic2_setup_plugin;
+package net.minecraftforkage.setup_plugin_compat;
 
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;

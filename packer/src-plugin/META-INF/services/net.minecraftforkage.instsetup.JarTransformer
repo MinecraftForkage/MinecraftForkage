@@ -3,3 +3,4 @@ net.minecraftforkage.setup_plugin.OptionalTransformer
 net.minecraftforkage.setup_plugin.ObjectHolderTransformer
 net.minecraftforkage.setup_plugin.CoremodSearchTransformer
 net.minecraftforkage.setup_plugin_compat.PlayerAPITransformerTransformer
+net.minecraftforkage.setup_plugin_compat.IC2JarTransformer
