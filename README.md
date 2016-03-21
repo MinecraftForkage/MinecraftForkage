@@ -75,3 +75,36 @@ External libraries for both Minecraft and Forge will be downloaded to `core/libr
 The folder structure is not preserved - all the library JARs are simply dumped into that directory.
 Natives will be extracted to `core/libraries/natives/`.
 
+
+User-friendliness layer
+=======================
+
+Users want Forkage modpacks to just work. Telling users to mess around with command lines or directory structures is a good way to not have any users :)
+
+Users can either generate a *standalone modpack JAR*, or use the vanilla launcher.
+
+## Standalone JARs
+
+Supplying the --standalone, --libraryDir and --nativesDir options to the command-line packer will cause it to emit a
+standalone JAR file. Note that many mods rely on the current working directory being the instance directory.
+
+Launching the standalone JAR is platform-specific; on Windows, it must be placed in the instance directory and then
+double-clicked, or a shortcut can be made to it.
+
+Note that standalone JARs contain Mojang code, and may contain open-source code in a manner not compliant with its license (as the licenses have not been reviewed for this purpose); therefore, they should not be 
+
+TODO: improve the login interface, and make it save sessions/profiles in a way compatible with the vanilla launcher.
+
+For now, it does not download assets, so the vanilla launcher must have been used at least once for this Minecraft version.
+
+For now, it does not download libraries. This is a problem - the packer must have the libraries all placed in one directory, and natives extracted, and it requires those two directories to be specified on the command line. None of this is user-friendly.
+
+## Vanilla launcher
+
+When using the vanilla launcher, the user should be able to set up a profile by selecting the Forkage version as the Minecraft
+version, and then selecting the instance directory - exactly the same as for Forge instances.
+
+To accomplish this, the *packer* is registered with the launcher. When the user launches Minecraft, the installer will
+quickly check if any mods have changed. If so, it will re-generate the modpack JAR. Then, it will launch the modpack JAR.
+The installer will be registered with all of the required libraries and assets, so that the launcher will handle downloading them.
+
