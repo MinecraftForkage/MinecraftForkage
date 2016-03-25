@@ -224,4 +224,6 @@ public class FluidStack
 
         return isFluidEqual((FluidStack) o);
     }
+    
+    public final int getFluidID() {return getFluid().getID();}
 }
