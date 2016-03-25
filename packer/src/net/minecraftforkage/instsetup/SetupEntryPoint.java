@@ -82,9 +82,11 @@ public class SetupEntryPoint {
 			if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
 				mods.add(modFile);
 		
-		for(File modFile : new File(InstanceEnvironmentData.getModsDir(), "1.7.10").listFiles())
-			if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
-				mods.add(modFile);
+		File versionSpecificModsDir = new File(InstanceEnvironmentData.getModsDir(), "1.7.10");
+		if (versionSpecificModsDir.isDirectory())
+			for(File modFile : versionSpecificModsDir.listFiles())
+				if(modFile.getName().endsWith(".zip") || modFile.getName().endsWith(".jar") || modFile.isDirectory())
+					mods.add(modFile);
 		
 		PackerContext context = new PackerContext();
 		context.modURLs = new ArrayList<URL>(mods.size());

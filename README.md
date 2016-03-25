@@ -64,7 +64,7 @@ This component resides in the `packer/` directory. This directory may be importe
 The packer relies on some of the libraries downloaded by running `ant extractsrc` in `core/`. This may be fixed in the future.
 For now, you need to do that if you want to be able to compile the packer.
 
-To build the packer, run `ant` in the `packer/` directory.
+To build the packer, run `ant` in the `packer/` directory, or use your favourite IDE.
 
 
 
