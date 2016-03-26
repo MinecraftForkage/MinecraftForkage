@@ -268,11 +268,6 @@ public class LoadController
             if (!mc.isImmutable() && mc.getMod()!=null)
             {
                 builder.put(mc, mc.getMod());
-                List<String> packages = mc.getOwnedPackages();
-                for (String pkg : packages)
-                {
-                    packageOwners.put(pkg, mc);
-                }
             }
             if (mc.getMod()==null && !mc.isImmutable() && state!=LoaderState.CONSTRUCTING)
             {

@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.cert.Certificate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -416,7 +417,6 @@ public class FMLModContainer implements ModContainer
         {
             ModClassLoader modClassLoader = event.getModClassLoader();
             modClassLoader.addFile(source);
-            modClassLoader.clearNegativeCacheFor(candidate.getClassList());
             Class<?> clazz = Class.forName(className, true, modClassLoader);
 
             Certificate[] certificates = clazz.getProtectionDomain().getCodeSource().getCertificates();
@@ -600,10 +600,11 @@ public class FMLModContainer implements ModContainer
         return (String) descriptor.get("guiFactory");
     }
 
+    // XXX: This method can be deleted if no mods depend on it
     @Override
     public List<String> getOwnedPackages()
     {
-        return candidate.getContainedPackages();
+        return Collections.emptyList();
     }
     
     @Override

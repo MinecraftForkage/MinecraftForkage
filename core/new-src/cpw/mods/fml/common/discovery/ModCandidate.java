@@ -13,11 +13,13 @@
 package cpw.mods.fml.common.discovery;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.ModContainer;
@@ -33,10 +35,10 @@ public class ModCandidate
     private List<String> baseModTypes = Lists.newArrayList();
     private boolean isMinecraft;
     private List<ASMModParser> baseModCandidateTypes = Lists.newArrayListWithCapacity(1);
-    private Set<String> foundClasses = Sets.newHashSet();
     private List<ModContainer> mods;
-    private List<String> packages = Lists.newArrayList();
     private ASMDataTable table;
+    // XXX Compatibility with Extra Utilities
+    private Set<String> classList = new HashSet<String>();
 
     public ModCandidate(File classPathRoot, File modContainer, ContainerType sourceType)
     {
@@ -80,13 +82,14 @@ public class ModCandidate
     public void addClassEntry(String name)
     {
         String className = name.substring(0, name.lastIndexOf('.')); // strip the .class
-        foundClasses.add(className);
+        // XXX Compatibility with Extra Utilities
+        if(className.startsWith("cofh/api/energy/") || className.startsWith("com/rwtema/extrautils/network/packets/"))
+            classList.add(className);
         className = className.replace('/','.');
         int pkgIdx = className.lastIndexOf('.');
         if (pkgIdx > -1)
         {
             String pkg = className.substring(0,pkgIdx);
-            packages.add(pkg);
             this.table.registerPackage(this,pkg);
         }
     }
@@ -111,16 +114,16 @@ public class ModCandidate
     {
         baseModCandidateTypes.add(modParser);
     }
+    
+    // XXX Compatibility with Extra Utilities
     public Set<String> getClassList()
     {
-        return foundClasses;
+    	return Collections.unmodifiableSet(classList);
     }
+    
     public List<ModContainer> getContainedMods()
     {
         return mods;
     }
-    public List<String> getContainedPackages()
-    {
-        return packages;
-    }
+    // FORKAGE DELETED: public List<String> getContainedPackages()
 }

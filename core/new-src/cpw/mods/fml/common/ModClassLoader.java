@@ -78,8 +78,8 @@ public class ModClassLoader extends URLClassLoader
         return STANDARD_LIBRARIES;
     }
 
+    // XXX: This method can be deleted if no mods rely on it.
     public void clearNegativeCacheFor(Set<String> classList)
     {
-        mainClassLoader.clearNegativeEntries(classList);
     }
 }
