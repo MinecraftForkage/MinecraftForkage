@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
@@ -893,13 +894,14 @@ public class Loader
         if (fmlBrandingProperties == null)
         {
             Properties loaded = new Properties();
-            try
-            {
-                loaded.load(getClass().getClassLoader().getResourceAsStream("fmlbranding.properties"));
-            }
-            catch (Exception e)
-            {
-                // File not found - ignore
+            InputStream stream = getClass().getClassLoader().getResourceAsStream("fmlbranding.properties");
+            if(stream != null) {
+            	try {
+	                loaded.load(stream);
+	                stream.close();
+            	} catch(IOException e) {
+            		throw new RuntimeException(e);
+            	}
             }
             fmlBrandingProperties = Maps.fromProperties(loaded);
         }
