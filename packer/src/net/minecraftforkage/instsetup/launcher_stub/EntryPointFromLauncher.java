@@ -18,9 +18,9 @@ class EntryPointFromLauncher {
 				gameDir = new File(args[k+1]);
 		
 		if(gameDir == null)
-			throw new RuntimeException("No --gameDir argument found! Arguments from launcher: " + Arrays.toString(args));
+			throw new RuntimeException("No --gameDir argument found! Arguments from launcher: " + printableLauncherArgs(args));
 		
-		System.out.println("Arguments from launcher: " + Arrays.toString(args));
+		System.out.println("Arguments from launcher: " + printableLauncherArgs(args));
 		
 		// Minecraft launcher has no way to specify additional program arguments, but we can specify JVM arguments, including -D
 		if(!Boolean.getBoolean("minecraftforkage.launcherstub.noInstanceSetup")) {
@@ -31,6 +31,20 @@ class EntryPointFromLauncher {
 			SetupEntryPoint.setupInstance(instArgs);
 		}
 		SetupEntryPoint.runInstance(gameDir, args, SetupEntryPoint.findLibrariesFromClasspath());
+	}
+
+	private static String printableLauncherArgs(String[] args) {
+		String[] copy = Arrays.copyOf(args, args.length);
+		for(int k = 0; k < args.length - 1; k++) {
+			// Note: we check args, and edit copy.
+			// That means that e.g. [--someflag, --accessToken, --accessToken, 1234567]
+			// will become [--someflag, --accessToken, REDACTED, REDACTED]
+			// and not [--someflag, --accessToken, REDACTED, 1234567]
+			// which could allow someone to leak the access token by passing crafted arguments before it. 
+			if(args[k].equals("--accessToken") || args[k].equals("--gameDir"))
+				copy[k+1] = "REDACTED";
+		}
+		return Arrays.toString(copy);
 	}
 
 	private static URL findCoreLocation() {
