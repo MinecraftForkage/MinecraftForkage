@@ -21,7 +21,11 @@ public class FakeLatencyHandler extends ChannelInboundHandlerAdapter
 {
     private static final Timer timer = new HashedWheelTimer();
     
-    public static final int LATENCY_MS = Integer.getInteger("net.mcforkage.fakeLatency");
+    public static final int LATENCY_MS;
+    static {
+    	Integer i = Integer.getInteger("net.mcforkage.fakeLatency");
+    	LATENCY_MS = (i == null ? 0 : i.intValue());
+    }
     
     private abstract static class Task implements TimerTask {
     	@Override
