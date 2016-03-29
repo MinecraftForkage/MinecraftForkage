@@ -275,7 +275,7 @@ public class LanguageRegistry
 
     private void searchZipForLanguages(File source, Side side) throws IOException
     {
-        ZipFile zf = new ZipFile(source);
+        /*ZipFile zf = new ZipFile(source);
         List<String> added = Lists.newArrayList();
         for (ZipEntry ze : Collections.list(zf.entries()))
         {
@@ -295,12 +295,12 @@ public class LanguageRegistry
         }
         if(added.size() > 0)
         	FMLLog.fine("Found translations in %s [%s]", source.getName(), Joiner.on(", ").join(added));
-        zf.close();
+        zf.close();*/
     }
 
     private void searchDirForLanguages(File source, String path, Side side) throws IOException
     {
-    	File[] files = source.listFiles();
+    	/*File[] files = source.listFiles();
     	if(files == null) {
     		System.err.println("Failed to list files in "+source);
     		return;
@@ -324,6 +324,6 @@ public class LanguageRegistry
                     StringTranslate.inject(new FileInputStream(file));
                 }
             }
-        }
+        }*/
     }
 }
