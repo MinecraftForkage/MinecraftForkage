@@ -74,6 +74,8 @@ public class MCFCompat {
 						return null;
 					if(stackTrace[1].getClassName().equals("logisticspipes.asm.LogisticsPipesCoreLoader") && stackTrace[1].getMethodName().equals("<init>"))
 						return null;
+					if(stackTrace[1].getClassName().equals("chocohead.patcher.PatcherPlugin") && stackTrace[1].getMethodName().equals("<clinit>"))
+						return null;
 				}
 					
 				return old.getClassBytes(arg0);

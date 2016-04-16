@@ -13,18 +13,16 @@ public class IC2JarTransformer extends JarTransformer {
 
 	@Override
 	public String getID() {
-		return "IC2";
+		return "MinecraftForkage|Compat|IC2";
 	}
 	
-	@Override
-	public void transform(AbstractZipFile zipFile, PackerContext context) throws Exception {
-		
-		if(!zipFile.doesPathExist("lib/ejml-0.23.jar"))
+	private void extractFile(AbstractZipFile zipFile, String path) throws Exception {
+		if(!zipFile.doesPathExist(path))
 			return;
 		
 		byte[] buffer = new byte[32768];
-		System.out.println("[IC2] Extracting lib/ejml-0.23.jar");
-		try (ZipInputStream ejml_in = new ZipInputStream(zipFile.read("lib/ejml-0.23.jar"))) {
+		System.out.println("[IC2] Extracting "+path);
+		try (ZipInputStream ejml_in = new ZipInputStream(zipFile.read(path))) {
 			for(ZipEntry ze; (ze = ejml_in.getNextEntry()) != null;) {
 				if(ze.getName().startsWith("META-INF/")) {
 					ejml_in.closeEntry();
@@ -47,7 +45,14 @@ public class IC2JarTransformer extends JarTransformer {
 			}
 		}
 		
-		zipFile.delete("lib/ejml-0.23.jar");
+		zipFile.delete(path);
+	}
+	
+	@Override
+	public void transform(AbstractZipFile zipFile, PackerContext context) throws Exception {
+		
+		extractFile(zipFile, "lib/ejml-0.23.jar");
+		extractFile(zipFile, "lib/EJML-core-0.26.jar");
 		
 		//InstanceEnvironmentData.coremodsToIgnore.add("ic2.core.coremod.IC2core");
 	}
