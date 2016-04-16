@@ -41,10 +41,11 @@ public class LaunchClassLoader extends URLClassLoader {
 	private ArrayList<IClassTransformer> transformers = new ArrayList<IClassTransformer>(0);
 	private ClassLoader parent;
 	
-	private File debugDir = null;/*new File("CLASSLOADER_DEBUG");
+	private File debugDir = Boolean.getBoolean("mcforkage.classloaderDebug") ? new File("CLASSLOADER_DEBUG") : null;
 	{
-		debugDir.mkdirs();
-	}*/
+		if(debugDir != null)
+			debugDir.mkdirs();
+	}
 	
 	// XXX BACKCOMPAT with logisticspipes.asm.LogisticsPipesClassInjector
 	private Map<String, byte[]> resourceCache = new HashMap<String, byte[]>();
