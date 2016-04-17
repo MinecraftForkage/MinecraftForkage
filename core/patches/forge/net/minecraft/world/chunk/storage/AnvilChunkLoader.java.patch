@@ -1,15 +1,15 @@
 --- ../src-base/minecraft/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
 +++ ../src-work/minecraft/net/minecraft/world/chunk/storage/AnvilChunkLoader.java
-@@ -25,6 +25,8 @@
+@@ -22,4 +22,8 @@
  import net.minecraft.world.chunk.NibbleArray;
  import net.minecraft.world.storage.IThreadedFileIO;
  import net.minecraft.world.storage.ThreadedFileIOBase;
 +import net.minecraftforge.common.MinecraftForge;
 +import net.minecraftforge.event.world.ChunkDataEvent;
- 
- import org.apache.logging.log4j.Level;
++import cpw.mods.fml.common.FMLLog;
++import org.apache.logging.log4j.Level;
  import org.apache.logging.log4j.LogManager;
-@@ -46,8 +48,46 @@
+@@ -43,8 +49,46 @@
          this.field_75825_d = p_i2003_1_;
      }
  
@@ -56,7 +56,7 @@
          NBTTagCompound nbttagcompound = null;
          ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(p_75815_2_, p_75815_3_);
          Object object = this.field_75827_c;
-@@ -56,11 +96,13 @@
+@@ -53,11 +97,13 @@
          {
              if (this.field_75826_b.contains(chunkcoordintpair))
              {
@@ -73,7 +73,7 @@
                          break;
                      }
                  }
-@@ -79,11 +121,24 @@
+@@ -76,11 +122,24 @@
              nbttagcompound = CompressedStreamTools.func_74794_a(datainputstream);
          }
  
@@ -99,7 +99,7 @@
          if (!p_75822_4_.func_150297_b("Level", 10))
          {
              field_151505_a.error("Chunk file at " + p_75822_2_ + "," + p_75822_3_ + " is missing level data, skipping");
-@@ -103,10 +158,30 @@
+@@ -100,10 +159,30 @@
                  field_151505_a.error("Chunk file at " + p_75822_2_ + "," + p_75822_3_ + " is in the wrong location; relocating. (Expected " + p_75822_2_ + ", " + p_75822_3_ + ", got " + chunk.field_76635_g + ", " + chunk.field_76647_h + ")");
                  p_75822_4_.func_74768_a("xPos", p_75822_2_);
                  p_75822_4_.func_74768_a("zPos", p_75822_3_);
@@ -131,7 +131,7 @@
          }
      }
  
-@@ -120,6 +195,7 @@
+@@ -117,6 +196,7 @@
              NBTTagCompound nbttagcompound1 = new NBTTagCompound();
              nbttagcompound.func_74782_a("Level", nbttagcompound1);
              this.func_75820_a(p_75816_2_, p_75816_1_, nbttagcompound1);
@@ -139,7 +139,48 @@
              this.func_75824_a(p_75816_2_.func_76632_l(), nbttagcompound);
          }
          catch (Exception exception)
-@@ -373,6 +449,12 @@
+@@ -258,11 +338,20 @@
+                 Entity entity = (Entity)iterator1.next();
+                 nbttagcompound1 = new NBTTagCompound();
+ 
+-                if (entity.func_70039_c(nbttagcompound1))
++                try
+                 {
+-                    p_75820_1_.field_76644_m = true;
+-                    nbttaglist2.func_74742_a(nbttagcompound1);
++                    if (entity.func_70039_c(nbttagcompound1))
++                    {
++                        p_75820_1_.field_76644_m = true;
++                        nbttaglist2.func_74742_a(nbttagcompound1);
++                    }
+                 }
++                catch (Exception e)
++                {
++                    FMLLog.log(Level.ERROR, e,
++                            "An Entity type %s has thrown an exception trying to write state. It will not persist. Report this to the mod author",
++                            entity.getClass().getName());
++                }
+             }
+         }
+ 
+@@ -274,8 +363,16 @@
+         {
+             TileEntity tileentity = (TileEntity)iterator1.next();
+             nbttagcompound1 = new NBTTagCompound();
++            try {
+             tileentity.func_145841_b(nbttagcompound1);
+             nbttaglist3.func_74742_a(nbttagcompound1);
++            }
++            catch (Exception e)
++            {
++                FMLLog.log(Level.ERROR, e,
++                        "A TileEntity type %s has throw an exception trying to write state. It will not persist. Report this to the mod author",
++                        tileentity.getClass().getName());
++            }
+         }
+ 
+         p_75820_3_.func_74782_a("TileEntities", nbttaglist3);
+@@ -361,6 +458,12 @@
              chunk.func_76616_a(p_75823_2_.func_74770_j("Biomes"));
          }
  
@@ -152,7 +193,7 @@
          NBTTagList nbttaglist1 = p_75823_2_.func_150295_c("Entities", 10);
  
          if (nbttaglist1 != null)
-@@ -434,7 +516,7 @@
+@@ -422,7 +525,7 @@
              }
          }
  

@@ -106,7 +106,15 @@
              chunk.func_76631_c();
              chunk.func_76624_a(this, this, p_73158_1_, p_73158_2_);
          }
-@@ -265,6 +325,11 @@
+@@ -216,6 +276,7 @@
+             if (this.field_73246_d != null)
+             {
+                 this.field_73246_d.func_73153_a(p_73153_1_, p_73153_2_, p_73153_3_);
++                cpw.mods.fml.common.registry.GameRegistry.generateWorld(p_73153_2_, p_73153_3_, field_73251_h, field_73246_d, p_73153_1_);
+                 chunk.func_76630_e();
+             }
+         }
+@@ -265,6 +326,11 @@
      {
          if (!this.field_73251_h.field_73058_d)
          {
@@ -118,7 +126,7 @@
              for (int i = 0; i < 100; ++i)
              {
                  if (!this.field_73248_b.isEmpty())
-@@ -278,6 +343,11 @@
+@@ -278,6 +344,11 @@
                          this.func_73242_b(chunk);
                          this.func_73243_a(chunk);
                          this.field_73245_g.remove(chunk);

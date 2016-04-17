@@ -1,6 +1,6 @@
 --- ../src-base/minecraft/net/minecraft/entity/item/EntityItem.java
 +++ ../src-work/minecraft/net/minecraft/entity/item/EntityItem.java
-@@ -14,10 +14,13 @@
+@@ -13,8 +14,13 @@
  import net.minecraft.util.MathHelper;
  import net.minecraft.util.StatCollector;
  import net.minecraft.world.World;
@@ -9,13 +9,12 @@
 +import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
--
- import cpw.mods.fml.common.FMLCommonHandler;
++import cpw.mods.fml.common.FMLCommonHandler;
 +import cpw.mods.fml.common.eventhandler.Event.Result;
  
  public class EntityItem extends Entity
  {
-@@ -30,6 +33,11 @@
+@@ -29,6 +33,11 @@
      public float field_70290_d;
      private static final String __OBFID = "CL_00001669";
  
@@ -27,7 +26,7 @@
      public EntityItem(World p_i1709_1_, double p_i1709_2_, double p_i1709_4_, double p_i1709_6_)
      {
          super(p_i1709_1_);
-@@ -46,8 +54,9 @@
+@@ -45,8 +54,9 @@
  
      public EntityItem(World p_i1710_1_, double p_i1710_2_, double p_i1710_4_, double p_i1710_6_, ItemStack p_i1710_8_)
      {
@@ -38,7 +37,7 @@
      }
  
      protected boolean func_70041_e_()
-@@ -71,6 +80,15 @@
+@@ -70,6 +80,15 @@
  
      public void func_70071_h_()
      {
@@ -54,7 +53,7 @@
          if (this.func_92059_d() == null)
          {
              this.func_70106_y();
-@@ -126,8 +144,30 @@
+@@ -125,8 +144,30 @@
  
              ++this.field_70292_b;
  
@@ -86,7 +85,7 @@
                  this.func_70106_y();
              }
          }
-@@ -242,6 +282,7 @@
+@@ -241,6 +282,7 @@
      {
          p_70014_1_.func_74777_a("Health", (short)((byte)this.field_70291_e));
          p_70014_1_.func_74777_a("Age", (short)this.field_70292_b);
@@ -94,7 +93,7 @@
  
          if (this.func_145800_j() != null)
          {
-@@ -277,20 +318,39 @@
+@@ -276,20 +318,39 @@
          NBTTagCompound nbttagcompound1 = p_70037_1_.func_74775_l("Item");
          this.func_92058_a(ItemStack.func_77949_a(nbttagcompound1));
  
@@ -136,3 +135,12 @@
              {
                  if (itemstack.func_77973_b() == Item.func_150898_a(Blocks.field_150364_r))
                  {
+@@ -325,6 +386,8 @@
+                     }
+                 }
+ 
++                FMLCommonHandler.instance().firePlayerItemPickupEvent(p_70100_1_, this);
++
+                 this.field_70170_p.func_72956_a(p_70100_1_, "random.pop", 0.2F, ((this.field_70146_Z.nextFloat() - this.field_70146_Z.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                 p_70100_1_.func_71001_a(this, i);
+ 

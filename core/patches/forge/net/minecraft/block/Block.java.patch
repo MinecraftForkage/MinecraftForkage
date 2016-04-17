@@ -1,7 +1,7 @@
 --- ../src-base/minecraft/net/minecraft/block/Block.java
 +++ ../src-work/minecraft/net/minecraft/block/Block.java
-@@ -3,24 +3,36 @@
- import cpw.mods.fml.common.registry.GameData;
+@@ -3,23 +3,36 @@
++import cpw.mods.fml.common.registry.GameData;
  import cpw.mods.fml.relauncher.Side;
  import cpw.mods.fml.relauncher.SideOnly;
 +
@@ -37,7 +37,7 @@
  import net.minecraft.util.IIcon;
  import net.minecraft.util.MovingObjectPosition;
  import net.minecraft.util.RegistryNamespaced;
-@@ -30,6 +42,15 @@
+@@ -30,7 +42,16 @@
  import net.minecraft.world.Explosion;
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
@@ -53,6 +53,17 @@
  
  public class Block
  {
+-    public static final RegistryNamespaced field_149771_c = new RegistryNamespacedDefaultedByKey("air");
++    public static final RegistryNamespaced field_149771_c = GameData.getBlockRegistry();
+@@ -102,6 +123,8 @@
+     protected IIcon field_149761_L;
+     private static final String __OBFID = "CL_00000199";
+ 
++    public final cpw.mods.fml.common.registry.RegistryDelegate<Block> delegate = 
++            ((cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry)field_149771_c).getDelegate(this, Block.class);
+     public static int func_149682_b(Block p_149682_0_)
+     {
+         return field_149771_c.func_148757_b(p_149682_0_);
 @@ -112,7 +133,8 @@
  
      public static Block func_149729_e(int p_149729_0_)

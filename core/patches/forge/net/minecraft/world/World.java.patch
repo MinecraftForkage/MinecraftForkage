@@ -473,8 +473,10 @@
                      }
                  }
              }
-@@ -1802,6 +1974,10 @@
+@@ -1802,9 +1974,13 @@
  
+-        this.field_147481_N = false;
+-
          if (!this.field_147483_b.isEmpty())
          {
 +            for (Object tile : field_147483_b)
@@ -484,6 +486,9 @@
              this.field_147482_g.removeAll(this.field_147483_b);
              this.field_147483_b.clear();
          }
+ 
++        this.field_147481_N = false;
++
 @@ -1822,18 +1998,18 @@
                      {
                          this.field_147482_g.add(tileentity1);
@@ -900,7 +905,7 @@
      @SideOnly(Side.CLIENT)
      public double func_72919_O()
      {
--        return this.field_72986_A.func_76067_t().getHorizon(this);
+-        return this.field_72986_A.func_76067_t() == WorldType.field_77138_c ? 0.0D : 63.0D;
 +        return field_73011_w.getHorizon();
      }
  
