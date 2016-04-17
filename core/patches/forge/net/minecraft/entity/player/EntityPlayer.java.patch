@@ -13,10 +13,12 @@
  import net.minecraft.block.Block;
  import net.minecraft.block.BlockBed;
  import net.minecraft.block.material.Material;
-@@ -77,8 +80,24 @@
+@@ -75,8 +80,26 @@
  import net.minecraft.world.WorldSettings;
  import net.minecraft.world.chunk.IChunkProvider;
  
++import cpw.mods.fml.common.FMLCommonHandler;
++import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 +import net.minecraftforge.common.ForgeHooks;
 +import net.minecraftforge.common.ISpecialArmor.ArmorProperties;
 +import net.minecraftforge.common.MinecraftForge;
@@ -56,6 +58,14 @@
          }
  
          this.func_71041_bz();
+@@ -193,6 +196,7 @@
+ 
+     public void func_70071_h_()
+     {
++        FMLCommonHandler.instance().onPlayerPreTick(this);
+         if (this.field_71074_e != null)
+         {
+             ItemStack itemstack = this.field_71071_by.func_70448_g();
 @@ -203,14 +224,23 @@
  
              if (itemstack == this.field_71074_e)
@@ -94,6 +104,14 @@
          {
              this.func_71053_j();
              this.field_71070_bA = this.field_71069_bz;
+@@ -316,6 +320,7 @@
+             this.field_71100_bB.func_75118_a(this);
+             this.func_71064_a(StatList.field_75948_k, 1);
+         }
++        FMLCommonHandler.instance().onPlayerPostTick(this);
+     }
+ 
+     public int func_82145_z()
 @@ -388,11 +418,13 @@
              int i = this.field_71074_e.field_77994_a;
              ItemStack itemstack = this.field_71074_e.func_77950_b(this.field_70170_p, this);
@@ -558,10 +576,15 @@
          chatcomponenttext.func_150256_b().func_150241_a(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + this.func_70005_c_() + " "));
          return chatcomponenttext;
      }
-@@ -2041,6 +2209,118 @@
-         FMLNetworkHandler.openGui(this, mod, modGuiId, world, x, y, z);
+@@ -2031,6 +2036,123 @@
+         }
      }
  
++    public void openGui(Object mod, int modGuiId, World world, int x, int y, int z)
++    {
++        FMLNetworkHandler.openGui(this, mod, modGuiId, world, x, y, z);
++    }
++
 +    /* ======================================== FORGE START =====================================*/
 +    @SideOnly(Side.CLIENT)
 +    @Override
