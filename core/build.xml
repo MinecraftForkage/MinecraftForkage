@@ -68,16 +68,12 @@
 	</target>
 	
 	<target name="process-source" depends="decompile">
-		<concat destfile="build/fml.patch">
-			<fileset dir="patches/fml" includes="**/*.patch"/>
-		</concat>
-		<concat destfile="build/forge.patch">
-			<fileset dir="patches/forge" includes="**/*.patch"/>
+		<concat destfile="build/source.patch">
+			<fileset dir="patches" includes="**/*.patch"/>
 		</concat>
 		<x:process-zip input="build/raw_source.zip" output="build/temp_source.zip" config="build-data/astyle.cfg" class="decompsource.MCPCleanup"/>
-		<x:process-zip input="build/temp_source.zip" output="build/patched_source_fml.zip" config="build/fml.patch" class="decompsource.ApplyUnifiedDiffs"/>
-		<x:process-zip input="build/patched_source_fml.zip" output="build/patched_source_forge.zip" config="build/forge.patch" class="decompsource.ApplyUnifiedDiffs"/>
-		<x:remap-sources input="build/patched_source_forge.zip" output="build/processed_source.zip" methods="build-data/methods.csv" fields="build-data/fields.csv" params="build-data/params.csv" nojavadocs="true"/>
+		<x:process-zip input="build/temp_source.zip" output="build/patched_source.zip" config="build/source.patch" class="decompsource.ApplyUnifiedDiffs"/>
+		<x:remap-sources input="build/patched_source.zip" output="build/processed_source.zip" methods="build-data/methods.csv" fields="build-data/fields.csv" params="build-data/params.csv" nojavadocs="true"/>
 	</target>
 	
 	<target name="extractsrc" depends="get-libraries, process-source" description="Decompile, and extract source code. This is the only target you need to run to get a dev environment.">
