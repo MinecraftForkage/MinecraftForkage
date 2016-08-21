@@ -149,6 +149,8 @@ public class DownloadLibrariesTask extends Task {
 				suffixes.add("-" + o);
 		
 		String baseURL = (urlObject != null ? (String)urlObject + "/" : "https://libraries.minecraft.net/");
+		if(baseURL.endsWith("//"))
+			baseURL = baseURL.substring(0, baseURL.length() - 1);
 		
 		String[] nameParts = name.split(":");
 		if(nameParts.length != 3)
